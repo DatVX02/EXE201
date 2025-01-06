@@ -1,6 +1,6 @@
 import React from 'react';
 import { Carousel } from 'antd';
-import logo from "../../assets/banner-f12-v3.png";
+import logo from "../../../assets/banner-f12-v3.png";
 const contentStyle = {
   margin: 0,
   height: '940px',
