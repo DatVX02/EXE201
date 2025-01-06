@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
-import logo from "../../assets/Layer_1.png";
+import logo from "../../assets/Logo.png";
 
 const Register = () => {
     const navigate = useNavigate();
@@ -92,11 +92,11 @@ const Register = () => {
         <div className="h-[88vh] flex items-center justify-center px-5 lg:px-0">
             <ToastContainer />
             <div className="flex justify-center flex-1 max-w-screen-lg bg-white border shadow sm:rounded-lg">
-                <div className="flex-1 hidden text-center md:flex bg-green-100">
+                <div className="flex-1 hidden text-center items-center md:flex ">
                     <img
                         src={logo}
                         alt="logo"
-                        className="m-5 rounded-lg justify-center items-center aspect-square"
+                        className="m-5 w-fit h-fit rounded-lg justify-center items-center aspect-square"
                     />
                 </div>
                 <div className="p-4 lg:w-1/2 xl:w-1/2  md:w-1/3">

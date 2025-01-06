@@ -4,7 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
-import layerImage from "../../assets/Layer_1.png"; 
+import layerImage from "../../assets/Logo.png"; 
 
 const Login = () => {
     const [username, setUsername] = useState("");
@@ -73,7 +73,7 @@ const Login = () => {
         <div className="h-[88vh] flex items-center justify-center px-5 lg:px-0">
             <ToastContainer />
             <div className="flex justify-center flex-1 max-w-screen-lg bg-white border shadow sm:rounded-lg">
-                <div className="flex-1 hidden text-center md:flex bg-green-100">
+                <div className="flex-1 hidden text-center md:flex ">
                     <img
                         src={layerImage}
                         alt="logo"
@@ -123,7 +123,7 @@ const Login = () => {
                                         : "bg-blue-900 hover:bg-indigo-700"
                                     }`}
                             >
-                                {loading ? "Đang xử lý..." : "Đăng nhập"}s
+                                {loading ? "Đang xử lý..." : "Đăng nhập"}
                             </button>
 
                             <div className="mt-1 text-center">
