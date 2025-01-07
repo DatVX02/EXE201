@@ -3,7 +3,7 @@ import { Carousel } from 'antd';
 import logo from "../../../assets/banner-f12-v3.png";
 const contentStyle = {
   margin: 0,
-  height: '940px',
+  height: '700px',
   color: '#fff',
   lineHeight: '160px',
   textAlign: 'center',

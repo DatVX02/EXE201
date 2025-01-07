@@ -3,7 +3,7 @@ import pharma from "../../../assets"
 const Brand = () => {
     returm(
         <>
-            "img src={logo}" />
+            {/* "img src={logo}" /> */}
         </>
     );
 }
