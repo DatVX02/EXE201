@@ -1,9 +1,9 @@
 import React from "react";
-import pharma from "../../../assets"
+import pharma from "../../../assets/pharmacity.png"
 const Brand = () => {
-    returm(
+    return(
         <>
-            {/* "img src={logo}" /> */}
+            <img src={pharma}/>
         </>
     );
 }

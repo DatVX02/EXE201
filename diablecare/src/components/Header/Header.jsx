@@ -19,11 +19,14 @@ const Header = () => {
       <Menu.Item key="4">
         <Link to="/contact">Liên hệ</Link>
       </Menu.Item>
+      <Menu.Item key="5">
+        <Link to="/contact">Chính sách</Link>
+      </Menu.Item>
     </Menu>
   );
 
   return (
-    <header className="flex justify-between items-center px-6 py-4 bg-[#00B389] text-white shadow-lg">
+    <header className="flex justify-between items-center px-6 py-4 bg-[#00B389] text-white shadow-lg ">
       <div className="flex items-center">
         <Link to="/">
           <img src={logo} alt="Logo" className="w-16" />
@@ -34,14 +37,20 @@ const Header = () => {
         <Link className="text-white hover:text-blue-300 transition duration-200" to="/">
           Trang chủ
         </Link>
-        <Link className="text-white hover:text-blue-300 transition duration-200" to="/about">
+        {/* <Link className="text-white hover:text-blue-300 transition duration-200" to="/about">
           Về chúng tôi
-        </Link>
+        </Link> */}
         <Link className="text-white hover:text-blue-300 transition duration-200" to="/products">
-          Sản phẩm
+          Cửa hàng
         </Link>
-        <Link className="text-white hover:text-blue-300 transition duration-200" to="/contact">
+        {/* <Link className="text-white hover:text-blue-300 transition duration-200" to="/contact">
           Liên hệ
+        </Link> */}
+        <Link className="text-white hover:text-blue-300 transition duration-200" to="/booking">
+          Đặt lịch
+        </Link>
+        <Link className="text-white hover:text-blue-300 transition duration-200" to="/advise">
+          Tư vấn
         </Link>
       </nav>
 
