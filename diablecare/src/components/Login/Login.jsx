@@ -70,18 +70,18 @@ const Login = () => {
 
 
     return (
-        <div className="h-[88vh] flex items-center justify-center px-5 lg:px-0">
+        <div className="h-[92vh] flex items-center justify-center px-5 lg:px-0">
             <ToastContainer />
-            <div className="flex justify-center flex-1 max-w-screen-lg bg-white border shadow sm:rounded-lg">
+            <div className="flex justify-center flex-1 bg-white border shadow sm:rounded-lg">
                 <div className="flex-1 hidden text-center md:flex ">
                     <img
                         src={layerImage}
                         alt="logo"
-                        className="m-5 rounded-lg justify-center items-center aspect-square"
+                        className="mt-10 w-[44rem] h-[44rem] rounded-lg justify-center items-center aspect-square"
                     />
                 </div>
 
-                <div className="p-4 lg:w-1/2 xl:w-1/2 sm:p-12 md:w-1/3">
+                <div className="p-4 lg:w-1/2 xl:w-1/2 sm:p-[11rem] md:w-1/3">
                     <div className="flex flex-col items-center">
                         <h1 className="text-2xl font-extrabold text-blue-900 xl:text-4xl">
                             Đăng nhập
