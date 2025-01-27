@@ -9,12 +9,15 @@ public class RegisterEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true) // Ràng buộc giá trị 'username' là duy nhất
     private String username;
 
     private String password;
     private String role;
     private String phoneNumber;
+
+    @Column(unique = true) // Ràng buộc giá trị 'email' là duy nhất
+    private String email;
 
     // Getters và Setters
     public Long getId() {
@@ -55,5 +58,13 @@ public class RegisterEntity {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

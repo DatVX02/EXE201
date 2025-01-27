@@ -1,11 +1,14 @@
 package Register;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class Register {
 
     @NotBlank(message = "Username is mandatory")
+    @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
     private String username;
 
     @NotBlank(message = "Password is mandatory")
@@ -19,7 +22,12 @@ public class Register {
     private String role;
 
     @NotBlank(message = "Phone number is mandatory")
+    @Pattern(regexp = "^\\d{10,15}$", message = "Phone number must be between 10 and 15 digits")
     private String phoneNumber;
+
+    @NotBlank(message = "Email is mandatory")
+    @Email(message = "Email should be valid")
+    private String email;
 
     // Getters và Setters
     public String getUsername() {
@@ -60,5 +68,13 @@ public class Register {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
