@@ -1,4 +1,4 @@
-package Register;
+package Register.model;
 
 public class JwtResponse {
     private String token;

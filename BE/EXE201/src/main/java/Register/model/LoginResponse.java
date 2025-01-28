@@ -1,28 +1,19 @@
-package Register;
+package Register.model;
 
-public class LoginRespone {
-    private Long id;
+public class LoginResponse {
     private String username;
-    private String password;
+    private String password; // Mã hóa dạng JWT
     private String role;
+    private String token;
 
-    // Constructor
-    public LoginRespone(Long id, String username, String password, String role) {
-        this.id = id;
+    public LoginResponse(String username, String password, String role, String token) {
         this.username = username;
         this.password = password;
         this.role = role;
+        this.token = token;
     }
 
     // Getters và Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getUsername() {
         return username;
     }
@@ -45,5 +36,13 @@ public class LoginRespone {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

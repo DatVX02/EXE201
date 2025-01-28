@@ -1,4 +1,4 @@
-package Register;
+package Register.model;
 
 public class RegisterResponse {
     private Long id;

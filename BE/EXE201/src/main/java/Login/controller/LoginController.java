@@ -1,5 +1,7 @@
-package Login;
+package Login.controller;
 
+import Login.model.User;
+import Login.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

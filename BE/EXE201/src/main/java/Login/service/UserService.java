@@ -1,5 +1,6 @@
-package Login;
+package Login.service;
 
+import Login.model.User;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;

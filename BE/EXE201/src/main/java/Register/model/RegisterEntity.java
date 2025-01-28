@@ -1,4 +1,4 @@
-package Register;
+package Register.model;
 
 import jakarta.persistence.*;
 
@@ -9,16 +9,15 @@ public class RegisterEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true) // Ràng buộc giá trị 'username' là duy nhất
+    @Column(unique = true)
     private String username;
 
     private String password;
     private String role;
     private String phoneNumber;
 
-    @Column(unique = true) // Ràng buộc giá trị 'email' là duy nhất
+    @Column(unique = true)
     private String email;
-
     // Getters và Setters
     public Long getId() {
         return id;

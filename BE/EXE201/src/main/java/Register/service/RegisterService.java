@@ -1,5 +1,8 @@
-package Register;
+package Register.service;
 
+import Register.model.Register;
+import Register.model.RegisterEntity;
+import Register.repository.RegisterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,29 +15,35 @@ public class RegisterService {
     private RegisterRepository registerRepository;
 
     public RegisterEntity save(Register register) {
-        // Kiểm tra trùng lặp username
+        // Kiểm tra username đã tồn tại
         Optional<RegisterEntity> existingUser = registerRepository.findByUsername(register.getUsername());
         if (existingUser.isPresent()) {
             throw new IllegalArgumentException("Username already exists!");
         }
 
-        // Kiểm tra trùng lặp email
+        // Kiểm tra email đã tồn tại
         Optional<RegisterEntity> existingEmail = registerRepository.findByEmail(register.getEmail());
         if (existingEmail.isPresent()) {
             throw new IllegalArgumentException("Email already exists!");
         }
 
+        // Tạo đối tượng RegisterEntity
         RegisterEntity entity = new RegisterEntity();
         entity.setUsername(register.getUsername());
-        entity.setPassword(register.getPassword()); // Mã hóa mật khẩu nếu cần
+        entity.setPassword(register.getPassword()); // Bạn có thể mã hóa mật khẩu tại đây
         entity.setRole(register.getRole());
         entity.setPhoneNumber(register.getPhoneNumber());
         entity.setEmail(register.getEmail());
+
+        // Lưu vào cơ sở dữ liệu
         return registerRepository.save(entity);
     }
 
-    public boolean authenticate(String username, String password) {
+    public RegisterEntity authenticateAndGetUser(String username, String password) {
         Optional<RegisterEntity> user = registerRepository.findByUsername(username);
-        return user.isPresent() && user.get().getPassword().equals(password);
+        if (user.isPresent() && user.get().getPassword().equals(password)) {
+            return user.get();
+        }
+        return null;
     }
 }
