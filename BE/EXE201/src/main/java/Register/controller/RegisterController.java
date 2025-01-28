@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/auth")
 public class RegisterController {
@@ -74,5 +76,17 @@ public class RegisterController {
         } else {
             return ResponseEntity.badRequest().body("Invalid username or password");
         }
+    }
+
+    @Operation(summary = "Get all users", description = "Fetch all registered users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Fetched all users successfully"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    @GetMapping("/users")
+    public ResponseEntity<List<RegisterEntity>> getAllUsers() {
+        // Lấy danh sách người dùng từ service
+        List<RegisterEntity> users = registerService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 }
