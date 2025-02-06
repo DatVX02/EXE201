@@ -59,4 +59,40 @@ public class RegisterService {
     public List<RegisterEntity> getAllUsers() {
         return registerRepository.findAll(); // Sử dụng phương thức `findAll` từ JpaRepository
     }
+
+    public Optional<RegisterEntity> getUserById(Long id) {
+        return registerRepository.findById(id);
+    }
+    public RegisterEntity updateUser(Long id, Register register) {
+        Optional<RegisterEntity> existingUser = registerRepository.findById(id);
+
+        if (existingUser.isEmpty()) {
+            throw new IllegalArgumentException("User not found!");
+        }
+
+        RegisterEntity user = existingUser.get();
+        user.setUsername(register.getUsername());
+        user.setEmail(register.getEmail());
+        user.setRole(register.getRole());
+
+        // Kiểm tra và cập nhật mật khẩu nếu có
+        if (register.getPassword() != null && !register.getPassword().isEmpty()) {
+            if (!register.getPassword().equals(register.getConfirmPassword())) {
+                throw new IllegalArgumentException("Password and Confirm Password do not match");
+            }
+            user.setPassword(register.getPassword());
+        }
+
+        return registerRepository.save(user);
+    }
+
+    public boolean deleteUserById(Long id) {
+        Optional<RegisterEntity> user = registerRepository.findById(id);
+        if (user.isPresent()) {
+            registerRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
 }

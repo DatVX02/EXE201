@@ -9,6 +9,7 @@ import Register.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,8 @@ public class RegisterController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    // ====================== AUTHENTICATION ======================
+    @Tag(name = "Authentication", description = "")
     @Operation(summary = "User registration", description = "API for user registration")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User registered successfully"),
@@ -45,6 +48,7 @@ public class RegisterController {
         }
     }
 
+    @Tag(name = "Authentication")
     @Operation(summary = "User login", description = "API for user login")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Login successful"),
@@ -78,6 +82,8 @@ public class RegisterController {
         }
     }
 
+    // ====================== USER MANAGEMENT ======================
+    @Tag(name = "User Management", description = "")
     @Operation(summary = "Get all users", description = "Fetch all registered users")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Fetched all users successfully"),
@@ -85,8 +91,53 @@ public class RegisterController {
     })
     @GetMapping("/users")
     public ResponseEntity<List<RegisterEntity>> getAllUsers() {
-        // Lấy danh sách người dùng từ service
         List<RegisterEntity> users = registerService.getAllUsers();
         return ResponseEntity.ok(users);
     }
+
+    @Tag(name = "User Management")
+    @Operation(summary = "Get user by ID", description = "Fetch user details by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User found"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    @GetMapping("/users/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        return registerService.getUserById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @Tag(name = "User Management")
+    @Operation(summary = "Update user by ID", description = "Update user details by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User updated successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    @PutMapping("/users/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @Valid @RequestBody Register register) {
+        try {
+            RegisterEntity updatedUser = registerService.updateUser(id, register);
+            return ResponseEntity.ok(updatedUser);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
+    @Tag(name = "User Management")
+    @Operation(summary = "Delete user by ID", description = "Delete a user by their ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
+        boolean isDeleted = registerService.deleteUserById(id);
+        if (isDeleted) {
+            return ResponseEntity.ok("User deleted successfully");
+        } else {
+            return ResponseEntity.status(404).body("User not found");
+        }
+    }
+
 }
