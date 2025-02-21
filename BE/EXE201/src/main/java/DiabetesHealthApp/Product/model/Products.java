@@ -2,10 +2,14 @@ package DiabetesHealthApp.Product.model;
 
 import DiabetesHealthApp.Category.model.Categories;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "products")
 public class Products {
 
     @Id
