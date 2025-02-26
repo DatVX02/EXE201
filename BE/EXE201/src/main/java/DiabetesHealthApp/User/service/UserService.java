@@ -1,18 +1,21 @@
 package DiabetesHealthApp.User.service;
 
+import DiabetesHealthApp.User.DTO.UsersDTO;
 import DiabetesHealthApp.User.model.RegisterRequest;
 import DiabetesHealthApp.User.model.Users;
 import DiabetesHealthApp.User.repository.RoleRepository;
 import DiabetesHealthApp.User.repository.UserRepository;
+import DiabetesHealthApp.User.service.Imp.IUsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import DiabetesHealthApp.User.model.Role;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class UserService implements IUsersService {
 
     @Autowired
     private UserRepository userRepository;
@@ -71,44 +74,72 @@ public class UserService {
         return null;
     }
 
-    // Lấy danh sách tất cả người dùng
-    public List<Users> getAllUsers() {
-        return userRepository.findAll(); // Sử dụng phương thức `findAll` từ JpaRepository
+    @Override
+    public UsersDTO getUserById(Long id) {
+        Optional<Users> userOptional = userRepository.findById(id);
+        return userOptional.map(this::mapToDTO).orElse(null);
     }
 
-    public Optional<Users> getUserById(long id) {
-        return userRepository.findById(id);
+    @Override
+    public UsersDTO getUserById(Integer id) {
+        return null;
     }
 
-    public Users updateUser(long id, RegisterRequest registerRequest) {
-        Optional<Users> existingUser = userRepository.findById(id);
-
-        if (existingUser.isEmpty()) {
-            throw new IllegalArgumentException("User not found!");
-        }
-
-        Users user = existingUser.get();
-        user.setAccount(registerRequest.getAccount());
-        user.setEmail(registerRequest.getEmail());
-        user.setRole(registerRequest.getRole());
-
-        // Kiểm tra và cập nhật mật khẩu nếu có
-        if (registerRequest.getPassword() != null && !registerRequest.getPassword().isEmpty()) {
-            if (!registerRequest.getPassword().equals(registerRequest.getConfirmPassword())) {
-                throw new IllegalArgumentException("Password and Confirm Password do not match");
-            }
-            user.setPassword(registerRequest.getPassword());
-        }
-
-        return userRepository.save(user);
+    @Override
+    public List<UsersDTO> getAllUsers() {
+        List<Users> usersList = userRepository.findAll();
+        return usersList.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 
-    public boolean deleteUserById(long id) {
-        Optional<Users> user = userRepository.findById(id);
-        if (user.isPresent()) {
-            userRepository.deleteById(id);
-            return true;
+    @Override
+    public UsersDTO updateUser(Integer id, UsersDTO usersDTO) {
+        return null;
+    }
+
+    @Override
+    public void deleteUser(Integer id) {
+
+    }
+
+    @Override
+    public UsersDTO updateUser(Long id, UsersDTO usersDTO) {
+        Optional<Users> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            Users user = userOptional.get();
+            user.setAccount(usersDTO.getAccount());
+            user.setEmail(usersDTO.getEmail());
+            user.setFullName(usersDTO.getFullName());
+            user.setPhoneNumber(usersDTO.getPhoneNumber());
+            user.setStatus(usersDTO.getStatus());
+            user.setDateOfBirth(usersDTO.getDateOfBirth());
+
+            Role role = new Role();
+            role.setRoleID(usersDTO.getRoleID());
+            user.setRole(role);
+
+            Users updatedUser = userRepository.save(user);
+            return mapToDTO(updatedUser);
         }
-        return false;
+        return null;
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    private UsersDTO mapToDTO(Users user) {
+        UsersDTO dto = new UsersDTO();
+        dto.setUserID(user.getUserID());
+        dto.setAccount(user.getAccount());
+        dto.setEmail(user.getEmail());
+        dto.setFullName(user.getFullName());
+        dto.setPhoneNumber(user.getPhoneNumber());
+        dto.setStatus(user.getStatus());
+        dto.setDateOfBirth(user.getDateOfBirth());
+        dto.setRoleID(user.getRole().getRoleID());
+        dto.setCreatedAt(user.getCreatedAt());
+        dto.setUpdatedAt(user.getUpdatedAt());
+        return dto;
     }
 }

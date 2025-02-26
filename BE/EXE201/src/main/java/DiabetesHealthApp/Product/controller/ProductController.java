@@ -1,47 +1,41 @@
 package DiabetesHealthApp.Product.controller;
 
-
-import DiabetesHealthApp.Product.model.Products;
-import DiabetesHealthApp.Product.service.ProductService;
+import DiabetesHealthApp.Product.DTO.ProductDTO;
+import DiabetesHealthApp.Product.service.Imp.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
 
     @Autowired
-    private ProductService productService;
+    private IProductService productService;
 
     @GetMapping
-    public List<Products> getAllProducts() {
+    public List<ProductDTO> getAllProducts() {
         return productService.getAllProducts();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Products> getProductById(@PathVariable int id) {
-        Optional<Products> product = productService.getProductById(id);
-        return product.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ProductDTO getProductById(@PathVariable int id) {
+        return productService.getProductById(id);
     }
 
     @PostMapping
-    public Products createProduct(@RequestBody Products product) {
-        return productService.createProduct(product);
+    public ProductDTO createProduct(@RequestBody ProductDTO productDTO) {
+        return productService.createProduct(productDTO);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Products> updateProduct(@PathVariable int id, @RequestBody Products product) {
-        Products updatedProduct = productService.updateProduct(id, product);
-        return updatedProduct != null ? ResponseEntity.ok(updatedProduct) : ResponseEntity.notFound().build();
+    @PutMapping
+    public ProductDTO updateProduct(@PathVariable int id, @RequestBody ProductDTO productDTO) {
+        return productService.updateProduct(id, productDTO);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable int id) {
-        return productService.deleteProduct(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    @DeleteMapping
+    public void deleteProduct(@PathVariable int id) {
+        productService.deleteProduct(id);
     }
 }

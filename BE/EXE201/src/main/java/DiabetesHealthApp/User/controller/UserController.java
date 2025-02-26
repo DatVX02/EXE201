@@ -1,6 +1,8 @@
 package DiabetesHealthApp.User.controller;
 
+import DiabetesHealthApp.User.DTO.UsersDTO;
 import DiabetesHealthApp.User.model.*;
+import DiabetesHealthApp.User.service.Imp.IUsersService;
 import DiabetesHealthApp.User.service.UserService;
 import DiabetesHealthApp.User.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +22,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private IUsersService usersService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -86,10 +91,9 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Fetched all users successfully"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    @GetMapping("/users")
-    public ResponseEntity<List<Users>> getAllUsers() {
-        List<Users> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+    @GetMapping
+    public ResponseEntity<List<UsersDTO>> getAllUsers() {
+        return ResponseEntity.ok(usersService.getAllUsers());
     }
 
     @Tag(name = "User Management")
@@ -98,11 +102,10 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User found"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    @GetMapping("/usersById")
-    public ResponseEntity<?> getUserById(@PathVariable long id) {
-        return userService.getUserById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping("/{id}")
+    public ResponseEntity<UsersDTO> getUserById(@PathVariable long id) {
+        UsersDTO userDTO = usersService.getUserById(id);
+        return userDTO != null ? ResponseEntity.ok(userDTO) : ResponseEntity.notFound().build();
     }
 
     @Tag(name = "User Management")
@@ -111,14 +114,10 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User updated successfully"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    @PutMapping("/users")
-    public ResponseEntity<?> updateUser(@PathVariable long id, @Valid @RequestBody RegisterRequest registerRequest) {
-        try {
-            Users updatedUser = userService.updateUser(id, registerRequest);
-            return ResponseEntity.ok(updatedUser);
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
-        }
+    @PutMapping("/{id}")
+    public ResponseEntity<UsersDTO> updateUser(@PathVariable long id, @RequestBody UsersDTO usersDTO) {
+        UsersDTO updatedUser = usersService.updateUser(id, usersDTO);
+        return updatedUser != null ? ResponseEntity.ok(updatedUser) : ResponseEntity.notFound().build();
     }
 
     @Tag(name = "User Management")
@@ -127,14 +126,10 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User deleted successfully"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    @DeleteMapping("/users")
-    public ResponseEntity<?> deleteUserById(@PathVariable long id) {
-        boolean isDeleted = userService.deleteUserById(id);
-        if (isDeleted) {
-            return ResponseEntity.ok("User deleted successfully");
-        } else {
-            return ResponseEntity.status(404).body("User not found");
-        }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        usersService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
