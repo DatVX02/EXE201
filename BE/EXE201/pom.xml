@@ -87,6 +87,11 @@
             <version>3.0.0</version>
         </dependency>
 
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-security</artifactId>-->
+<!--        </dependency>-->
+
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -107,6 +112,11 @@
             <artifactId>lombok</artifactId>
             <version>1.18.30</version>  <!-- Cập nhật lên phiên bản mới nhất -->
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <version>3.4.1</version>
         </dependency>
 
 

@@ -33,13 +33,13 @@ public class CategoryController {
         return categoryService.createCategory(category);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping
     public ResponseEntity<Categories> updateCategory(@PathVariable int id, @RequestBody Categories category) {
         Categories updatedCategory = categoryService.updateCategory(id, category);
         return updatedCategory != null ? ResponseEntity.ok(updatedCategory) : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     public ResponseEntity<Void> deleteCategory(@PathVariable int id) {
         return categoryService.deleteCategory(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
