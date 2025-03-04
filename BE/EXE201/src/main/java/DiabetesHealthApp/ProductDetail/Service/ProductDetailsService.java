@@ -23,7 +23,8 @@ public class ProductDetailsService implements IProductDetailsService {
 
     @Override
     public ProductDetailsDTO getProductById(Integer id) {
-        ProductDetail product = productDetailsRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+        ProductDetail product = productDetailsRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
         return convertToDTO(product);
     }
 
@@ -36,7 +37,8 @@ public class ProductDetailsService implements IProductDetailsService {
 
     @Override
     public ProductDetailsDTO updateProduct(Integer id, ProductDetailsDTO productDetailsDTO) {
-        ProductDetail existingProduct = productDetailsRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+        ProductDetail existingProduct = productDetailsRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
 
         existingProduct.setProductID(productDetailsDTO.getProductID());
         existingProduct.setDescription(productDetailsDTO.getDescription());

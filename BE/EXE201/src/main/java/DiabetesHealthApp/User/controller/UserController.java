@@ -91,7 +91,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Fetched all users successfully"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    @GetMapping
+    @GetMapping("/GetAllUser")
     public ResponseEntity<List<UsersDTO>> getAllUsers() {
         return ResponseEntity.ok(usersService.getAllUsers());
     }
@@ -102,7 +102,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User found"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    @GetMapping("/{id}")
+    @GetMapping("/GetUserById")
     public ResponseEntity<UsersDTO> getUserById(@PathVariable long id) {
         UsersDTO userDTO = usersService.getUserById(id);
         return userDTO != null ? ResponseEntity.ok(userDTO) : ResponseEntity.notFound().build();
@@ -114,7 +114,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User updated successfully"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    @PutMapping("/{id}")
+    @PutMapping("/UpdateUser")
     public ResponseEntity<UsersDTO> updateUser(@PathVariable long id, @RequestBody UsersDTO usersDTO) {
         UsersDTO updatedUser = usersService.updateUser(id, usersDTO);
         return updatedUser != null ? ResponseEntity.ok(updatedUser) : ResponseEntity.notFound().build();
@@ -126,7 +126,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User deleted successfully"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/DeleteUser")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         usersService.deleteUser(id);
         return ResponseEntity.noContent().build();

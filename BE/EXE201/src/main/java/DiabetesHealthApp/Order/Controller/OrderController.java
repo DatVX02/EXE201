@@ -29,12 +29,12 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
     }
 
-    @GetMapping
+    @GetMapping("/getall")
     public ResponseEntity<List<Order>> getAllOrders() {
         return ResponseEntity.ok(orderService.getAllOrders());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/getbyid/{id}")
     public ResponseEntity<Order> getOrderById(@PathVariable int id) {
         Optional<Order> order = orderService.getOrderById(id);
         return order.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());

@@ -15,27 +15,27 @@ public class ProductDetailController {
     @Autowired
     private IProductDetailsService productDetailsService;
 
-    @GetMapping
+    @GetMapping("/getall")
     public ResponseEntity<List<ProductDetailsDTO>> getAllProducts() {
         return ResponseEntity.ok(productDetailsService.getAllProducts());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/getById/{id}")
     public ResponseEntity<ProductDetailsDTO> getProductById(@PathVariable int id) {
         return ResponseEntity.ok(productDetailsService.getProductById(id));
     }
 
-    @PostMapping
+    @PostMapping("/creat")
     public ResponseEntity<ProductDetailsDTO> createProduct(@RequestBody ProductDetailsDTO productDetailsDTO) {
         return ResponseEntity.ok(productDetailsService.createProduct(productDetailsDTO));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<ProductDetailsDTO> updateProduct(@PathVariable int id, @RequestBody ProductDetailsDTO productDetailsDTO) {
         return ResponseEntity.ok(productDetailsService.updateProduct(id, productDetailsDTO));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/detele/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable int id) {
         productDetailsService.deleteProduct(id);
         return ResponseEntity.noContent().build();
