@@ -16,30 +16,30 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping
+    @GetMapping("/GetAll")
     public List<Categories> getAllCategories() {
         return categoryService.getAllCategories();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/GetById/{id}")
     public ResponseEntity<Categories> getCategoryById(@PathVariable int id) {
         Optional<Categories> category = categoryService.getCategoryById(id);
         return category.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/Create")
     public Categories createCategory(@RequestBody Categories category) {
         return categoryService.createCategory(category);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/Update/{id}")
     public ResponseEntity<Categories> updateCategory(@PathVariable int id, @RequestBody Categories category) {
         Categories updatedCategory = categoryService.updateCategory(id, category);
         return updatedCategory != null ? ResponseEntity.ok(updatedCategory) : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/Update/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable int id) {
         return categoryService.deleteCategory(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }

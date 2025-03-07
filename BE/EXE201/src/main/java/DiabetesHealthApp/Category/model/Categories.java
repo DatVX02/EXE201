@@ -3,6 +3,7 @@ package DiabetesHealthApp.Category.model;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "categories")
 public class Categories {
 
     @Id
