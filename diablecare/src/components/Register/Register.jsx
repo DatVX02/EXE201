@@ -64,7 +64,7 @@ const Register = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        "https://f171-2405-4803-c877-55b0-4cdd-7c2f-6b9d-c541.ngrok-free.app/api/auth/register",//api register
+        "https://f171-2405-4803-c877-55b0-4cdd-7c2f-6b9d-c541.ngrok-free.app/api/auth/register", //api register
         {
           method: "POST",
           headers: {
