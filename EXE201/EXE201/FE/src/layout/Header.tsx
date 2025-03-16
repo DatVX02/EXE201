@@ -179,7 +179,7 @@ const Header: React.FC = () => {
                   <ul className="py-2">
                     <li>
                       <Link
-                        to="/category1"
+                        to="/shopping"
                         className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                         onClick={() => setIsShopDropdownVisible(false)}
                       >
