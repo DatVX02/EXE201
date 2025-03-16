@@ -82,7 +82,7 @@ const SkinAssessmentQuiz: React.FC = () => {
   return (
     <Layout>
       <div className="p-8 bg-gradient-to-r from-green-100 to-blue-200 rounded-lg shadow-xl max-w-4xl mx-auto transition-all duration-500">
-        <h2 className="text-4xl font-semibold text-center text-gray-800 mb-8">Trắc nghiệm đánh giá da</h2>
+        <h2 className="text-4xl font-semibold text-center text-gray-800 mb-8">Trắc nghiệm đánh giá loại bệnh</h2>
         <Steps current={current} onChange={setCurrent} className="mb-6">
           {questions.map((_, index) => (
             <Step key={index} />
