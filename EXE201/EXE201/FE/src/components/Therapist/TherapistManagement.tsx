@@ -29,19 +29,19 @@ function getItem(
 
 const items: MenuItem[] = [
   getItem(
-    "Danh sách đơn hàng ",
-    "/doctor_staff/list-of-assigned",
+    "List of Assigned ",
+    "/therapist/list-of-assigned",
     <ScheduleOutlined />
   ),
 
   getItem(
-    "Thực hiện dịch vụ",
-    "/doctor_staff/perfom-service",
+    "Perform Service",
+    "/therapist/perfom-service",
     <CustomerServiceOutlined />
   ),
   getItem(
-    "Lịch sử đơn hàng",
-    "/doctor_staff/service-history ",
+    "Service History",
+    "/therapist/service-history ",
     <HistoryOutlined />
   ),
 ];

@@ -82,7 +82,9 @@ const Register: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5000/api/auth/register", {
+      const API_URL = "https://luluspa-production.up.railway.app/api";
+
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -113,17 +115,17 @@ const Register: React.FC = () => {
       setLoading(false);
     }
   };
-
+  const API_BASE_URL = window.location.hostname === "localhost"
+  ? "http://localhost:5000/api"
+  : "https://luluspa-production.up.railway.app/api";
   const handleOtpSubmit = async (e: FormEvent): Promise<void> => {
     e.preventDefault();
     try {
       setLoading(true);
-      const response = await fetch(
-        "http://localhost:5000/api/auth/verify-otp",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+      const response = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
           },
           body: JSON.stringify({
             email: formData.email,
@@ -152,56 +154,55 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="h-[89vh] flex items-center justify-center px-5 lg:px-0 mt-26">
+    <div className='h-[86vh] flex items-center justify-center px-5 lg:px-0'>
       <ToastContainer />
-      <div className="flex justify-center flex-1 max-w-screen-lg bg-white border shadow sm:rounded-lg">
-        <div className="flex-1 hidden text-center md:flex">
+      <div className='flex justify-center flex-1 max-w-screen-lg bg-white border shadow sm:rounded-lg'>
+        <div className='flex-1 hidden text-center md:flex'>
           <img
             src={logo}
-            alt="logo"
-            className="m-5 w-108 h-108 object-contain rounded-lg"
+            alt='logo'
+            className='m-5 w-108 h-108 object-contain rounded-lg' // Sửa lại kích thước logo cho hợp lý
           />
         </div>
-        <div className="p-4 lg:w-1/2 xl:w-1/2 md:w-1/3">
-          <div className="flex flex-col items-center">
-            <div className="text-center">
-              <h1 className="mb-2 text-2xl font-extrabold text-blue-900 xl:text-4xl">
-                Đăng ký
+        <div className='p-4 lg:w-1/2 xl:w-1/2 md:w-1/3'>
+          <div className='flex flex-col items-center'>
+            <div className='text-center'>
+              <h1 className='mt-4 mb-2 text-2xl font-extrabold text-blue-900 xl:text-4xl'>
+                Sign up
               </h1>
             </div>
-            <form onSubmit={handleSubmit} className="flex-1 w-full">
-              <div className="flex flex-col max-w-xs gap-4 mx-auto">
-                <label className="text-sm font-medium text-left text-gray-700">
-                  Tên tài khoản <span className="text-red-500">*</span>
+            <form onSubmit={handleSubmit} className='flex-1 w-full'>
+              <div className='flex flex-col max-w-xs gap-4 mx-auto'>
+                <label className='text-sm font-medium text-left text-gray-700'>
+                  Username <span className='text-red-500'>*</span>
                 </label>
                 <input
-                  className="w-full px-5 py-3 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
-                  type="text"
-                  name="username"
-                  placeholder="Vui lòng nhập tên tài khoản"
+                  className='w-full px-5 py-3 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white'
+                  type='text'
+                  name='username'
+                  placeholder='Enter your username'
                   value={formData.username}
                   onChange={handleInputChange}
                   required // Thêm thuộc tính HTML required
                 />
 
-                <label className="text-sm font-medium text-left text-gray-700">
-                  Mật khẩu <span className="text-red-500">*</span>
+                <label className='text-sm font-medium text-left text-gray-700'>
+                  Password <span className='text-red-500'>*</span>
                 </label>
-                <div className="relative w-full">
+                <div className='relative w-full'>
                   <input
-                    className="w-full px-5 py-3 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
+                    className='w-full px-5 py-3 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white'
                     type={passwordVisible ? "text" : "password"}
-                    name="password"
-                    placeholder="Vui lòng nhập mật khẩu"
+                    name='password'
+                    placeholder='Enter your password'
                     value={formData.password}
                     onChange={handleInputChange}
                     required // Thêm thuộc tính HTML required
                   />
                   <button
-                    type="button"
-                    className="absolute text-gray-500 right-3 top-3"
-                    onClick={() => setPasswordVisible(!passwordVisible)}
-                  >
+                    type='button'
+                    className='absolute text-gray-500 right-3 top-3'
+                    onClick={() => setPasswordVisible(!passwordVisible)}>
                     {passwordVisible ? (
                       <EyeInvisibleOutlined />
                     ) : (
@@ -210,66 +211,65 @@ const Register: React.FC = () => {
                   </button>
                 </div>
 
-                <label className="text-sm font-medium text-left text-gray-700">
-                  Email <span className="text-red-500">*</span>
+                <label className='text-sm font-medium text-left text-gray-700'>
+                  Email <span className='text-red-500'>*</span>
                 </label>
                 <input
-                  className="w-full px-5 py-3 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
-                  type="email"
-                  name="email"
-                  placeholder="Vui lòng nhập email"
+                  className='w-full px-5 py-3 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white'
+                  type='email'
+                  name='email'
+                  placeholder='Enter your email'
                   value={formData.email}
                   onChange={handleInputChange}
                   required // Thêm thuộc tính HTML required
                 />
 
-                <label className="text-sm font-medium text-left text-gray-700">
-                  Số điện thoại
+                <label className='text-sm font-medium text-left text-gray-700'>
+                  Phone Number
                 </label>
                 <input
-                  className="w-full px-5 py-3 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
-                  type="text"
-                  name="phone_number"
-                  placeholder="Vui lòng nhập số điện thoại"
+                  className='w-full px-5 py-3 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white'
+                  type='text'
+                  name='phone_number'
+                  placeholder='Enter your phone number'
                   value={formData.phone_number}
                   onChange={handleInputChange}
                 />
 
-                <label className="text-sm font-medium text-left text-gray-700">
-                  Giới tính
+                <label className='text-sm font-medium text-left text-gray-700'>
+                  Gender
                 </label>
                 <select
-                  className="w-full px-5 py-3 text-sm font-medium bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
-                  name="gender"
+                  className='w-full px-5 py-3 text-sm font-medium bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white'
+                  name='gender'
                   value={formData.gender}
-                  onChange={handleInputChange}
-                >
-                  <option value="Male">Nam</option>
-                  <option value="Female">Nữ</option>
+                  onChange={handleInputChange}>
+                  <option value='other'>Other</option>
+                  <option value='male'>Male</option>
+                  <option value='female'>Female</option>
                 </select>
-                <label className="text-sm font-medium text-left text-gray-700">
-                  Địa chỉ
+                <label className='text-sm font-medium text-left text-gray-700'>
+                  Address
                 </label>
                 <input
-                  className="w-full px-5 py-3 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
-                  type="text"
-                  name="address"
-                  placeholder="Vui lòng nhập địa chỉ"
+                  className='w-full px-5 py-3 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white'
+                  type='text'
+                  name='address'
+                  placeholder='Enter your address'
                   value={formData.address}
                   onChange={handleInputChange}
                 />
 
                 <button
-                  type="submit"
+                  type='submit'
                   disabled={loading}
-                  className="flex items-center justify-center w-full py-4 mt-5 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out bg-blue-900 rounded-lg hover:bg-indigo-700 focus:shadow-outline focus:outline-none"
-                >
+                  className='flex items-center justify-center w-full py-4 mt-5 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out bg-blue-900 rounded-lg hover:bg-indigo-700 focus:shadow-outline focus:outline-none'>
                   {loading ? "Đang xử lý..." : "Sign up"}
                 </button>
-                <p className="mt-2 mb-4 text-xs text-center text-gray-600">
-                  Bạn đã có tài khoản?{" "}
-                  <Link to="/login">
-                    <span className="font-semibold text-blue-900">Đăng nhập</span>
+                <p className='mt-2 mb-4 text-xs text-center text-gray-600'>
+                  Have an account?{" "}
+                  <Link to='/login'>
+                    <span className='font-semibold text-blue-900'>Login</span>
                   </Link>
                 </p>
               </div>
@@ -280,34 +280,32 @@ const Register: React.FC = () => {
 
       {/* OTP Modal */}
       {showOtpModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-            <h2 className="text-xl font-bold mb-4 text-center">Xác nhận OTP</h2>
+        <div className='fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center'>
+          <div className='bg-white p-6 rounded-lg shadow-lg max-w-sm w-full'>
+            <h2 className='text-xl font-bold mb-4 text-center'>Xác nhận OTP</h2>
             <form onSubmit={handleOtpSubmit}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className='mb-4'>
+                <label className='block text-sm font-medium text-gray-700 mb-2'>
                   Nhập mã OTP được gửi đến email của bạn
                 </label>
                 <input
-                  type="text"
+                  type='text'
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-                  placeholder="Nhập OTP"
+                  className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500'
+                  placeholder='Nhập OTP'
                 />
               </div>
               <button
-                type="submit"
+                type='submit'
                 disabled={loading}
-                className="w-full py-2 bg-blue-900 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-              >
+                className='w-full py-2 bg-blue-900 text-white rounded-lg hover:bg-indigo-700 transition-colors'>
                 {loading ? "Đang xác nhận..." : "Xác nhận"}
               </button>
               <button
-                type="button"
+                type='button'
                 onClick={() => setShowOtpModal(false)}
-                className="w-full mt-2 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
-              >
+                className='w-full mt-2 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors'>
                 Hủy
               </button>
             </form>

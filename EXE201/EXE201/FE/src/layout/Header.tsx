@@ -17,6 +17,7 @@ const Header: React.FC = () => {
   const [role, setRole] = useState<string | null>(null);
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
+  const [isShopDropdownVisible, setIsShopDropdownVisible] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -25,6 +26,17 @@ const Header: React.FC = () => {
       setUser(parsedUser);
       setRole(parsedUser.role || null);
     }
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!(event.target as HTMLElement).closest(".shop-dropdown")) {
+        setIsShopDropdownVisible(false);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   const handleBookNow = () => {
@@ -153,13 +165,40 @@ const Header: React.FC = () => {
                 Trang chủ
               </Link>
             </li>
-            <li>
-              <Link
-                to="/booking_services"
-                className="hover:text-yellow-300 transition duration-300"
+            <li className="relative shop-dropdown">
+              <button
+                onClick={() => setIsShopDropdownVisible(!isShopDropdownVisible)}
+                className="hover:text-yellow-300 transition duration-300 focus:outline-none"
               >
                 Cửa hàng
-              </Link>
+              </button>
+
+              {/* Dropdown menu */}
+              {isShopDropdownVisible && (
+                <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+                  <ul className="py-2">
+                    <li>
+                      <Link
+                        to="/category1"
+                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsShopDropdownVisible(false)}
+                      >
+                        Mua hàng
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/services"
+                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsShopDropdownVisible(false)}
+                      >
+                        Đặt lịch tư vấn
+                      </Link>
+                    </li>
+                    
+                  </ul>
+                </div>
+              )}
             </li>
             <li>
               <Link
@@ -272,14 +311,17 @@ const Header: React.FC = () => {
                 🏡 Tên cửa hàng: <span className="font-semibold">Diable</span>
               </p>
               <p className="text-gray-600">
-                📞 Số điện thoại: <span className="font-semibold">123-456-789</span>
+                📞 Số điện thoại:{" "}
+                <span className="font-semibold">123-456-789</span>
               </p>
               <p className="text-gray-600">
                 📧 Email: <span className="font-semibold">info@Diable.com</span>
               </p>
               <p className="text-gray-600">
                 ⏰ Thời gian làm việc:{" "}
-                <span className="font-semibold">Thứ 2 - thứ 7, 9:00 - 17:30</span>
+                <span className="font-semibold">
+                  Thứ 2 - thứ 7, 9:00 - 17:30
+                </span>
               </p>
               <a
                 href="https://www.facebook.com/profile.php?id=61572026472325"

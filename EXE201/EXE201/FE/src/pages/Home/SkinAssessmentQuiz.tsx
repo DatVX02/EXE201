@@ -21,13 +21,17 @@ const SkinAssessmentQuiz: React.FC = () => {
 
   useEffect(() => {
     const fetchQuestions = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/api/questions");
-        const formattedQuestions = response.data.map((q: any) => ({
-          id: q._id,
-          question: q.text,
-          options: q.options.map((opt: any) => opt.text),
-        }));
+      const API_BASE_URL = window.location.hostname === "localhost"
+      ? "http://localhost:5000/api"
+      : "https://luluspa-production.up.railway.app/api";
+    
+    try {
+      const response = await axios.get(`${API_BASE_URL}/questions`);
+      const formattedQuestions = response.data.map((q: any) => ({
+        id: q._id,
+        question: q.text,
+        options: q.options.map((opt: any) => opt.text),
+      }));
         setQuestions(formattedQuestions);
       } catch (error) {
         message.error("Không thể tải câu hỏi, vui lòng thử lại sau.");
@@ -61,8 +65,12 @@ const SkinAssessmentQuiz: React.FC = () => {
         return;
       }
 
-      const response = await axios.post("http://localhost:5000/api/questions/submit", { answers: formattedAnswers });
-
+      const API_BASE_URL = window.location.hostname === "localhost"
+      ? "http://localhost:5000/api"
+      : "https://luluspa-production.up.railway.app/api";
+    
+    const response = await axios.post(`${API_BASE_URL}/questions/submit`, { answers: formattedAnswers });
+    
       setResult(response.data.message || "Kết quả đã được gửi thành công.");
       setBestMatch(response.data.bestMatch || "Không có kết quả phù hợp.");
     } catch (error) {
@@ -74,7 +82,7 @@ const SkinAssessmentQuiz: React.FC = () => {
   return (
     <Layout>
       <div className="p-8 bg-gradient-to-r from-green-100 to-blue-200 rounded-lg shadow-xl max-w-4xl mx-auto transition-all duration-500">
-        <h2 className="text-4xl font-semibold text-center text-gray-800 mb-8">Trắc nghiệm đánh giá về bệnh tiểu đường</h2>
+        <h2 className="text-4xl font-semibold text-center text-gray-800 mb-8">Trắc nghiệm đánh giá da</h2>
         <Steps current={current} onChange={setCurrent} className="mb-6">
           {questions.map((_, index) => (
             <Step key={index} />

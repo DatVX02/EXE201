@@ -25,7 +25,9 @@ const StaffCheckIn: React.FC = () => {
   const [selectedStaff, setSelectedStaff] = useState<{ [cartId: string]: string | null }>({});
   const [currentPage, setCurrentPage] = useState(1);
   const bookingsPerPage = 15;
-  const API_BASE_URL = "http://localhost:5000/api";
+  const API_BASE_URL = window.location.hostname === "localhost"
+  ? "http://localhost:5000/api"
+  : "https://luluspa-production.up.railway.app/api";
 
   useEffect(() => {
     if (user) {
@@ -245,7 +247,7 @@ const StaffCheckIn: React.FC = () => {
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap">Total Price (VND)</th>
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap">Status</th>
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap">Action</th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Doctor</th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Therapist</th>
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap">Notes</th>
                 </tr>
               </thead>
@@ -285,7 +287,7 @@ const StaffCheckIn: React.FC = () => {
                             Check-in
                           </button>
                         ) : booking.status === "checked-in" ? (
-                          <span className="text-gray-500">Waiting for Doctor to Complete</span>
+                          <span className="text-gray-500">Waiting for Therapist to Complete</span>
                         ) : booking.status === "completed" ? (
                           <button
                             onClick={() => handleCheckOut(booking.CartID || "")}

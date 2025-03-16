@@ -8,7 +8,7 @@ const Footer: React.FC = () => {
         <p className="mt-2">
           Follow us on:
           <a
-            href="https://www.facebook.com/profile.php?id=61572026472325"
+            href="https://facebook.com"
             target="_blank"
             rel="noopener noreferrer"
             className="text-pink-400 ml-2 hover:underline"
@@ -17,7 +17,7 @@ const Footer: React.FC = () => {
           </a>{" "}
           |{" "}
           <a
-            href="https://www.instagram.com/diabecare.vn/"
+            href="https://instagram.com"
             target="_blank"
             rel="noopener noreferrer"
             className="text-pink-400 ml-2 hover:underline"

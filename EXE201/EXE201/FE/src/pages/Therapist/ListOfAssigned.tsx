@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../../context/AuthContext";
-import { Therapist, Booking } from "../../types/booking";
+import { Booking } from "../../types/booking";
 
 const statusStyles = {
   pending: { bg: "bg-yellow-100", text: "text-yellow-800", icon: "⏳" },
@@ -17,7 +17,9 @@ const ListOfAssign: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const bookingsPerPage = 5;
-  const API_BASE_URL = "http://localhost:5000/api";
+  const API_BASE_URL = window.location.hostname === "localhost"
+  ? "http://localhost:5000/api"
+  : "https://luluspa-production.up.railway.app/api";
 
   useEffect(() => {
     if (user) {
@@ -102,7 +104,7 @@ const ListOfAssign: React.FC = () => {
     <div className="container mx-auto p-6">
       <ToastContainer />
       <h1 className="text-3xl font-bold text-center mb-6">
-        Đặt lịch hẹn theo chỉ định của bác sĩ
+        Therapist Assigned Bookings
       </h1>
       {loadingCart ? (
         <div className="text-center">
@@ -139,28 +141,28 @@ const ListOfAssign: React.FC = () => {
               <thead className="bg-gray-100">
                 <tr>
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap sticky left-0 bg-gray-100 z-10">
-                    Đơn hàng 
+                    CartID
                   </th>
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap">
-                    Tên khách hàng
+                    Customer Name
                   </th>
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap">
-                    Tên dịch vụ
+                    Service Name
                   </th>
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap">
-                    Ngày đặt lịch
+                    Booking Date
                   </th>
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap">
-                    Thời gian bắt đầu
+                    Start Time
                   </th>
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap">
-                    Tổng (VND)
+                    Total Price (VND)
                   </th>
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap">
-                    Trạng thái
+                    Status
                   </th>
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap">
-                    
+                    Action
                   </th>
                 </tr>
               </thead>
@@ -226,10 +228,10 @@ const ListOfAssign: React.FC = () => {
                   : "bg-blue-500 text-white hover:bg-blue-600"
               } transition-all duration-300`}
             >
-              Trang trước
+              Previous
             </button>
             <span className="py-2 px-4">
-              Trang {currentPage} of {totalPages}
+              Page {currentPage} of {totalPages}
             </span>
             <button
               onClick={goToNextPage}
@@ -240,7 +242,7 @@ const ListOfAssign: React.FC = () => {
                   : "bg-blue-500 text-white hover:bg-blue-600"
               } transition-all duration-300`}
             >
-              Trang sau
+              Next
             </button>
           </div>
           <div className="text-center mt-6">
@@ -249,7 +251,7 @@ const ListOfAssign: React.FC = () => {
               className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition-all duration-300"
               disabled={loadingCart}
             >
-              {loadingCart ? "Refreshing..." : "Tải lại trang đặt hàng"}
+              {loadingCart ? "Refreshing..." : "Refresh Bookings"}
             </button>
           </div>
         </>

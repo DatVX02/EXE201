@@ -32,7 +32,12 @@ const Login: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const API_URL =
+        window.location.hostname === "localhost"
+          ? "http://localhost:5000/api"
+          : "https://luluspa-production.up.railway.app/api";
+
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,7 +66,7 @@ const Login: React.FC = () => {
       } else if (data.role === "staff") {
         navigate("/staff/check-in");
       } else if (data.role === "skincare_staff") {
-        navigate("/doctor_staff");
+        navigate("/therapist");
       }
     } catch (error) {
       console.error("Lỗi đăng nhập:", error);
@@ -120,9 +125,8 @@ const Login: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className={`flex items-center justify-center w-full py-4 mt-5 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out rounded-lg ${
-                  loading ? "bg-gray-500" : "bg-blue-900 hover:bg-indigo-700"
-                }`}
+                className={`flex items-center justify-center w-full py-4 mt-5 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out rounded-lg ${loading ? "bg-gray-500" : "bg-blue-900 hover:bg-indigo-700"
+                  }`}
               >
                 {loading ? "Đang xử lý..." : "Đăng nhập"}
               </button>
@@ -131,14 +135,14 @@ const Login: React.FC = () => {
                   to="/forgot-password"
                   className="text-sm font-medium text-blue-900 hover:underline"
                 >
-                  Quên mật khẩu
+                  Forgot password
                 </Link>
               </div>
 
               <p className="mt-6 text-xs text-center text-gray-600">
-                Bạn chưa có tài khoản -{" "}
+                Don't have an account -{" "}
                 <Link to="/register">
-                  <span className="font-semibold text-blue-900">Đăng ký</span>
+                  <span className="font-semibold text-blue-900">Sign up</span>
                 </Link>
               </p>
             </form>

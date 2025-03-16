@@ -114,12 +114,14 @@ const AdminHeader: React.FC = () => {
         boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
       }}>
       <div className='flex items-center'>
+        <Link to='/'>
           <img
             src={logo || "/placeholder.svg"}
             alt='LuLuSpa Logo'
             className='w-16 h-16 rounded-full'
           />
-        {/* <div className='text-xl font-semibold ml-4 p'>Welcome</div> */}
+        </Link>
+        <div className='text-xl font-semibold ml-4 p'>Welcome</div>
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
@@ -158,7 +160,7 @@ const AdminHeader: React.FC = () => {
                 color: "#000",
               }}
             />
-            {user && <span style={{ fontWeight: 500 }}>Welcome, {" "} {user.username}</span>}
+            {user && <span style={{ fontWeight: 500 }}>{user.username}</span>}
             <svg
               xmlns='http://www.w3.org/2000/svg'
               width='16'

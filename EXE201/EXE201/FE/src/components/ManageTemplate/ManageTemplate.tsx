@@ -9,6 +9,7 @@ interface Columns {
   title: string;
   dataIndex: string;
   key: string;
+  render?: (value: any, record: any) => React.ReactNode;
 }
 
 interface ManageTemplateProps {
@@ -19,6 +20,8 @@ interface ManageTemplateProps {
     | ((editingId: string | null) => React.ReactElement);
   apiEndpoint: string;
   mode?: "full" | "view-only" | "create-only" | "delete-only";
+  dataSource?: any[];
+  setDataSource?: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
 function ManageTemplate({
@@ -27,10 +30,12 @@ function ManageTemplate({
   formItems,
   apiEndpoint,
   mode = "full",
+  dataSource: externalDataSource,
+  setDataSource: setExternalDataSource,
 }: ManageTemplateProps) {
   const { token } = useAuth();
   const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Bắt đầu với false để tránh vòng xoay ban đầu
   const [showModal, setShowModal] = useState(false);
   const [form] = Form.useForm();
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -38,47 +43,68 @@ function ManageTemplate({
   const fetchData = async () => {
     if (!token) {
       message.error("Authentication required. Please log in.");
+      setLoading(false); // Dừng loading nếu không có token
       return;
     }
+
+    setLoading(true);
     try {
-      setLoading(true);
-      console.log("Fetching data with token:", token);
+      console.log("Fetching data from:", apiEndpoint);
+      console.log("Using token:", token);
       const res = await api.get(apiEndpoint, {
         headers: { "x-auth-token": token },
       });
-      console.log("API Response Data:", res.data);
+      console.log("API Response:", res.data);
+
       const responseData = Array.isArray(res.data)
         ? res.data
         : res.data.data
         ? res.data.data
         : [];
+      console.log("Processed Data:", responseData);
+
       setData(responseData);
+      if (setExternalDataSource) {
+        setExternalDataSource(responseData);
+      }
     } catch (error: any) {
-      console.error("Fetch error:", error.response?.data || error);
-      message.error(error.response?.data?.message || `Error fetching ${title}`);
+      console.error("Fetch error:", error.response?.data || error.message);
+      message.error(
+        error.response?.data?.message || `Error fetching ${title}. Check console for details.`
+      );
       setData([]);
+      if (setExternalDataSource) {
+        setExternalDataSource([]);
+      }
     } finally {
-      setLoading(false);
+      setLoading(false); // Đảm bảo loading dừng lại dù thành công hay thất bại
     }
   };
 
   useEffect(() => {
-    fetchData();
-  }, [apiEndpoint, token]);
+    if (externalDataSource !== undefined) {
+      console.log("Using external data source:", externalDataSource);
+      setData(externalDataSource);
+      setLoading(false); // Dừng loading nếu dùng dữ liệu ngoài
+    } else {
+      fetchData();
+    }
+  }, [apiEndpoint, token, externalDataSource]); // Dependency rõ ràng
 
   const handleCreate = async (values: any) => {
     if (!token || mode === "view-only") return;
     try {
-      console.log("Sending Data to API:", JSON.stringify(values, null, 2));
+      console.log("Creating with data:", values);
       const response = await api.post(apiEndpoint, values, {
         headers: { "x-auth-token": token, "Content-Type": "application/json" },
       });
-      console.log("API Response:", response.data);
+      console.log("Create Response:", response.data);
       toast.success(`${title} created successfully`);
       form.resetFields();
       setShowModal(false);
       fetchData();
     } catch (error: any) {
+      console.error("Create error:", error.response?.data || error.message);
       message.error(error.response?.data?.message || `Error creating ${title}`);
     }
   };
@@ -86,6 +112,7 @@ function ManageTemplate({
   const handleEdit = async (values: any) => {
     if (!token || mode !== "full") return;
     try {
+      console.log("Editing with data:", values);
       await api.put(`${apiEndpoint}/${editingId}`, values, {
         headers: { "x-auth-token": token },
       });
@@ -95,6 +122,7 @@ function ManageTemplate({
       setEditingId(null);
       fetchData();
     } catch (error: any) {
+      console.error("Edit error:", error.response?.data || error.message);
       message.error(error.response?.data?.message || `Error updating ${title}`);
     }
   };
@@ -102,12 +130,14 @@ function ManageTemplate({
   const handleDelete = async (id: string) => {
     if (!token || (mode !== "full" && mode !== "delete-only")) return;
     try {
+      console.log("Deleting ID:", id);
       await api.delete(`${apiEndpoint}/${id}`, {
         headers: { "x-auth-token": token },
       });
       toast.success(`${title} deleted successfully`);
       fetchData();
     } catch (error: any) {
+      console.error("Delete error:", error.response?.data || error.message);
       message.error(error.response?.data?.message || `Error deleting ${title}`);
     }
   };
@@ -129,16 +159,17 @@ function ManageTemplate({
             render: (_: any, record: any) => (
               <Space>
                 <Button
-                  type='link'
+                  type="link"
                   icon={<EditOutlined />}
                   onClick={() => startEdit(record)}
                 />
                 <Popconfirm
                   title={`Are you sure you want to delete this ${title}?`}
                   onConfirm={() => handleDelete(record._id)}
-                  okText='Yes'
-                  cancelText='No'>
-                  <Button type='link' danger icon={<DeleteOutlined />} />
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button type="link" danger icon={<DeleteOutlined />} />
                 </Popconfirm>
               </Space>
             ),
@@ -154,30 +185,29 @@ function ManageTemplate({
               <Popconfirm
                 title={`Are you sure you want to delete this ${title}?`}
                 onConfirm={() => handleDelete(record._id)}
-                okText='Yes'
-                cancelText='No'>
-                <Button type='link' danger icon={<DeleteOutlined />} />
+                okText="Yes"
+                cancelText="No"
+              >
+                <Button type="link" danger icon={<DeleteOutlined />} />
               </Popconfirm>
             ),
           },
         ]
-      : mode === "create-only"
-      ? [...columns]
-      : columns; // "view-only" -> No actions
+      : [...columns];
 
   return (
     <div style={{ padding: "24px" }}>
       <ToastContainer />
-
       {(mode === "full" || mode === "create-only") && (
         <Button
-          type='primary'
+          type="primary"
           onClick={() => {
             setEditingId(null);
             form.resetFields();
             setShowModal(true);
           }}
-          style={{ marginBottom: "16px" }}>
+          style={{ marginBottom: "16px" }}
+        >
           Create new {title}
         </Button>
       )}
@@ -186,7 +216,7 @@ function ManageTemplate({
         columns={columnsWithActions}
         dataSource={data}
         loading={loading}
-        rowKey='_id'
+        rowKey="_id"
       />
 
       {mode !== "view-only" && formItems && (
@@ -198,11 +228,13 @@ function ManageTemplate({
             setEditingId(null);
             form.resetFields();
           }}
-          onOk={() => form.submit()}>
+          onOk={() => form.submit()}
+        >
           <Form
             form={form}
             labelCol={{ span: 24 }}
-            onFinish={editingId ? handleEdit : handleCreate}>
+            onFinish={editingId ? handleEdit : handleCreate}
+          >
             {typeof formItems === "function" ? formItems(editingId) : formItems}
           </Form>
         </Modal>

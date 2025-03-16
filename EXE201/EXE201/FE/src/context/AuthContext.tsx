@@ -1,31 +1,12 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { toast } from "react-toastify";
-import { Therapist, Booking } from "../types/booking";
+import {Booking } from "../types/booking";
 
 interface User {
   username: string;
   role: string;
   email?: string;
 }
-
-// export interface Booking {
-//   username: string | undefined;
-//   CartID?: string;
-//   service_id: number;
-//   serviceName: string;
-//   customerName: string;
-//   customerPhone: string;
-//   customerEmail: string;
-//   notes?: string;
-//   bookingDate: string;
-//   startTime: string;
-//   endTime?: string;
-//   selectedTherapist?: Therapist | null;
-//   Skincare_staff?: string;
-//   totalPrice?: number;
-//   status: "pending" | "checked-in" | "completed" | "cancelled";
-//   action?: "checkin" | "checkout" | null;
-// }
 
 interface AuthContextType {
   token: string | null;
@@ -41,7 +22,8 @@ interface AuthContextType {
   cartError: string | null;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [token, setToken] = useState<string | null>(localStorage.getItem("authToken"));
@@ -53,7 +35,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loadingCart, setLoadingCart] = useState<boolean>(false);
   const [cartError, setCartError] = useState<string | null>(null);
 
-  const API_BASE_URL = "http://localhost:5000/api";
+  const API_BASE_URL = window.location.hostname === "localhost"
+  ? "http://localhost:5000/api"
+  : "https://luluspa-production.up.railway.app/api";
 
   useEffect(() => {
     if (token) {
@@ -176,7 +160,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
   
       if (!response.ok) {
-        return ; 
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`Không thể tải giỏ hàng: ${response.status} - ${errorData.message || "Lỗi server không xác định"}`);
       }
   
       const data = await response.json();
