@@ -15,7 +15,6 @@ const ProductSchema = new mongoose.Schema(
     image: { type: String, default: "" },
     vouchers: [
       {
-        // Thêm field vouchers
         type: mongoose.Schema.Types.ObjectId,
         ref: "Voucher",
       },
@@ -23,6 +22,11 @@ const ProductSchema = new mongoose.Schema(
     discountedPrice: { type: Number, default: null },
     createDate: { type: Date, default: Date.now },
     updateDate: { type: Date, default: Date.now },
+    productType: {
+      type: String,
+      enum: ["purchase", "consultation"],
+      required: true,
+    },
   },
   { timestamps: false }
 );

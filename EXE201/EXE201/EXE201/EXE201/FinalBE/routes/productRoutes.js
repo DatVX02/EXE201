@@ -16,6 +16,10 @@ router.post(
     ),
     check("duration", "Thời gian phải là số nguyên").isInt(),
     check("category", "ID danh mục không hợp lệ").isMongoId(),
+    check("productType", "Loại sản phẩm không hợp lệ").isIn([
+      "purchase",
+      "consultation",
+    ]),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -23,9 +27,17 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    let { name, description, price, duration, category, image, vouchers } = req.body;
+    let {
+      name,
+      description,
+      price,
+      duration,
+      category,
+      image,
+      vouchers,
+      productType,
+    } = req.body;
 
-    // Xử lý giá tiền
     if (typeof price === "string") {
       price = price.replace(/\./g, "");
     } else if (typeof price === "number") {
@@ -40,11 +52,12 @@ router.post(
         return res.status(400).json({ msg: "Danh mục không tồn tại" });
       }
 
-      // Kiểm tra nếu có vouchers được gửi lên
       if (vouchers && Array.isArray(vouchers)) {
         const validVouchers = await Voucher.find({ _id: { $in: vouchers } });
         if (validVouchers.length !== vouchers.length) {
-          return res.status(400).json({ msg: "Một hoặc nhiều voucher không tồn tại" });
+          return res
+            .status(400)
+            .json({ msg: "Một hoặc nhiều voucher không tồn tại" });
         }
       }
 
@@ -59,7 +72,8 @@ router.post(
         duration,
         category,
         image: image || "",
-        vouchers: vouchers || [], // Thêm vouchers nếu có
+        vouchers: vouchers || [],
+        productType,
       });
 
       await product.save();
@@ -78,12 +92,13 @@ router.get("/", async (req, res) => {
       .populate("category", "name description")
       .populate("vouchers", "code discountPercentage expiryDate isActive");
 
-    const productsWithDiscount = products.map(product => {
+    const productsWithDiscount = products.map((product) => {
       const price = product.price;
       const vouchers = product.vouchers || [];
-      const highestDiscount = vouchers.length > 0 
-        ? Math.max(...vouchers.map(v => v.discountPercentage || 0)) 
-        : 0;
+      const highestDiscount =
+        vouchers.length > 0
+          ? Math.max(...vouchers.map((v) => v.discountPercentage || 0))
+          : 0;
       const discountedPrice = price - (price * highestDiscount) / 100;
 
       return {
@@ -110,9 +125,10 @@ router.get("/:id", async (req, res) => {
 
     const price = product.price;
     const vouchers = product.vouchers || [];
-    const highestDiscount = vouchers.length > 0 
-      ? Math.max(...vouchers.map(v => v.discountPercentage || 0)) 
-      : 0;
+    const highestDiscount =
+      vouchers.length > 0
+        ? Math.max(...vouchers.map((v) => v.discountPercentage || 0))
+        : 0;
     const discountedPrice = price - (price * highestDiscount) / 100;
 
     res.json({
@@ -127,7 +143,16 @@ router.get("/:id", async (req, res) => {
 
 // PUT: Cập nhật product (bao gồm thêm/xóa vouchers)
 router.put("/:id", async (req, res) => {
-  const { name, description, price, duration, category, image, vouchers } = req.body;
+  const {
+    name,
+    description,
+    price,
+    duration,
+    category,
+    image,
+    vouchers,
+    productType,
+  } = req.body;
 
   try {
     let product = await Product.findById(req.params.id);
@@ -149,7 +174,9 @@ router.put("/:id", async (req, res) => {
       }
       const validVouchers = await Voucher.find({ _id: { $in: vouchers } });
       if (validVouchers.length !== vouchers.length) {
-        return res.status(400).json({ msg: "Một hoặc nhiều voucher không tồn tại" });
+        return res
+          .status(400)
+          .json({ msg: "Một hoặc nhiều voucher không tồn tại" });
       }
       product.vouchers = vouchers;
     }
@@ -160,7 +187,7 @@ router.put("/:id", async (req, res) => {
     product.duration = duration || product.duration;
     product.category = category || product.category;
     product.image = image || product.image;
-
+    product.productType = productType || product.productType;
     await product.save();
     res.json(product);
   } catch (err) {
@@ -196,7 +223,9 @@ router.post("/:id/vouchers", async (req, res) => {
     }
 
     if (product.vouchers.includes(voucherId)) {
-      return res.status(400).json({ msg: "Voucher đã được áp dụng cho sản phẩm này" });
+      return res
+        .status(400)
+        .json({ msg: "Voucher đã được áp dụng cho sản phẩm này" });
     }
 
     product.vouchers.push(voucherId);
@@ -218,7 +247,9 @@ router.delete("/:id/vouchers/:voucherId", async (req, res) => {
 
     const voucherIndex = product.vouchers.indexOf(req.params.voucherId);
     if (voucherIndex === -1) {
-      return res.status(400).json({ msg: "Voucher không được áp dụng cho sản phẩm này" });
+      return res
+        .status(400)
+        .json({ msg: "Voucher không được áp dụng cho sản phẩm này" });
     }
 
     product.vouchers.splice(voucherIndex, 1);

@@ -9,6 +9,7 @@ import { Divider, Dropdown, Menu } from "antd";
 import { ChevronDown, User } from "lucide-react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { ShoppingCartOutlined } from "@ant-design/icons";
 
 const Header: React.FC = () => {
   const [user, setUser] = useState<{ username: string; role?: string } | null>(
@@ -32,7 +33,7 @@ const Header: React.FC = () => {
       toast.error("Bạn cần đăng nhập trước khi đặt dịch vụ!");
       setTimeout(() => navigate("/login"), 3000);
     } else {
-      navigate("/booking_services/services");
+      navigate("/booking_services//services");
     }
   };
 
@@ -97,7 +98,7 @@ const Header: React.FC = () => {
       >
         <div className="px-4 py-2 flex items-center gap-2 text-gray-700">
           <User size={16} />
-          <span>Lịch sử đặt hàng</span>
+          <span>My Profile</span>
         </div>
       </Menu.Item>
       <Menu.Item key="settings" className="hover:bg-yellow-50">
@@ -119,7 +120,7 @@ const Header: React.FC = () => {
             <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
             <circle cx="12" cy="12" r="3"></circle>
           </svg>
-          <span>Cài đặt </span>
+          <span>Settings</span>
         </Link>
       </Menu.Item>
       <div className="border-t border-gray-100 my-1"></div>
@@ -222,6 +223,8 @@ const Header: React.FC = () => {
           >
             Đặt lịch
           </button>
+
+          <ShoppingCartOutlined />
 
           <div className="flex items-center space-x-2">
             {user ? (
