@@ -11,15 +11,15 @@ router.post(
   "/",
   [
     check("name", "Tên sản phẩm không được để trống").not().isEmpty(),
-    check("price", "Giá sản phẩm phải là số hợp lệ").matches(
-      /^\d{1,3}(\.\d{3})*$/
-    ),
-    check("duration", "Thời gian phải là số nguyên").isInt(),
+    check("price", "Giá sản phẩm phải là số hợp lệ").isNumeric(),
     check("category", "ID danh mục không hợp lệ").isMongoId(),
-    check("productType", "Loại sản phẩm không hợp lệ").isIn([
-      "purchase",
-      "consultation",
-    ]),
+    check("productType")
+      .exists()
+      .withMessage("Product Type is required")
+      .isString()
+      .withMessage("Product Type must be a string")
+      .isIn(["purchase", "consultation"])
+      .withMessage("Loại sản phẩm không hợp lệ"),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -38,27 +38,19 @@ router.post(
       productType,
     } = req.body;
 
+    // ✅ Nếu productType là "purchase", xóa duration để tránh lỗi
+    if (productType === "purchase") {
+      duration = undefined;
+    }
+
     if (typeof price === "string") {
-      price = price.replace(/\./g, "");
-    } else if (typeof price === "number") {
-      price = price.toString();
-    } else {
-      return res.status(400).json({ msg: "Giá sản phẩm không hợp lệ" });
+      price = parseFloat(price.replace(/\./g, ""));
     }
 
     try {
       const categoryExists = await Category.findById(category);
       if (!categoryExists) {
         return res.status(400).json({ msg: "Danh mục không tồn tại" });
-      }
-
-      if (vouchers && Array.isArray(vouchers)) {
-        const validVouchers = await Voucher.find({ _id: { $in: vouchers } });
-        if (validVouchers.length !== vouchers.length) {
-          return res
-            .status(400)
-            .json({ msg: "Một hoặc nhiều voucher không tồn tại" });
-        }
       }
 
       const lastProduct = await Product.findOne().sort({ service_id: -1 });

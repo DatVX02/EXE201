@@ -12,13 +12,15 @@ function ManageCategory() {
   const formItems = (
     <>
       <Form.Item
-        name='name'
-        label='Name'
-        rules={[{ required: true, message: "Please input category name" }]}>
-        <Input />
+        name="name"
+        label="Name"
+        rules={[{ required: true, message: "Please input category name" }]}
+      >
+        <Input placeholder="Enter category name" />
       </Form.Item>
-      <Form.Item name='description' label='Description'>
-        <Input.TextArea />
+
+      <Form.Item name="description" label="Description">
+        <Input.TextArea placeholder="Enter description" />
       </Form.Item>
     </>
   );

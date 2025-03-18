@@ -332,7 +332,7 @@ const EnhancedBookingPage: React.FC = () => {
           setRatings(data);
         } catch (error) {
           console.error("Lỗi khi lấy đánh giá:", error);
-          toast.error("Không thể tải đánh giá.");
+          // toast.error("Không thể tải đánh giá.");
         } finally {
           setLoadingRatings(false);
         }

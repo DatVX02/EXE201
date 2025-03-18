@@ -1,12 +1,11 @@
 const mongoose = require("mongoose");
-
 const ProductSchema = new mongoose.Schema(
-  {
+  { 
     service_id: { type: Number, unique: true },
     name: { type: String, required: true },
     description: { type: String },
     price: { type: Number, required: true },
-    duration: { type: Number, required: true },
+    duration: { type: Number, required: false }, // ✅ Không bắt buộc nhập
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",

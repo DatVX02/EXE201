@@ -66,22 +66,40 @@ function ManageTemplate({
     fetchData();
   }, [apiEndpoint, token]);
 
-  const handleCreate = async (values: any) => {
-    if (!token || mode === "view-only") return;
-    try {
-      console.log("Sending Data to API:", JSON.stringify(values, null, 2));
-      const response = await api.post(apiEndpoint, values, {
-        headers: { "x-auth-token": token, "Content-Type": "application/json" },
-      });
-      console.log("API Response:", response.data);
-      toast.success(`${title} created successfully`);
-      form.resetFields();
-      setShowModal(false);
-      fetchData();
-    } catch (error: any) {
-      message.error(error.response?.data?.message || `Error creating ${title}`);
-    }
-  };
+ const handleCreate = async (values: any) => {
+   if (!token || mode === "view-only") return;
+
+   console.log(
+     "🚀 Raw Data before processing:",
+     JSON.stringify(values, null, 2)
+   );
+
+   // ✅ Xóa duration nếu productType là "purchase"
+   if (values.productType === "purchase") {
+     delete values.duration;
+   }
+
+   console.log(
+     "🚀 Final Data being sent to API:",
+     JSON.stringify(values, null, 2)
+   );
+
+   try {
+     const response = await api.post(apiEndpoint, values, {
+       headers: { "x-auth-token": token, "Content-Type": "application/json" },
+     });
+     console.log("✅ API Response:", response.data);
+     toast.success(`${title} created successfully`);
+     form.resetFields();
+     setShowModal(false);
+     fetchData();
+   } catch (error: any) {
+     console.error("❌ API Error:", error.response?.data || error);
+     message.error(error.response?.data?.message || `Error creating ${title}`);
+   }
+ };
+
+
 
   const handleEdit = async (values: any) => {
     if (!token || mode !== "full") return;

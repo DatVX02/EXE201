@@ -238,7 +238,7 @@ const HomePage: React.FC = () => {
       navigate("/login");
       return;
     }
-    navigate(`/booking/${id}`);
+    navigate(`/booking_services`);
   };
 
   const handleNext = () => {
