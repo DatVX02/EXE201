@@ -4,7 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
-import logo from "../assets/Logo.png";
+import logo from "../assets/logo7.png";
 
 const Register: React.FC = () => {
   const navigate = useNavigate();

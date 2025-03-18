@@ -3,45 +3,39 @@
 import type React from "react";
 import { useState, useEffect } from "react";
 import "../../src/index.css";
-import Logo from "../assets/Logo.png";
+import logo from "../assets/logo7.png";
 import { Link, useNavigate } from "react-router-dom";
 import { Divider, Dropdown, Menu } from "antd";
 import { ChevronDown, User } from "lucide-react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useAuth } from "../context/AuthContext";
 
 const Header: React.FC = () => {
-  const [user, setUser] = useState<{ username: string; role?: string } | null>(
-    null
-  );
+  const { token, setToken, setUser, setCart, fetchCart } = useAuth();
+  const [user, setLocalUser] = useState<{
+    username: string;
+    role?: string;
+  } | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const [isShopDropdownVisible, setIsShopDropdownVisible] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
+      setLocalUser(parsedUser);
       setRole(parsedUser.role || null);
+    } else {
+      setLocalUser(null);
+      setRole(null);
     }
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (!(event.target as HTMLElement).closest(".shop-dropdown")) {
-        setIsShopDropdownVisible(false);
-      }
-    };
-
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, []);
+  }, [token]);
 
   const handleBookNow = () => {
     if (!user) {
-      toast.error("Bạn cần đăng nhập trước khi đặt dịch vụ!");
+      toast.error("You need to log in before booking a service!");
       setTimeout(() => navigate("/login"), 3000);
     } else {
       navigate("/services");
@@ -49,12 +43,11 @@ const Header: React.FC = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("authToken");
-    setUser(null);
+    setToken(null);
+    setLocalUser(null);
     setRole(null);
     navigate("/login");
-    toast.success("Đã đăng xuất thành công!");
+    toast.success("Logged out successfully!");
   };
 
   const getDashboardLink = () => {
@@ -69,7 +62,7 @@ const Header: React.FC = () => {
       case "skincare_staff":
         return "/therapist";
       case "user":
-        return "/dashboard";
+        return "/dashboard"; // Vẫn trỏ đến dashboard, nhưng tiêu đề sẽ thay đổi
       default:
         return "/dashboard";
     }
@@ -89,7 +82,7 @@ const Header: React.FC = () => {
       >
         <div className="px-4 py-2 flex items-center gap-2 text-gray-700">
           <User size={16} />
-          <span>Hồ sơ</span>
+          <span>{role === "user" ? "Order History" : "My Dashboard"}</span>
         </div>
       </Menu.Item>
       <Menu.Item key="settings" className="hover:bg-yellow-50">
@@ -111,7 +104,7 @@ const Header: React.FC = () => {
             <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
             <circle cx="12" cy="12" r="3"></circle>
           </svg>
-          <span>Cài đặt</span>
+          <span>Settings</span>
         </Link>
       </Menu.Item>
       <div className="border-t border-gray-100 my-1"></div>
@@ -136,23 +129,27 @@ const Header: React.FC = () => {
             <polyline points="16 17 21 12 16 7"></polyline>
             <line x1="21" y1="12" x2="9" y2="12"></line>
           </svg>
-          <span>Đăng xuất</span>
+          <span>Log Out</span>
         </div>
       </Menu.Item>
     </Menu>
   );
 
   return (
-    <header className="bg-[#00B389] text-black py-4 shadow-lg sticky top-0 z-50">
+    <header className="bg-[#dad5c9] text-black py-4 shadow-lg sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center px-6">
         <div className="flex items-center space-x-3">
           <Link to="/">
             <img
-              src={Logo || "/placeholder.svg"}
+              src={logo || "/placeholder.svg"}
               alt="LuLuSpa Logo"
               className="w-16 h-16 rounded-full"
             />
           </Link>
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-wide">
+            <span className="text-black-300">LuLu</span>
+            <span className="text-yellow-300">Spa</span>
+          </h1>
         </div>
 
         <nav>
@@ -162,50 +159,23 @@ const Header: React.FC = () => {
                 to="/"
                 className="hover:text-yellow-300 transition duration-300"
               >
-                Trang chủ
+                Home
               </Link>
             </li>
-            <li className="relative shop-dropdown">
-              <button
-                onClick={() => setIsShopDropdownVisible(!isShopDropdownVisible)}
-                className="hover:text-yellow-300 transition duration-300 focus:outline-none"
+            <li>
+              <Link
+                to="/services"
+                className="hover:text-yellow-300 transition duration-300"
               >
-                Cửa hàng
-              </button>
-
-              {/* Dropdown menu */}
-              {isShopDropdownVisible && (
-                <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
-                  <ul className="py-2">
-                    <li>
-                      <Link
-                        to="/shopping"
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsShopDropdownVisible(false)}
-                      >
-                        Mua hàng
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        to="/services"
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsShopDropdownVisible(false)}
-                      >
-                        Đặt lịch tư vấn
-                      </Link>
-                    </li>
-                    
-                  </ul>
-                </div>
-              )}
+                Services
+              </Link>
             </li>
             <li>
               <Link
                 to="/test"
                 className="hover:text-yellow-300 transition duration-300"
               >
-                Câu hỏi
+                Test
               </Link>
             </li>
             <li>
@@ -213,7 +183,7 @@ const Header: React.FC = () => {
                 to="/blog"
                 className="hover:text-yellow-300 transition duration-300"
               >
-                Tin tức
+                Blog
               </Link>
             </li>
             <li>
@@ -221,7 +191,7 @@ const Header: React.FC = () => {
                 onClick={() => setShowModal(true)}
                 className="hover:text-yellow-300 transition duration-300"
               >
-                Liên hệ
+                Contact
               </button>
             </li>
           </ul>
@@ -233,7 +203,7 @@ const Header: React.FC = () => {
             onClick={handleBookNow}
             className="hidden md:block bg-yellow-300 text-black py-2 px-6 rounded-lg shadow-md hover:bg-yellow-400 transition duration-100"
           >
-            Đặt lịch
+            Book Now
           </button>
 
           <div className="flex items-center space-x-2">
@@ -257,14 +227,14 @@ const Header: React.FC = () => {
                   to="/login"
                   className="hover:text-yellow-300 transition duration-300"
                 >
-                  <span>Đăng nhập </span>
+                  <span>Login</span>
                 </Link>
                 <Divider type="vertical" className="border-black mt-1 h-7" />
                 <Link
                   to="/register"
                   className="hover:text-yellow-300 transition duration-300"
                 >
-                  <span>Đăng ký</span>
+                  <span>Signup</span>
                 </Link>
               </>
             )}
@@ -275,7 +245,6 @@ const Header: React.FC = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center px-4">
           <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg relative">
-            {/* Nút đóng modal */}
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-3 right-3 text-2xl text-gray-600 hover:text-gray-900"
@@ -283,51 +252,46 @@ const Header: React.FC = () => {
               ×
             </button>
 
-            {/* Tiêu đề */}
             <h3 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
-              Thông tin liên hệ
+              Contact Information
             </h3>
 
-            {/* Form */}
             <form className="space-y-4">
               <input
                 type="text"
-                placeholder="Họ và tên"
+                placeholder="Name"
                 className="p-2 border w-full rounded-md"
               />
               <input
                 type="text"
-                placeholder="Số điện thoại"
+                placeholder="Phone Number"
                 className="p-2 border w-full rounded-md"
               />
               <button className="py-2 px-4 bg-blue-500 text-white rounded-lg w-full hover:bg-blue-600 transition">
-                Gửi yêu cầu
+                Submit
               </button>
             </form>
 
-            {/* Thông tin LuLuSpa */}
             <div className="mt-6 text-left">
               <p className="text-gray-600 font-medium">
-                🏡 Tên cửa hàng: <span className="font-semibold">Diable</span>
+                🏡 Store Name: <span className="font-semibold">LuLuSpa</span>
               </p>
               <p className="text-gray-600">
-                📞 Số điện thoại:{" "}
-                <span className="font-semibold">123-456-789</span>
+                📞 Phone: <span className="font-semibold">123-456-789</span>
               </p>
               <p className="text-gray-600">
-                📧 Email: <span className="font-semibold">info@Diable.com</span>
+                📧 Email:{" "}
+                <span className="font-semibold">info@luluspa.com</span>
               </p>
               <p className="text-gray-600">
-                ⏰ Thời gian làm việc:{" "}
-                <span className="font-semibold">
-                  Thứ 2 - thứ 7, 9:00 - 17:30
-                </span>
+                ⏰ Working Hours:{" "}
+                <span className="font-semibold">Mon - Sat, 9:00 - 17:30</span>
               </p>
               <a
-                href="https://www.facebook.com/profile.php?id=61572026472325"
+                href="https://facebook.com/luluspa"
                 className="text-blue-600 hover:underline mt-2 inline-block"
               >
-                🌐 Hoặc có thể liên hệ với chúng tôi qua Facebook
+                🌐 Visit our Facebook
               </a>
             </div>
           </div>

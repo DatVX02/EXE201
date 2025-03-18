@@ -1,6 +1,13 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useCallback,
+} from "react";
 import { toast } from "react-toastify";
-import {Booking } from "../types/booking";
+import { Booking } from "../types/booking";
 
 interface User {
   username: string;
@@ -24,9 +31,12 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [token, setToken] = useState<string | null>(localStorage.getItem("authToken"));
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const [token, setToken] = useState<string | null>(
+    localStorage.getItem("authToken")
+  );
   const [user, setUser] = useState<User | null>(() => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
@@ -35,9 +45,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loadingCart, setLoadingCart] = useState<boolean>(false);
   const [cartError, setCartError] = useState<string | null>(null);
 
-  const API_BASE_URL = window.location.hostname === "localhost"
-  ? "http://localhost:5000/api"
-  : "https://luluspa-production.up.railway.app/api";
+  const API_BASE_URL =
+    window.location.hostname === "localhost"
+      ? "http://localhost:5000/api"
+      : "https://luluspa-production.up.railway.app/api";
 
   useEffect(() => {
     if (token) {
@@ -135,22 +146,31 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setCart([]);
       return;
     }
-  
+
     setLoadingCart(true);
     try {
       let endpoint: string;
       if (user.role === "staff") {
         endpoint = `${API_BASE_URL}/cart`;
-        console.log(`Staff role detected - Fetching all carts from: ${endpoint}`);
-      } else if (user.role === "skincare_staff" || user.username.startsWith("therapist")) {
+        console.log(
+          `Staff role detected - Fetching all carts from: ${endpoint}`
+        );
+      } else if (
+        user.role === "skincare_staff" ||
+        user.username.startsWith("therapist")
+      ) {
         // Thêm kiểm tra username bắt đầu bằng "therapist" để ưu tiên
         endpoint = `${API_BASE_URL}/cart/therapist/${user.username}`;
-        console.log(`Therapist role detected - Fetching assigned carts from: ${endpoint}`);
+        console.log(
+          `Therapist role detected - Fetching assigned carts from: ${endpoint}`
+        );
       } else {
         endpoint = `${API_BASE_URL}/cart/user/${user.username}`;
-        console.log(`Customer role detected - Fetching user carts from: ${endpoint}`);
+        console.log(
+          `Customer role detected - Fetching user carts from: ${endpoint}`
+        );
       }
-  
+
       const response = await fetch(endpoint, {
         method: "GET",
         headers: {
@@ -158,19 +178,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           "x-auth-token": token,
         },
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(`Không thể tải giỏ hàng: ${response.status} - ${errorData.message || "Lỗi server không xác định"}`);
+        throw new Error(
+          `Không thể tải giỏ hàng: ${response.status} - ${
+            errorData.message || "Lỗi server không xác định"
+          }`
+        );
       }
-  
+
       const data = await response.json();
       console.log("Fetched cart data:", data);
       setCart(data);
       setCartError(null);
     } catch (error) {
       console.error("Lỗi khi tải giỏ hàng:", error);
-      const errorMessage = error instanceof Error ? error.message : "Lỗi không xác định";
+      const errorMessage =
+        error instanceof Error ? error.message : "Lỗi không xác định";
       setCartError(errorMessage);
       setCart([]);
       toast.error(errorMessage);

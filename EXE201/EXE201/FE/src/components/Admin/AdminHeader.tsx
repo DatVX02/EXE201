@@ -10,7 +10,7 @@ import {
   SettingOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../../assets/Logo.png";
+import logo from "../../assets/logo7.png";
 
 const { Header } = Layout;
 

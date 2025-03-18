@@ -4,7 +4,7 @@ import { Modal, Input, Button, message, Spin } from "antd";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import layerImage from "../assets/Logo.png";
+import layerImage from "../assets/logo7.png";
 
 const Forgot_password: React.FC = () => {
   const [email, setEmail] = useState("");

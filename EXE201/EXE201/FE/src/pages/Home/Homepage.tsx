@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import { useAuth } from "../../context/AuthContext";
 import type { Booking, Service, Therapist, Blog } from "../../types/booking";
 import video1 from "../../assets/video/invideo-ai-1080 Discover the Magic of LuLuSpa_ Your Skin 2025-01-10.mp4";
+import { JSX } from "react/jsx-runtime";
 
 // Animation variants
 const sectionVariants = {
@@ -168,7 +169,7 @@ const HomePage: React.FC = () => {
         setTherapistError(
           "Unable to load specialist list. Please try again later."
         );
-        toast.error("Unable to load specialist list. Please try again later.");
+        // toast.error("Unable to load specialist list. Please try again later.")
       } finally {
         setLoadingTherapists(false);
       }
@@ -356,7 +357,7 @@ const HomePage: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             >
-              Những điều về bệnh tiểu đường
+              Discover the Magic of LuLuSpa
             </motion.h1>
             <motion.p
               className="text-2xl font-light mb-8"
@@ -364,7 +365,7 @@ const HomePage: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
             >
-              Bạn cần nắm để phòng tránh
+              Your Skin, Our Passion
             </motion.p>
             <motion.button
               onClick={() =>
@@ -376,7 +377,7 @@ const HomePage: React.FC = () => {
               whileTap="tap"
               disabled={services.length === 0}
             >
-              Mua sắm và đặt lịch tư vấn
+              Book Your Luxurious Experience
             </motion.button>
           </div>
         </motion.section>
@@ -393,16 +394,39 @@ const HomePage: React.FC = () => {
         >
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-5xl font-extrabold text-gray-900 mb-4">
-                Đặt lịch tư vấn
-              </h2>
-              <div className="w-24 h-1 bg-yellow-400 mx-auto"></div>
+              <motion.h1
+                className="text-4xl md:text-5xl font-extrabold text-center mb-12 bg-gradient-to-r from-yellow-600 to-white-500 bg-clip-text text-transparent drop-shadow-lg tracking-wide"
+                initial={{ opacity: 0, y: -50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                Luxurious Skincare Packages
+              </motion.h1>
+              <div className="mt-2 h-1 w-24 bg-gradient-to-r from-yellow-600 to-white-400 rounded mx-auto"></div>
+              <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
+                Discover our premium skincare treatments designed to rejuvenate
+                and transform your skin
+              </p>
             </div>
 
             {/* Infinite Carousel for Services */}
             {services.length > 0 ? (
               <div className="relative overflow-hidden">
-                <motion.div ref={carouselRef} className="flex">
+                <motion.div
+                  ref={carouselRef}
+                  className="flex"
+                  animate={{
+                    x: ["0%", "-100%"],
+                    transition: {
+                      x: {
+                        repeat: Infinity,
+                        repeatType: "loop",
+                        duration: services.length * 2,
+                        ease: "linear",
+                      },
+                    },
+                  }}
+                >
                   {[...services, ...services].map((service, index) => (
                     <motion.div
                       key={`${service._id}-${index}`}
@@ -412,7 +436,7 @@ const HomePage: React.FC = () => {
                       animate="visible"
                     >
                       <div
-                        className={`bg-white rounded-xl shadoxw-lg overflow-hidden transition-all duration-300 hover:shadow-xl flex flex-col h-full ${
+                        className={`bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl flex flex-col h-full ${
                           service.discountedPrice != null
                             ? ""
                             : "hover:translate-y-[-4px]"
@@ -479,7 +503,7 @@ const HomePage: React.FC = () => {
                                   </div>
                                 </>
                               ) : (
-                                <div className="text-lg font-bold text-gray-800">
+                                <div className="text-lg font-bold text-yellow-500">
                                   {(service.price as number).toLocaleString(
                                     "vi-VN"
                                   )}{" "}
@@ -503,7 +527,6 @@ const HomePage: React.FC = () => {
                                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                                   />
                                 </svg>
-                                Thời gian tư vấn: {""}
                                 {service.duration
                                   ? `${service.duration} min`
                                   : "TBD"}
@@ -519,7 +542,7 @@ const HomePage: React.FC = () => {
                                 whileHover="hover"
                                 whileTap="tap"
                               >
-                                Đặt lịch tư vấn
+                                Book Now
                               </motion.button>
                             </div>
                           </div>
@@ -540,10 +563,19 @@ const HomePage: React.FC = () => {
           {/* Therapist Section */}
           <div className="container mx-auto px-4 mt-24">
             <div className="text-center mb-16">
-              <h3 className="text-4xl font-extrabold text-gray-900 mb-4">
-                Bác sĩ hàng đầu
-              </h3>
-              <div className="w-24 h-1 bg-gradient-to-r from-yellow-400 to-pink-500 mx-auto"></div>
+              <motion.h1
+                className="text-4xl md:text-5xl font-extrabold text-center mb-12 bg-gradient-to-r from-yellow-600 to-white-500 bg-clip-text text-transparent drop-shadow-lg tracking-wide"
+                initial={{ opacity: 0, y: -50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                Our Skincare Experts
+              </motion.h1>
+              <div className="mt-2 h-1 w-24 bg-gradient-to-r from-yellow-600 to-white-400 rounded mx-auto"></div>
+              <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
+                Meet our team of certified specialists with years of experience
+                in skincare treatments
+              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
@@ -555,7 +587,7 @@ const HomePage: React.FC = () => {
                 <p className="text-center text-red-600 col-span-3">
                   {therapistError}
                 </p>
-              ) : therapists.length > 0 ? (
+              ) : isAuthenticated && therapists.length > 0 ? (
                 therapists
                   .slice(
                     currentTherapistIndex * 3,
@@ -571,7 +603,7 @@ const HomePage: React.FC = () => {
                       whileHover="hover"
                     >
                       <div className="relative">
-                        <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-pink-500/20 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-white-500/20 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         <img
                           src={
                             therapist.image ||
@@ -631,18 +663,9 @@ const HomePage: React.FC = () => {
                             Experience
                           </h5>
                           <p className="text-sm text-gray-600">
-                            {therapist.Description?.includes("năm")
-                              ? therapist.Description.match(/\d+\s+năm/)?.[0] ||
-                                "Nhiều năm"
-                              : "Nhiều năm"}{" "}
-                            kinh nghiệm chuyên sâu
+                            {therapist.Description}
                           </p>
                         </div>
-
-                        <p className="text-gray-600 text-sm line-clamp-3 flex-grow">
-                          {therapist.Description ||
-                            "Chuyên gia tận tâm với nhiều năm kinh nghiệm trong lĩnh vực chăm sóc da."}
-                        </p>
 
                         <div className="mt-4 flex justify-between items-center">
                           <div className="flex space-x-2">
@@ -758,10 +781,19 @@ const HomePage: React.FC = () => {
         >
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-5xl font-extrabold text-gray-900 mb-4">
-                Tin tức nổi bật
-              </h2>
-              <div className="w-24 h-1 bg-yellow-400 mx-auto"></div>
+              <motion.h1
+                className="text-4xl md:text-5xl font-extrabold text-center mb-12 bg-gradient-to-r from-yellow-600 to-white-500 bg-clip-text text-transparent drop-shadow-lg tracking-wide"
+                initial={{ opacity: 0, y: -50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                Latest Blog Posts
+              </motion.h1>
+              <div className="mt-2 h-1 w-24 bg-gradient-to-r from-yellow-600 to-white-400 rounded mx-auto"></div>
+              <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
+                Stay updated with the latest skincare trends, tips, and insights
+                from our experts
+              </p>
             </div>
 
             {loadingBlogs ? (
@@ -820,21 +852,19 @@ const HomePage: React.FC = () => {
                             </div>
                             <div>
                               <p className="text-sm font-medium text-gray-900">
-                                Admin
+                                {blogs[0].createName}
                               </p>
-                              <p className="text-xs text-gray-500">
-                                {new Date(
-                                  blogs[0].createdAt || Date.now()
-                                ).toLocaleDateString("vi-VN", {
+                              {/* <p className="text-xs text-gray-500">
+                                {new Date(blogs[9].createdAt || Date.now()).toLocaleDateString("vi-VN", {
                                   year: "numeric",
                                   month: "long",
                                   day: "numeric",
                                 })}
-                              </p>
+                              </p> */}
                             </div>
                           </div>
                           <motion.button
-                            onClick={() => navigate(`/blog/${blogs[0].id}`)}
+                            onClick={() => navigate(`/blog/${blogs[0]._id}`)}
                             className="px-6 py-3 bg-yellow-400 text-gray-900 rounded-lg font-semibold hover:bg-yellow-300 transition duration-300 w-full md:w-auto"
                             variants={buttonVariants}
                             whileHover="hover"
@@ -856,7 +886,7 @@ const HomePage: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
                     {blogs.slice(1, 4).map((blog) => (
                       <motion.div
-                        key={blog.id}
+                        key={blog._id}
                         className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col h-full"
                         variants={serviceCardVariants}
                         initial="hidden"
@@ -892,7 +922,7 @@ const HomePage: React.FC = () => {
                             {blog.description}
                           </p>
                           <motion.button
-                            onClick={() => navigate(`/blog/${blog.id}`)}
+                            onClick={() => navigate(`/blog/${blog._id}`)}
                             className="mt-auto text-yellow-600 font-medium hover:text-yellow-700 flex items-center"
                             variants={buttonVariants}
                             whileHover="hover"

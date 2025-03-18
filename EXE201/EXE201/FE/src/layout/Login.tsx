@@ -4,7 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import { useAuth } from "../context/AuthContext"; // Import useAuth
-import layerImage from "../assets/Logo.png";
+import layerImage from "../assets/logo7.png";
 
 const Login: React.FC = () => {
   const { setToken, setUser } = useAuth(); // Lấy hàm setToken và setUser từ context
