@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Layout from "../../layout/Layout";
-
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 interface CartItem {
   _id: string;
   name: string;
@@ -11,11 +12,22 @@ interface CartItem {
 
 const Cart: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
-
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
     setCart(storedCart);
   }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/login"); 
+      return;
+    }
+
+    const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    setCart(storedCart);
+  }, [isAuthenticated]);
 
   const updateCart = (newCart: CartItem[]) => {
     localStorage.setItem("cart", JSON.stringify(newCart));
