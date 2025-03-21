@@ -29,16 +29,28 @@ const buttonVariants = {
 
 const therapistCardVariants = {
   hidden: { opacity: 0, scale: 0.95 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: "easeOut" } },
-  hover: { 
-    scale: 1.03, 
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+  hover: {
+    scale: 1.03,
     boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
-    transition: { duration: 0.3 }
-  }
+    transition: { duration: 0.3 },
+  },
 };
 
 const HomePage: React.FC = () => {
-  const { cart, fetchCart, isAuthenticated, loadingCart, cartError, setCart, token } = useAuth();
+  const {
+    cart,
+    fetchCart,
+    isAuthenticated,
+    loadingCart,
+    cartError,
+    // setCart,
+    token,
+  } = useAuth();
   const navigate = useNavigate();
   const [services, setServices] = useState<Service[]>([]);
   const [therapists, setTherapists] = useState<Therapist[]>([]);
@@ -94,7 +106,8 @@ const HomePage: React.FC = () => {
             "x-auth-token": token,
           },
         });
-        if (!response.ok) throw new Error(`Failed to fetch therapists: ${response.status}`);
+        if (!response.ok)
+          throw new Error(`Failed to fetch therapists: ${response.status}`);
         const data = await response.json();
         setTherapists(
           data.map((staff: any) => ({
@@ -106,7 +119,9 @@ const HomePage: React.FC = () => {
         );
       } catch (error: any) {
         console.error("Error fetching therapists:", error.message);
-        setTherapistError("Unable to load specialist list. Please try again later.");
+        setTherapistError(
+          "Unable to load specialist list. Please try again later."
+        );
         toast.error(therapistError);
       } finally {
         setLoadingTherapists(false);
@@ -124,7 +139,8 @@ const HomePage: React.FC = () => {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
-        if (!response.ok) throw new Error(`Failed to fetch blogs: ${response.status}`);
+        if (!response.ok)
+          throw new Error(`Failed to fetch blogs: ${response.status}`);
         const data = await response.json();
         if (Array.isArray(data)) setBlogs(data);
         else {
@@ -161,13 +177,18 @@ const HomePage: React.FC = () => {
     const completedItems = cart.filter((item) => item.status === "completed"); // Updated to "completed"
     console.log("Completed items:", completedItems); // Debug log
     if (completedItems.length === 0) {
-      toast.error("No completed items in the cart to checkout. Please ensure items are marked as completed.");
+      toast.error(
+        "No completed items in the cart to checkout. Please ensure items are marked as completed."
+      );
       return;
     }
 
     setShowCheckoutModal(true);
 
-    const totalAmount = completedItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+    const totalAmount = completedItems.reduce(
+      (sum, item) => sum + (item.totalPrice || 0),
+      0
+    );
     const orderName = completedItems[0]?.serviceName || "Multiple Services";
     let description = `Dịch vụ ${orderName.substring(0, 25)}`;
     if (description.length > 25) description = description.substring(0, 25);
@@ -202,48 +223,68 @@ const HomePage: React.FC = () => {
     }
   };
 
-  const handlePayment = async () => {
-    try {
-      if (!token) throw new Error("Please log in to confirm payment.");
+  // const handlePayment = async () => {
+  //   try {
+  //     if (!token) throw new Error("Please log in to confirm payment.");
 
-      await Promise.all(
-        cart
-          .filter((item) => item.status === "completed") // Updated to "completed"
-          .map((item) =>
-            fetch(`${API_BASE_URL}/cart/${item.CartID}`, {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-                "x-auth-token": token,
-              },
-              body: JSON.stringify({ status: "checked-out" }),
-            }).then((res) => {
-              if (!res.ok) throw new Error(`Failed to update cart item ${item.CartID}`);
-            })
-          )
-      );
+  //     await Promise.all(
+  //       cart
+  //         .filter((item) => item.status === "completed") // Updated to "completed"
+  //         .map((item) =>
+  //           fetch(`${API_BASE_URL}/cart/${item.CartID}`, {
+  //             method: "PUT",
+  //             headers: {
+  //               "Content-Type": "application/json",
+  //               "x-auth-token": token,
+  //             },
+  //             body: JSON.stringify({ status: "checked-out" }),
+  //           }).then((res) => {
+  //             if (!res.ok)
+  //               throw new Error(`Failed to update cart item ${item.CartID}`);
+  //           })
+  //         )
+  //     );
 
-      await fetchCart();
-      setShowCheckoutModal(false);
-      toast.success("Thanh toán và check-out thành công!");
-    } catch (error) {
-      console.error("Error updating cart status:", error);
-      toast.error("Lỗi khi cập nhật trạng thái thanh toán.");
-    }
-  };
+  //     await fetchCart();
+  //     setShowCheckoutModal(false);
+  //     toast.success("Thanh toán và check-out thành công!");
+  //   } catch (error) {
+  //     console.error("Error updating cart status:", error);
+  //     toast.error("Lỗi khi cập nhật trạng thái thanh toán.");
+  //   }
+  // };
 
-  const handleBookNow = (id: string) => {
-    if (!isAuthenticated) {
-      toast.warning("Vui lòng đăng nhập để đặt dịch vụ.");
+  const handleRedirect = () => {
+    if(!isAuthenticated) {
+      toast.warning("Vui lòng đăng nhập để tiếp tục.");
       navigate("/login");
       return;
     }
-    navigate(`/booking_services`);
+    navigate("/booking_services");
+  };
+
+  const handleBookNow = (
+    id: string,
+    productType: "purchase" | "consultation"
+  ) => {
+    if (!isAuthenticated) {
+      toast.warning("Vui lòng đăng nhập để tiếp tục.");
+      navigate("/login");
+      return;
+    }
+
+    if (productType === "purchase") {
+      navigate(`/booking_services/${id}`);
+    } else {
+      navigate(`/booking/${id}`);
+    }
   };
 
   const handleNext = () => {
     const maxIndex = Math.ceil(services.length / 3) - 1;
-    setCurrentServiceIndex((prevIndex) => (prevIndex < maxIndex ? prevIndex + 1 : 0));
+    setCurrentServiceIndex((prevIndex) =>
+      prevIndex < maxIndex ? prevIndex + 1 : 0
+    );
   };
 
   const handleViewAllBlogs = () => {
@@ -293,9 +334,11 @@ const HomePage: React.FC = () => {
               transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
             >
               Bạn cần nắm
-            </motion.p> 
+            </motion.p>
             <motion.button
-              onClick={() => services.length > 0 && handleBookNow(services[0]._id)}
+              onClick={() =>
+                services.length > 0 && handleRedirect(services[0]._id)
+              }
               className="px-8 py-4 bg-yellow-400 text-gray-900 rounded-full text-lg font-semibold hover:bg-yellow-300 transition duration-300 ease-in-out transform"
               variants={buttonVariants}
               whileHover="hover"
@@ -338,21 +381,32 @@ const HomePage: React.FC = () => {
                         alt={service.name}
                         className="w-full h-64 object-cover"
                         onError={(e) => {
-                          (e.target as HTMLImageElement).src = "/default-service.jpg";
+                          (e.target as HTMLImageElement).src =
+                            "/default-service.jpg";
                         }}
                       />
                       <div className="p-8">
                         <h3 className="text-3xl font-semibold text-gray-800 mb-4">
                           {service.name}
                         </h3>
-                        <p className="text-gray-600 mb-6">{service.description}</p>
+                        <p className="text-gray-600 mb-6">
+                          {service.description}
+                        </p>
                         <div className="flex justify-between items-center mb-4">
                           <div className="flex flex-col">
                             <span className="text-2xl font-bold text-yellow-500">
                               {service.price
-                                ? `${typeof service.price === "number"
-                                    ? service.price.toLocaleString("vi-VN")
-                                    : parseFloat((service.price as { $numberDecimal: string }).$numberDecimal).toLocaleString("vi-VN")} VNĐ`
+                                ? `${
+                                    typeof service.price === "number"
+                                      ? service.price.toLocaleString("vi-VN")
+                                      : parseFloat(
+                                          (
+                                            service.price as {
+                                              $numberDecimal: string;
+                                            }
+                                          ).$numberDecimal
+                                        ).toLocaleString("vi-VN")
+                                  } VNĐ`
                                 : "Contact for Price"}
                             </span>
                             <span className="text-lg text-gray-600">
@@ -362,13 +416,17 @@ const HomePage: React.FC = () => {
                             </span>
                           </div>
                           <motion.button
-                            onClick={() => handleBookNow(service._id)}
+                            onClick={() =>
+                              handleBookNow(service._id, service.productType)
+                            }
                             className="px-6 py-3 bg-yellow-400 text-gray-900 rounded-full font-semibold hover:bg-yellow-300 transition duration-300 ease-in-out transform"
                             variants={buttonVariants}
                             whileHover="hover"
                             whileTap="tap"
                           >
-                            Book Now
+                            {service.productType === "purchase"
+                              ? "Xem chi tiết"
+                              : "Đặt lịch"}
                           </motion.button>
                         </div>
                       </div>
@@ -376,7 +434,8 @@ const HomePage: React.FC = () => {
                   ))
               ) : (
                 <p className="text-gray-600 text-center col-span-3">
-                  Our luxurious services are being prepared. Please check back soon.
+                  Our luxurious services are being prepared. Please check back
+                  soon.
                 </p>
               )}
             </div>
@@ -398,13 +457,17 @@ const HomePage: React.FC = () => {
           {/* Enhanced Therapist Section with Consistent Typography */}
           <div className="container mx-auto px-4 mt-16">
             <h3 className="text-4xl font-extrabold text-gray-900 mb-12 text-center bg-gradient-to-r from-yellow-400 to-pink-500 bg-clip-text text-transparent">
-              Bác sĩ hàng đầu 
+              Bác sĩ hàng đầu
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {loadingTherapists ? (
-                <p className="text-center text-gray-600 col-span-3">Loading specialists...</p>
+                <p className="text-center text-gray-600 col-span-3">
+                  Loading specialists...
+                </p>
               ) : therapistError ? (
-                <p className="text-center text-red-600 col-span-3">{therapistError}</p>
+                <p className="text-center text-red-600 col-span-3">
+                  {therapistError}
+                </p>
               ) : isAuthenticated && therapists.length > 0 ? (
                 therapists.map((therapist) => (
                   <motion.div
@@ -421,7 +484,8 @@ const HomePage: React.FC = () => {
                         alt={therapist.name}
                         className="w-full h-56 object-cover rounded-t-lg"
                         onError={(e) => {
-                          (e.target as HTMLImageElement).src = "/default-avatar.png";
+                          (e.target as HTMLImageElement).src =
+                            "/default-avatar.png";
                         }}
                       />
                       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-gray-900/30 rounded-t-lg"></div>
@@ -434,7 +498,8 @@ const HomePage: React.FC = () => {
                         Skincare Specialist
                       </p>
                       <p className="text-base text-gray-600 font-medium line-clamp-2">
-                        {therapist.Description || "Chuyên gia tận tâm với nhiều năm kinh nghiệm trong lĩnh vực chăm sóc da."}
+                        {therapist.Description ||
+                          "Chuyên gia tận tâm với nhiều năm kinh nghiệm trong lĩnh vực chăm sóc da."}
                       </p>
                     </div>
                     <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-yellow-400 to-pink-500 opacity-0 hover:opacity-10 transition-opacity duration-300"></div>
@@ -484,8 +549,12 @@ const HomePage: React.FC = () => {
                         className="w-full h-48 object-cover"
                       />
                       <div className="p-4">
-                        <h3 className="text-xl font-semibold text-gray-900">{blog.title}</h3>
-                        <p className="text-gray-600 mt-2 line-clamp-2">{blog.description}</p>
+                        <h3 className="text-xl font-semibold text-gray-900">
+                          {blog.title}
+                        </h3>
+                        <p className="text-gray-600 mt-2 line-clamp-2">
+                          {blog.description}
+                        </p>
                         <div className="mt-4">
                           <motion.button
                             onClick={() => navigate(`/blog/${blog.id}`)}
@@ -514,7 +583,9 @@ const HomePage: React.FC = () => {
                 </div>
               </>
             ) : (
-              <p className="text-gray-600 text-center">No blog posts available.</p>
+              <p className="text-gray-600 text-center">
+                No blog posts available.
+              </p>
             )}
           </div>
         </motion.section>

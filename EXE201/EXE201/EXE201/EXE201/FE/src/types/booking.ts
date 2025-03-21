@@ -14,6 +14,7 @@ export type Service = {
   };
   createDate?: string;
   __v?: number;
+  productType: "purchase" | "consultation";q
 };
 
 export type Therapist = {
