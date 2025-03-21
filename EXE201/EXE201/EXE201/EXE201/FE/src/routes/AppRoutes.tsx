@@ -41,7 +41,6 @@ import ManageService from "../pages/admin/ManageService";
 //customer
 import ProfileUser from "../pages/Customer/Customer_profile";
 import ManageVoucher from "../pages/admin/ManageVoucher";
-import Layoutservice from "../layout/Layoutservice";
 import Booking from "../pages/Home/Booking";
 import BookingService from "../pages/Home/BookingService";
 
@@ -66,7 +65,6 @@ const AppRoutes: React.FC = () => {
           <Route path="/booking_services" element={<BookingService/>}/>
           <Route path="/booking_services/booking" element={<Booking />} />
           <Route path="/booking_services/services" element={<ServicePage />} />
-          <Route path="/booking_services" element={<Layoutservice />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/test" element={<TestPage />} />
           {/* <Route path="/blog-details/:id" element={<BlogPage />} /> */}

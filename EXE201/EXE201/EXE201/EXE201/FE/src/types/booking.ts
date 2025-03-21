@@ -41,6 +41,7 @@ export type Booking = {
   totalPrice?: number;
   status: "pending" | "checked-in" | "completed" | "checked-out" | "cancel";
   action?: "checkin" | "checkout" | null; // From EnhancedBookingPage
+  productType: "purchase" | "consultation";
 };
 
 export type Blog = {

@@ -114,11 +114,15 @@ const EnhancedBookingPage: React.FC = () => {
     return `${priceValue.toLocaleString("vi-VN")} VNĐ`;
   };
 
-  const calculateTotal = (): number => {
-    return cart
-      .filter((item) => item.status === "completed") // Updated to "completed"
-      .reduce((sum, item) => sum + (item.totalPrice || 0), 0);
-  };
+ const calculateTotal = (): number => {
+   return cart
+     .filter(
+       (item) =>
+         item.status === "completed" && item.productType === "consultation"
+     )
+     .reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+ };
+
 
   const formatTotal = (): string => {
     const totalValue = calculateTotal();
@@ -168,11 +172,10 @@ const EnhancedBookingPage: React.FC = () => {
       return;
     }
 
-    const completedItems = cart.filter((item) => item.status === "completed"); // Updated to "completed"
-    if (completedItems.length === 0) {
-      toast.error("No completed items in the cart to checkout.");
-      return;
-    }
+    const completedItems = cart.filter(
+      (item) =>
+        item.status === "completed" && item.productType === "consultation"
+    );
 
     setShowCheckoutModal(true);
 
@@ -220,16 +223,23 @@ const EnhancedBookingPage: React.FC = () => {
 
       await Promise.all(
         cart
-          .filter((item) => item.status === "completed") // Updated to "completed"
+          .filter(
+            (item) =>
+              item.status === "completed" && item.productType === "consultation"
+          )
           .map((item) =>
-            fetch(`${API_BASE_URL}/cart/${item.CartID}`, {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-                "x-auth-token": token,
-              },
-              body: JSON.stringify({ status: "checked-out" }),
-            }).then((res) => {
+            fetch(
+              `${API_BASE_URL}/cart/${item.CartID}`,
+
+              {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-auth-token": token,
+                },
+                body: JSON.stringify({ status: "checked-out" }),
+              }
+            ).then((res) => {
               if (!res.ok)
                 throw new Error(`Failed to update cart item ${item.CartID}`);
             })
@@ -412,7 +422,11 @@ const EnhancedBookingPage: React.FC = () => {
                 </h3>
                 <ul className="space-y-4">
                   {cart
-                    .filter((item) => item.status === "completed") // Updated to "completed"
+                    .filter(
+                      (item) =>
+                        item.status === "completed" &&
+                        item.productType === "consultation"
+                    )
                     .map((item, index) => (
                       <li
                         key={item.CartID || index}
@@ -678,7 +692,7 @@ const EnhancedBookingPage: React.FC = () => {
                 <p className="text-gray-600 text-center">Loading ratings...</p>
               ) : ratings.length === 0 ? (
                 <p className="text-gray-600 text-center">
-                 Chưa có đánh giá về dịch vụ này
+                  Chưa có đánh giá về dịch vụ này
                 </p>
               ) : (
                 <div className="space-y-6">

@@ -5,6 +5,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Layout from "../../layout/Layout";
 import { useAuth } from "../../context/AuthContext";
+import ServicePage from "./Servicepage";
+import Servicepagebooking from "./Servicepagebooking";
 
 interface Service {
   _id: string;
@@ -103,28 +105,7 @@ const BookingService: React.FC = () => {
             <h3 className="text-3xl font-semibold mb-6 text-gray-700">
               Tư vấn
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {services
-                .filter((service) => service.productType === "consultation")
-                .map((service) => (
-                  <motion.div
-                    key={service._id}
-                    className="bg-white p-6 rounded-lg shadow-lg"
-                  >
-                    <h3 className="text-2xl font-semibold text-gray-800 mb-4">
-                      {service.name}
-                    </h3>
-                    <img
-                      className="w-full h-48 object-cover rounded-lg mb-4"
-                      src={service.image || "/default-image.jpg"}
-                      alt={service.name}
-                    />
-                    <p className="text-lg font-bold text-gray-900 mb-2">
-                      {formatPrice(service.price)}
-                    </p>
-                  </motion.div>
-                ))}
-            </div>
+            <Servicepagebooking/>
           </>
         )}
       </div>

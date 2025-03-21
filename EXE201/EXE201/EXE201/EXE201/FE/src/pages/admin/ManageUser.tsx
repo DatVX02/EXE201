@@ -88,92 +88,95 @@ function ManageUser() {
 
   const formItems = (editingId: string | null) => {
     // Lấy thông tin user đang edit từ danh sách users
-    const editingUser = editingId ? users.find((user: any) => user._id === editingId) : null;
-    
+    const editingUser = editingId
+      ? users.find((user: any) => user._id === editingId)
+      : null;
+
     return (
-    <>
-      <Form.Item
-        name="username"
-        label="Username"
-        rules={[{ required: true, message: "Please input username" }]}
-      >
-        <Input />
-      </Form.Item>
-      {!editingId && (
+      <>
         <Form.Item
-          name="password"
-          label="Password"
+          name="username"
+          label="Username"
+          rules={[{ required: true, message: "Please input username" }]}
+        >
+          <Input />
+        </Form.Item>
+        {!editingId && (
+          <Form.Item
+            name="password"
+            label="Password"
+            rules={[
+              { required: true, message: "Please input password" },
+              { min: 8, message: "Password must be at least 8 characters" },
+            ]}
+          >
+            <Input.Password />
+          </Form.Item>
+        )}
+        <Form.Item
+          name="email"
+          label="Email"
           rules={[
-            { required: true, message: "Please input password" },
-            { min: 8, message: "Password must be at least 8 characters" },
+            { required: true, message: "Please input email" },
+            {
+              pattern: /^[a-zA-Z0-9._%+-]+@gmail\.com$/,
+              message: "Email must be in the format of @gmail.com",
+            },
           ]}
         >
-          <Input.Password />
+          <Input />
         </Form.Item>
-      )}
-      <Form.Item
-        name="email"
-        label="Email"
-        rules={[
-          { required: true, message: "Please input email" },
-          {
-            pattern: /^[a-zA-Z0-9._%+-]+@gmail\.com$/,
-            message: "Email must be in the format of @gmail.com",
-          },
-        ]}
-      >
-        <Input />
-      </Form.Item>
-      <Form.Item
-        name="phone_number"
-        label="Phone Number"
-        rules={[
-          { required: true, message: "Please input phone number" },
-          {
-            pattern: /^\d{10}$/,
-            message: "Phone number must be exactly 10 digits",
-          },
-        ]}
-      >
-        <Input />
-      </Form.Item>
-      <Form.Item
-        name="gender"
-        label="Gender"
-        rules={[{ required: true, message: "Please select gender" }]}
-      >
-        <Select>
-          <Select.Option value="male">Male</Select.Option>
-          <Select.Option value="female">Female</Select.Option>
-        </Select>
-      </Form.Item>
-      <Form.Item
-        name="Description"
-        label="Description"
-        rules={[{ required: true, message: "Please input description" }]}
-      >
-        <Input />
-      </Form.Item>
-      <Form.Item
-        name="address"
-        label="Address"
-        rules={[{ required: true, message: "Please input address" }]}
-      >
-        <Input />
-      </Form.Item>
-      <Form.Item
-        name="role"
-        label="Role"
-        rules={[{ required: true, message: "Please select role" }]}
-      >
-        <Select disabled={editingUser?.role === 'admin'}>
-          <Select.Option value="admin">Admin</Select.Option>
-          <Select.Option value="skincare_staff">Skincare Staff</Select.Option>
-          <Select.Option value="staff">Staff</Select.Option>
-        </Select>
-      </Form.Item>
-    </>
-  )};
+        <Form.Item
+          name="phone_number"
+          label="Phone Number"
+          rules={[
+            { required: true, message: "Please input phone number" },
+            {
+              pattern: /^\d{10}$/,
+              message: "Phone number must be exactly 10 digits",
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="gender"
+          label="Gender"
+          rules={[{ required: true, message: "Please select gender" }]}
+        >
+          <Select>
+            <Select.Option value="male">Male</Select.Option>
+            <Select.Option value="female">Female</Select.Option>
+          </Select>
+        </Form.Item>
+        <Form.Item
+          name="Description"
+          label="Description"
+          rules={[{ required: true, message: "Please input description" }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="address"
+          label="Address"
+          rules={[{ required: true, message: "Please input address" }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="role"
+          label="Role"
+          rules={[{ required: true, message: "Please select role" }]}
+        >
+          <Select disabled={editingUser?.role === "admin"}>
+            <Select.Option value="admin">Admin</Select.Option>
+            <Select.Option value="skincare_staff">Doctor staff</Select.Option>
+            <Select.Option value="staff">Staff</Select.Option>
+          </Select>
+        </Form.Item>
+      </>
+    );
+  };
 
   return (
     <div>
