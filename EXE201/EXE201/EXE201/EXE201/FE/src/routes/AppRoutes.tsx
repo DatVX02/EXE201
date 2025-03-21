@@ -12,7 +12,7 @@ import SettingPage from "../pages/Home/Settingpage";
 import ContactPage from "../pages/Home/ContactPage";
 import BlogPage from "../pages/Home/Blogpage";
 import TestPage from "../pages/Home/SkinAssessmentQuiz";
-
+import BlogDetailPage from "../pages/Home/BlogDetailPage";
 //manager
 import ManageUser from "../pages/admin/ManageUser";
 import ManageCategory from "../pages/admin/ManageCategory";
@@ -43,7 +43,8 @@ import ProfileUser from "../pages/Customer/Customer_profile";
 import ManageVoucher from "../pages/admin/ManageVoucher";
 import Booking from "../pages/Home/Booking";
 import BookingService from "../pages/Home/BookingService";
-
+import BookingDetail from "../pages/Home/BookingDetail";
+import Cart from "../pages/Home/Cart";
 const AppRoutes: React.FC = () => {
   return (
     <AuthProvider>
@@ -62,10 +63,14 @@ const AppRoutes: React.FC = () => {
           <Route path="/settings" element={<SettingPage />} />
           <Route path="/booking/:id" element={<BookingPage />} />
           <Route path="/contact" element={<ContactPage />} />{" "}
-          <Route path="/booking_services" element={<BookingService/>}/>
+          <Route path="/booking_services" element={<BookingService />} />
           <Route path="/booking_services/booking" element={<Booking />} />
           <Route path="/booking_services/services" element={<ServicePage />} />
+          <Route path="/booking_services/:id" element={<BookingDetail />} />
           <Route path="/blog" element={<BlogPage />} />
+          <Route path="/blog/:_id" element={<BlogDetailPage />} />
+          <Route path="/cart" element={<Cart />} />
+          {/* <Route path="/blog-details/:id" element={<BlogPage />} /> */}
           <Route path="/test" element={<TestPage />} />
           {/* <Route path="/blog-details/:id" element={<BlogPage />} /> */}
           <Route path="/admin" element={<AdminDashboard />}>

@@ -97,6 +97,14 @@ const BookingService: React.FC = () => {
                     <p className="text-lg font-bold text-gray-900 mb-2">
                       {formatPrice(service.price)}
                     </p>
+                    <button
+                      onClick={() =>
+                        navigate(`/booking_services/${service._id}`)
+                      }
+                      className="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    >
+                      Xem chi tiết
+                    </button>
                   </motion.div>
                 ))}
             </div>
@@ -105,7 +113,7 @@ const BookingService: React.FC = () => {
             <h3 className="text-3xl font-semibold mb-6 text-gray-700">
               Tư vấn
             </h3>
-            <Servicepagebooking/>
+            <Servicepagebooking />
           </>
         )}
       </div>

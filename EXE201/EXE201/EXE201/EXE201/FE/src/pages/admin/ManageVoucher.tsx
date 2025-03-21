@@ -23,14 +23,15 @@ function ManageVoucher() {
   const formItems = (
     <>
       <Form.Item
-        name='code'
-        label=' Code Name'
-        rules={[{ required: true, message: "Please input code name" }]}>
+        name="code"
+        label=" Code Name"
+        rules={[{ required: true, message: "Please input code name" }]}
+      >
         <Input />
       </Form.Item>
       <Form.Item
-        name='discountPercentage'
-        label='Discount Amount'
+        name="discountPercentage"
+        label="Discount Amount"
         rules={[
           { required: true, message: "Please input discount amount" },
           {
@@ -39,7 +40,8 @@ function ManageVoucher() {
             max: 100,
             message: "Discount must be between 1-100",
           },
-        ]}>
+        ]}
+      >
         <InputNumber
           min={1}
           max={100}
@@ -48,10 +50,11 @@ function ManageVoucher() {
         />
       </Form.Item>
       <Form.Item
-        name='expiryDate'
-        label='Expiry Date'
-        rules={[{ required: true, message: "Please input expiry date" }]}>
-        <Input type='date' />
+        name="expiryDate"
+        label="Expiry Date"
+        rules={[{ required: true, message: "Please input expiry date" }]}
+      >
+        <Input type="date" />
       </Form.Item>
     </>
   );
@@ -62,7 +65,7 @@ function ManageVoucher() {
         title={title}
         columns={columns}
         formItems={formItems}
-        apiEndpoint='/vouchers'
+        apiEndpoint="/vouchers"
       />
     </div>
   );

@@ -9,7 +9,7 @@ import { Divider, Dropdown, Menu } from "antd";
 import { ChevronDown, User } from "lucide-react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { ShoppingCartOutlined } from "@ant-design/icons";
 const Header: React.FC = () => {
   const [user, setUser] = useState<{ username: string; role?: string } | null>(
     null
@@ -215,6 +215,9 @@ const Header: React.FC = () => {
         </nav>
 
         <div className="flex items-center space-x-4">
+          <Link to="/cart" className="hover:text-yellow-300 transition duration-300">
+            <ShoppingCartOutlined className="text-xl" />{" "}
+          </Link>
           <button
             title="Book your appointment now"
             onClick={handleBookNow}

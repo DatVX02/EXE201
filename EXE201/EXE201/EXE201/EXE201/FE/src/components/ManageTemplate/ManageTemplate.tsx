@@ -5,7 +5,7 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useAuth } from "../../context/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 
-interface Columns {
+interface Columns { 
   title: string;
   dataIndex: string;
   key: string;

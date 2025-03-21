@@ -41,11 +41,11 @@ const items: MenuItem[] = [
     "/admin/service-management",
     <ProductOutlined />
   ),
-  getItem(
-    "VoucherManagement",
-    "/admin/voucher-management",
-    <MoneyCollectOutlined />
-  ),
+  // getItem(
+  //   "VoucherManagement",
+  //   "/admin/voucher-management",
+  //   <MoneyCollectOutlined />
+  // ),
 
   getItem("CategoryManagement", "/admin/category-management", <ReadOutlined />),
 

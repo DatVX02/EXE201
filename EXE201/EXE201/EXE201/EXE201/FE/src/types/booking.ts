@@ -45,9 +45,10 @@ export type Booking = {
 };
 
 export type Blog = {
-  id: number;
+  createdAt: number;
+  _id: string;
   title: string;
-  author: string;
+  createName: string;
   description: string;
   image?: string;
   content?: string;
