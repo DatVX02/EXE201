@@ -124,7 +124,7 @@ const BlogPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            Skincare Blog
+            Tin tức về bệnh tiểu đường
             <div className="mt-2 h-1 w-24 bg-gradient-to-r from-yellow-600 to-white-400 rounded mx-auto"></div>
           </motion.h1>
           {/* Featured Post */}
