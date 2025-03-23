@@ -1,71 +1,113 @@
 const express = require("express");
 const router = express.Router();
+const axios = require("axios");
 const payOS = require("../utils/payos");
 const Payment = require("../models/Payment");
-
+const Booking = require("../models/booking");
 //API tạo link thanh toán
 router.post("/create", async (req, res) => {
-  const { orderName, description, returnUrl, cancelUrl, amount } = req.body;
+  const {
+    cart,
+    customerName,
+    customerEmail,
+    customerPhone,
+    paymentMethod,
+    orderName = "Đơn hàng sản phẩm",
+    description = "Thanh toán đơn hàng",
+    returnUrl,
+    cancelUrl,
+    amount,
+  } = req.body;
 
-  if (
-    !orderName ||
-    !description ||
-    !returnUrl ||
-    !cancelUrl ||
-    !amount ||
-    amount <= 0
-  ) {
+  // Kiểm tra dữ liệu đầu vào
+  if (!cart || cart.length === 0 || !amount || !returnUrl || !cancelUrl) {
     return res.status(400).json({
       error: -1,
-      message: "Missing or invalid required fields",
+      message: "Thiếu thông tin đơn hàng hoặc giỏ hàng trống.",
     });
   }
 
-  // Giới hạn mô tả tối đa 25 ký tự
   const truncatedDescription =
     description.length > 25 ? description.substring(0, 25) : description;
 
   const orderCode = Number(String(new Date().getTime()).slice(-6));
 
   try {
-    const paymentLinkRes = await payOS.createPaymentLink({
-      orderCode,
-      amount,
-      description: truncatedDescription,
-      returnUrl,
-      cancelUrl,
-      orderName,
-    });
+    // 🔹 Lưu từng sản phẩm booking vào DB
+    for (const item of cart) {
+      const price =
+        typeof item.price === "object"
+          ? parseFloat(item.price.$numberDecimal)
+          : item.price;
 
-    // 🔹 Lưu vào MongoDB
-    const newPayment = new Payment({
-      orderCode,
-      orderName,
-      amount,
-      description: truncatedDescription,
-      status: "pending",
-      returnUrl,
-      cancelUrl,
-    });
+      const newBooking = new Booking({
+        service_id: item._id,
+        service_name: item.name,
+        customerName,
+        customerEmail,
+        customerPhone,
+        quantity: item.quantity,
+        price,
+        paymentMethod,
+        productType: item.productType || "purchase",
+        orderCode, // ✅ bắt buộc để cập nhật về sau
+      });
+      await newBooking.save();
+    }
 
-    await newPayment.save(); // Lưu vào MongoDB
-
-    return res.json({
-      error: 0,
-      message: "Success",
-      data: {
-        checkoutUrl: paymentLinkRes.checkoutUrl,
-        qrCode: paymentLinkRes.qrCode,
-        orderCode: paymentLinkRes.orderCode,
-        amount: paymentLinkRes.amount,
+    // 🔹 Nếu là phương thức PayOS → gọi API tạo link
+    if (paymentMethod === "payos") {
+      const paymentLinkRes = await payOS.createPaymentLink({
+        orderCode,
+        amount,
         description: truncatedDescription,
-      },
-    });
+        returnUrl,
+        cancelUrl,
+        orderName,
+      });
+
+      // 🔹 Lưu payment
+      const newPayment = new Payment({
+        orderCode,
+        orderName,
+        amount,
+        description: truncatedDescription,
+        status: "pending",
+        returnUrl,
+        cancelUrl,
+      });
+
+      await newPayment.save();
+
+      return res.json({
+        error: 0,
+        message: "Tạo thanh toán thành công",
+        data: {
+          checkoutUrl: paymentLinkRes.checkoutUrl,
+          qrCode: paymentLinkRes.qrCode,
+          orderCode: paymentLinkRes.orderCode,
+          amount: paymentLinkRes.amount,
+          description: truncatedDescription,
+        },
+      });
+    } else {
+      // 🔹 Nếu thanh toán COD hoặc Bank → không cần tạo link
+      return res.json({
+        error: 0,
+        message: "Đơn hàng đã được lưu. Không cần thanh toán online.",
+        data: {
+          checkoutUrl: returnUrl,
+        },
+      });
+    }
   } catch (error) {
-    console.error("Create Payment Error:", error);
+    console.error(
+      "❌ Lỗi khi tạo thanh toán:",
+      error.response?.data || error.message
+    );
     return res.status(500).json({
       error: -1,
-      message: "Failed to create payment link",
+      message: "Không thể xử lý thanh toán",
       data: error.message,
     });
   }
@@ -123,6 +165,12 @@ router.put("/update/:orderCode", async (req, res) => {
         error: -1,
         message: "Order not found",
       });
+    }
+    if (status === "success") {
+      const relatedBookings = await Booking.find({ orderCode });
+      console.log("Booking cần cập nhật:", relatedBookings);
+
+      await Booking.updateMany({ orderCode }, { status: "checked-out" });
     }
 
     return res.json({

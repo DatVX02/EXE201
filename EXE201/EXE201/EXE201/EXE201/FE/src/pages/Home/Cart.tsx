@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Layout from "../../layout/Layout";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 interface CartItem {
   _id: string;
   name: string;
@@ -21,7 +22,7 @@ const Cart: React.FC = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate("/login"); 
+      navigate("/login");
       return;
     }
 
@@ -71,6 +72,46 @@ const Cart: React.FC = () => {
         : item.price;
     return acc + price * item.quantity;
   }, 0);
+
+  const handleCheckout = async () => {
+    try {
+      const cartWithProductType = cart.map((item) => ({
+        ...item,
+        productType: "purchase", // hoặc lấy từ DB nếu đã có
+      }));
+
+      const response = await fetch(
+        "http://localhost:5000/api/payments/create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cart: cartWithProductType,
+            orderName: "Thanh toán đơn hàng",
+            description: "Đơn hàng mua sản phẩm",
+            returnUrl: "http://localhost:3000/payment-success",
+            cancelUrl: "http://localhost:3000/payment-cancel",
+            amount: total,
+            paymentMethod: "payos", // hoặc để chọn sau
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok && data?.data?.checkoutUrl) {
+        // clear cart nếu muốn
+        // localStorage.removeItem("cart");
+        window.location.href = data.data.checkoutUrl;
+      } else {
+        alert(data.message || "Lỗi khi tạo đơn hàng.");
+      }
+    } catch (error) {
+      console.error("Lỗi tạo đơn hàng:", error);
+      alert("Không thể kết nối đến máy chủ.");
+    }
+  };
 
   return (
     <Layout>
@@ -153,9 +194,11 @@ const Cart: React.FC = () => {
             </div>
 
             <div className="text-right mt-4">
-              <button className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">
-                Tiến hành thanh toán
-              </button>
+              <Link to="/checkout-service">
+                <button className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">
+                  Tiến hành thanh toán
+                </button>
+              </Link>
             </div>
           </>
         )}

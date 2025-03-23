@@ -77,9 +77,9 @@ const Header: React.FC = () => {
       case "skincare_staff":
         return "/therapist";
       case "user":
-        return "/dashboard";
+        return "/order_history";
       default:
-        return "/dashboard";
+        return "/order_history";
     }
   };
 
@@ -100,7 +100,7 @@ const Header: React.FC = () => {
           <span>Lịch sử đặt hàng</span>
         </div>
       </Menu.Item>
-      <Menu.Item key="settings" className="hover:bg-yellow-50">
+      {/* <Menu.Item key="settings" className="hover:bg-yellow-50">
         <Link
           to="/settings"
           className="px-4 py-2 flex items-center gap-2 text-gray-700"
@@ -121,7 +121,7 @@ const Header: React.FC = () => {
           </svg>
           <span>Cài đặt </span>
         </Link>
-      </Menu.Item>
+      </Menu.Item> */}
       <div className="border-t border-gray-100 my-1"></div>
       <Menu.Item
         key="logout"

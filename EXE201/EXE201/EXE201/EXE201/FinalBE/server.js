@@ -15,6 +15,7 @@ const reviewRoutes = require("./routes/reviewRoutes");
 const questionRoutes = require("./routes/questionRoutes");
 const ratingRoutes = require("./routes/ratingRoutes");
 const blogRoutes = require("./routes/blogRoutes");
+const book = require("./routes/bookingRoutes");
 const app = express();
 const path = require("path");
 // Middleware
@@ -68,6 +69,9 @@ app.use("/api/blogs", blogRoutes);
 
 //rating 
 app.use("/api/ratings", ratingRoutes);
+
+app.use("/api/booking", book);
+
 // Connect DB
 mongoose
   .connect(process.env.MONGO_URI, {

@@ -134,7 +134,7 @@ const CustomerProfile: React.FC = () => {
   };
 
   return (
-    <Layout>
+    
       <div className="container mx-auto p-6">
         <h1 className="text-3xl font-bold text-center mb-6">Lịch Sử Đơn Hàng</h1>
 
@@ -186,9 +186,8 @@ const CustomerProfile: React.FC = () => {
             </table>
           )}
         </div>
-      </div>
 
-      {/* Modal đánh giá */}
+  
       <Modal
         title="Đánh Giá Dịch Vụ"
         open={isModalOpen}
@@ -208,7 +207,7 @@ const CustomerProfile: React.FC = () => {
           className="mt-4"
         />
       </Modal>
-    </Layout>
+      </div>
   );
 };
 

@@ -45,6 +45,8 @@ import Booking from "../pages/Home/Booking";
 import BookingService from "../pages/Home/BookingService";
 import BookingDetail from "../pages/Home/BookingDetail";
 import Cart from "../pages/Home/Cart";
+import CheckOutService from "../pages/Home/CheckOutService";
+import Customer_layout from "../pages/Customer/Customer_layout";
 const AppRoutes: React.FC = () => {
   return (
     <AuthProvider>
@@ -70,6 +72,7 @@ const AppRoutes: React.FC = () => {
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:_id" element={<BlogDetailPage />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout-service" element={<CheckOutService />} />
           {/* <Route path="/blog-details/:id" element={<BlogPage />} /> */}
           <Route path="/test" element={<TestPage />} />
           {/* <Route path="/blog-details/:id" element={<BlogPage />} /> */}
@@ -103,6 +106,7 @@ const AppRoutes: React.FC = () => {
           </Route>
           {/* Customer router */}
           <Route path="/dashboard" element={<ProfileUser />} />
+          <Route path="/order_history" element={<Customer_layout />} />
           {/* Login */}
           <Route
             path="/login"
