@@ -35,7 +35,7 @@ const CustomerBooking: React.FC = () => {
         (item: Booking) => item.productType === "purchase"
       );
       setBookings(filtered);
-    } catch (err) {
+    } catch {
       setError("Không thể tải dữ liệu lịch đặt.");
     } finally {
       setLoading(false);

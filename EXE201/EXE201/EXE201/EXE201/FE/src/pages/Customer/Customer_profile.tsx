@@ -65,7 +65,7 @@ const CustomerProfile: React.FC = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Không thể tải đơn hàng.");
+        throw new Error("Không có đơn hàng nào.");
       }
 
       const data: Booking[] = await response.json();
@@ -134,60 +134,63 @@ const CustomerProfile: React.FC = () => {
   };
 
   return (
-    
-      <div className="container mx-auto p-6">
-        <h1 className="text-3xl font-bold text-center mb-6">Lịch Sử Đơn Hàng</h1>
+    <div className="container mx-auto p-6">
+      <h1 className="text-3xl font-bold text-center mb-6">Lịch Sử Đơn Hàng</h1>
 
-        <div className="overflow-x-auto min-h-[500px]">
-          {loading ? (
-            <Skeleton active paragraph={{ rows: 10 }} />
-          ) : error ? (
-            <p className="text-center text-red-600">{error}</p>
-          ) : orders.length === 0 ? (
-            <p className="text-center text-gray-600">Không có đơn hàng nào</p>
-          ) : (
-            <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="py-3 px-4 border-b text-left">Mã Đơn</th>
-                  <th className="py-3 px-4 border-b text-left">Tên Dịch Vụ</th>
-                  <th className="py-3 px-4 border-b text-left">Khách Hàng</th>
-                  <th className="py-3 px-4 border-b text-left">Trạng Thái</th>
-                  <th className="py-3 px-4 border-b text-left">Đánh Giá</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order) => (
-                  <tr key={order.CartID} className="hover:bg-gray-50">
-                    <td className="py-2 px-4 border-b">{order.BookingID || "N/A"}</td>
-                    <td className="py-2 px-4 border-b">{order.serviceName}</td>
-                    <td className="py-2 px-4 border-b">{order.customerName}</td>
-                    <td className="py-2 px-4 border-b">
-                      <span
-                        className={`px-2 py-0.5 rounded-full text-sm ${
-                          statusStyles[order.status]?.bg || "bg-gray-100"
-                        } ${statusStyles[order.status]?.text || "text-gray-800"}`}
+      <div className="overflow-x-auto min-h-[500px]">
+        {loading ? (
+          <Skeleton active paragraph={{ rows: 10 }} />
+        ) : error ? (
+          <p className="text-center text-gray-600">{error}</p>
+        ) : orders.length === 0 ? (
+          <p className="text-center text-gray-600">Không có đơn hàng nào</p>
+        ) : (
+          <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="py-3 px-4 border-b text-left">Mã Đơn</th>
+                <th className="py-3 px-4 border-b text-left">Tên Dịch Vụ</th>
+                <th className="py-3 px-4 border-b text-left">Khách Hàng</th>
+                <th className="py-3 px-4 border-b text-left">Trạng Thái</th>
+                <th className="py-3 px-4 border-b text-left">Đánh Giá</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((order) => (
+                <tr key={order.CartID} className="hover:bg-gray-50">
+                  <td className="py-2 px-4 border-b">
+                    {order.BookingID || "N/A"}
+                  </td>
+                  <td className="py-2 px-4 border-b">{order.serviceName}</td>
+                  <td className="py-2 px-4 border-b">{order.customerName}</td>
+                  <td className="py-2 px-4 border-b">
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-sm ${
+                        statusStyles[order.status]?.bg || "bg-gray-100"
+                      } ${statusStyles[order.status]?.text || "text-gray-800"}`}
+                    >
+                      {statusStyles[order.status]?.icon || "⏳"} {order.status}
+                    </span>
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    {order.status === "checked-out" ? (
+                      <Button
+                        type="primary"
+                        onClick={() => openReviewModal(order)}
                       >
-                        {statusStyles[order.status]?.icon || "⏳"} {order.status}
-                      </span>
-                    </td>
-                    <td className="py-2 px-4 border-b">
-                      {order.status === "checked-out" ? (
-                        <Button type="primary" onClick={() => openReviewModal(order)}>
-                          Đánh Giá
-                        </Button>
-                      ) : (
-                        <span className="text-gray-400">Chưa thể đánh giá</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+                        Đánh Giá
+                      </Button>
+                    ) : (
+                      <span className="text-gray-400">Chưa thể đánh giá</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
 
-  
       <Modal
         title="Đánh Giá Dịch Vụ"
         open={isModalOpen}
@@ -207,7 +210,7 @@ const CustomerProfile: React.FC = () => {
           className="mt-4"
         />
       </Modal>
-      </div>
+    </div>
   );
 };
 
