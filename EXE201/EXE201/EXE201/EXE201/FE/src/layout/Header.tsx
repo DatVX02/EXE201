@@ -3,20 +3,24 @@
 import type React from "react";
 import { useState, useEffect } from "react";
 import "../../src/index.css";
-import Logo from "../assets/Logo.png";
+import Logo from "../assets/logodiabecare_1.png";
 import { Link, useNavigate } from "react-router-dom";
 import { Divider, Dropdown, Menu } from "antd";
 import { ChevronDown, User } from "lucide-react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ShoppingCartOutlined } from "@ant-design/icons";
+
 const Header: React.FC = () => {
   const [user, setUser] = useState<{ username: string; role?: string } | null>(
     null
   );
   const [role, setRole] = useState<string | null>(null);
-  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+  const [loadingSearch, setLoadingSearch] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -27,15 +31,6 @@ const Header: React.FC = () => {
     }
   }, []);
 
-  const handleBookNow = () => {
-    if (!user) {
-      toast.error("Bạn cần đăng nhập trước khi đặt dịch vụ!");
-      setTimeout(() => navigate("/login"), 3000);
-    } else {
-      navigate("/booking_services/services");
-    }
-  };
-
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("authToken");
@@ -43,6 +38,66 @@ const Header: React.FC = () => {
     setRole(null);
     navigate("/login");
     toast.success("Đã đăng xuất thành công!");
+  };
+
+  const handleSearchChange = async (value: string) => {
+    setSearchQuery(value);
+
+    if (value.trim() === "") {
+      setFilteredProducts([]);
+      return;
+    }
+
+    setLoadingSearch(true);
+    try {
+      const response = await fetch("http://localhost:5000/api/products/");
+      const products = await response.json();
+
+      const filtered = products.filter((product: any) =>
+        product.name.toLowerCase().includes(value.toLowerCase())
+      );
+
+      setFilteredProducts(filtered);
+    } catch (error) {
+      console.error("Lỗi khi tìm kiếm sản phẩm:", error);
+    } finally {
+      setLoadingSearch(false);
+    }
+  };
+
+  const handleSelectProduct = (product: any) => {
+    setSearchQuery("");
+    setFilteredProducts([]);
+
+    if (product.productType === "purchase") {
+      navigate(`/booking_services/${product._id}`);
+    } else if (product.productType === "consultation") {
+      navigate(`/booking/${product._id}`);
+    } else {
+      toast.error("Loại sản phẩm không xác định!");
+    }
+  };
+
+  const getDashboardLink = () => {
+    const storedUser = localStorage.getItem("user");
+    const userRole = storedUser ? JSON.parse(storedUser).role : null;
+
+    switch (userRole) {
+      case "admin":
+        return "/admin";
+      case "staff":
+        return "/staff";
+      case "skincare_staff":
+        return "/therapist";
+      case "user":
+        return "/order_history";
+      default:
+        return "/order_history";
+    }
+  };
+
+  const handleProfileClick = () => {
+    navigate(getDashboardLink());
   };
 
   const storeMenu = (
@@ -65,28 +120,6 @@ const Header: React.FC = () => {
       </Menu.Item>
     </Menu>
   );
-  const getDashboardLink = () => {
-    const storedUser = localStorage.getItem("user");
-    const userRole = storedUser ? JSON.parse(storedUser).role : null;
-
-    switch (userRole) {
-      case "admin":
-        return "/admin";
-      case "staff":
-        return "/staff";
-      case "skincare_staff":
-        return "/therapist";
-      case "user":
-        return "/order_history";
-      default:
-        return "/order_history";
-    }
-  };
-
-  const handleProfileClick = () => {
-    console.log("User role from localStorage:", localStorage.getItem("user"));
-    navigate(getDashboardLink());
-  };
 
   const userMenu = (
     <Menu className="bg-white rounded-lg shadow-lg border border-gray-200 py-1 w-48">
@@ -100,28 +133,6 @@ const Header: React.FC = () => {
           <span>Lịch sử đặt hàng</span>
         </div>
       </Menu.Item>
-      {/* <Menu.Item key="settings" className="hover:bg-yellow-50">
-        <Link
-          to="/settings"
-          className="px-4 py-2 flex items-center gap-2 text-gray-700"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-          </svg>
-          <span>Cài đặt </span>
-        </Link>
-      </Menu.Item> */}
       <div className="border-t border-gray-100 my-1"></div>
       <Menu.Item
         key="logout"
@@ -151,14 +162,14 @@ const Header: React.FC = () => {
   );
 
   return (
-    <header className="bg-[#00B389] text-black py-4 shadow-lg sticky top-0 z-50">
+    <header className="bg-[#fff] text-black py-4 shadow-lg sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center px-6">
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center">
           <Link to="/">
             <img
               src={Logo || "/placeholder.svg"}
               alt="LuLuSpa Logo"
-              className="w-16 h-16 rounded-full"
+              className="w-60 h-12 ml-20"
             />
           </Link>
         </div>
@@ -171,6 +182,14 @@ const Header: React.FC = () => {
                 className="hover:text-yellow-300 transition duration-300"
               >
                 Trang chủ
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/booking_services/services"
+                className="hover:text-yellow-300 transition duration-300"
+              >
+                Đặt lịch
               </Link>
             </li>
             <li>
@@ -187,29 +206,35 @@ const Header: React.FC = () => {
                 </li>
               </Dropdown>
             </li>
-            <li>
-              <Link
-                to="/test"
-                className="hover:text-yellow-300 transition duration-300"
-              >
-                Câu hỏi
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/blog"
-                className="hover:text-yellow-300 transition duration-300"
-              >
-                Tin tức
-              </Link>
-            </li>
-            <li>
-              <button
-                onClick={() => setShowModal(true)}
-                className="hover:text-yellow-300 transition duration-300"
-              >
-                Liên hệ
-              </button>
+
+            <li className="relative">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  placeholder="Tìm sản phẩm..."
+                  className="px-3 py-1.5 border border-yellow-400 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-300 text-sm w-56"
+                />
+                {loadingSearch && (
+                  <div className="absolute top-full left-0 mt-1 px-3 py-1 text-sm text-gray-500 bg-white rounded shadow w-full">
+                    Đang tìm...
+                  </div>
+                )}
+                {filteredProducts.length > 0 && (
+                  <ul className="absolute z-50 bg-white border mt-1 left-0 rounded-md shadow-lg w-full max-h-60 overflow-y-auto">
+                    {filteredProducts.map((product) => (
+                      <li
+                        key={product._id}
+                        onClick={() => handleSelectProduct(product)}
+                        className="px-4 py-2 hover:bg-yellow-100 cursor-pointer text-sm"
+                      >
+                        {product.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </li>
           </ul>
         </nav>
@@ -219,16 +244,8 @@ const Header: React.FC = () => {
             to="/cart"
             className="hover:text-yellow-300 transition duration-300"
           >
-            <ShoppingCartOutlined className="text-xl" />{" "}
+            <ShoppingCartOutlined className="text-xl" />
           </Link>
-          <button
-            title="Book your appointment now"
-            onClick={handleBookNow}
-            className="hidden md:block bg-yellow-300 text-black py-2 px-6 rounded-lg shadow-md hover:bg-yellow-400 transition duration-100"
-          >
-            Đặt lịch
-          </button>
-
           <div className="flex items-center space-x-2">
             {user ? (
               <Dropdown
@@ -248,7 +265,7 @@ const Header: React.FC = () => {
                   to="/login"
                   className="hover:text-yellow-300 transition duration-300"
                 >
-                  <span>Đăng nhập </span>
+                  <span>Đăng nhập</span>
                 </Link>
                 <Divider type="vertical" className="border-black mt-1 h-7" />
                 <Link
@@ -262,68 +279,6 @@ const Header: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center px-4">
-          <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg relative">
-            {/* Nút đóng modal */}
-            <button
-              onClick={() => setShowModal(false)}
-              className="absolute top-3 right-3 text-2xl text-gray-600 hover:text-gray-900"
-            >
-              ×
-            </button>
-
-            {/* Tiêu đề */}
-            <h3 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
-              Thông tin liên hệ
-            </h3>
-
-            {/* Form */}
-            <form className="space-y-4">
-              <input
-                type="text"
-                placeholder="Name"
-                className="p-2 border w-full rounded-md"
-              />
-              <input
-                type="text"
-                placeholder="Phone Number"
-                className="p-2 border w-full rounded-md"
-              />
-              <button className="py-2 px-4 bg-blue-500 text-white rounded-lg w-full hover:bg-blue-600 transition">
-                Gửi yêu cầu
-              </button>
-            </form>
-
-            {/* Thông tin LuLuSpa */}
-            <div className="mt-6 text-left">
-              <p className="text-gray-600 font-medium">
-                🏡 Tên cửa hàng: <span className="font-semibold">Diable</span>
-              </p>
-              <p className="text-gray-600">
-                📞 Số điện thoại:{" "}
-                <span className="font-semibold">123-456-789</span>
-              </p>
-              <p className="text-gray-600">
-                📧 Email: <span className="font-semibold">info@Diable.com</span>
-              </p>
-              <p className="text-gray-600">
-                ⏰ Thời gian làm việc:{" "}
-                <span className="font-semibold">
-                  Thứ 2 - thứ 7, 9:00 - 17:30
-                </span>
-              </p>
-              <a
-                href="https://www.facebook.com/profile.php?id=61572026472325"
-                className="text-blue-600 hover:underline mt-2 inline-block"
-              >
-                🌐 Hoặc có thể liên hệ với chúng tôi qua Facebook
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
 
       <ToastContainer autoClose={3000} />
     </header>
