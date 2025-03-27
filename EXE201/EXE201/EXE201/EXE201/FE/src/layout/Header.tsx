@@ -129,7 +129,7 @@ const Header: React.FC = () => {
         className="hover:bg-yellow-50"
       >
         <div className="px-4 py-2 flex items-center gap-2 text-gray-700">
-          <User size={16} />
+          <User size={14} />
           <span>Lịch sử đặt hàng</span>
         </div>
       </Menu.Item>

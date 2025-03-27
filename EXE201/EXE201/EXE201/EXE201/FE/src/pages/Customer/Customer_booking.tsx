@@ -42,7 +42,6 @@ const CustomerBooking: React.FC = () => {
     }
   };
 
-
   const updateBookingStatus = async (orderCode: string, newStatus: string) => {
     try {
       const response = await fetch(

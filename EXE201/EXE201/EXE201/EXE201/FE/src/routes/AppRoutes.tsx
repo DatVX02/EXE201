@@ -112,7 +112,7 @@ const AppRoutes: React.FC = () => {
             path="/login"
             element={
               <>
-                <Header />
+                {/* <Header /> */}
                 <Login />
               </>
             }
@@ -121,7 +121,7 @@ const AppRoutes: React.FC = () => {
             path="/register"
             element={
               <>
-                <Header />
+                {/* <Header /> */}
                 <Register />
               </>
             }

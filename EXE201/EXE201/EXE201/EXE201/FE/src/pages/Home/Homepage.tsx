@@ -9,8 +9,12 @@ import CheckoutModal from "../../components/Cart/CheckoutModal";
 import { toast } from "react-toastify";
 import { useAuth } from "../../context/AuthContext";
 import { Booking, Service, Therapist, Blog } from "../../types/booking";
-import video1 from "../../assets/video/invideo-ai-1080 Discover the Magic of LuLuSpa_ Your Skin 2025-01-10.mp4";
-
+import { Carousel } from "antd";
+import Logo1 from "../../assets/20200327_tieu-duong-0.jpg";
+import Logo2 from "../../assets/benh-tieu-duong-1.jpg";
+import Logo3 from "../../assets/hieu-dung-benh-tieu-duong.png";
+import Logo4 from "../../assets/pngtree-world-diabetes-day-celebrate-with-awareness-on-november-14th-image_16416493.jpg";
+import { Link } from "react-router-dom";
 // Animation variants (unchanged)
 const sectionVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -39,6 +43,10 @@ const therapistCardVariants = {
     boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
     transition: { duration: 0.3 },
   },
+};
+
+const onChange = (currentSlide: number) => {
+  console.log(currentSlide);
 };
 
 const HomePage: React.FC = () => {
@@ -165,6 +173,14 @@ const HomePage: React.FC = () => {
       fetchCart();
     }
   }, [isAuthenticated, fetchCart]);
+  const contentStyle: React.CSSProperties = {
+    height: "100vh",
+    color: "#fff",
+    lineHeight: "100vh",
+    textAlign: "center",
+    background: "#364d79",
+    width: "100%",
+  };
 
   const handleCheckout = async () => {
     console.log("Checking out with cart:", cart); // Debug log
@@ -255,7 +271,7 @@ const HomePage: React.FC = () => {
   // };
 
   const handleRedirect = () => {
-    if(!isAuthenticated) {
+    if (!isAuthenticated) {
       toast.warning("Vui lòng đăng nhập để tiếp tục.");
       navigate("/login");
       return;
@@ -302,7 +318,7 @@ const HomePage: React.FC = () => {
           animate="visible"
           exit="hidden"
         >
-          <video
+          {/* <video
             src={video1}
             autoPlay
             loop
@@ -317,7 +333,21 @@ const HomePage: React.FC = () => {
           >
             <source src={video1} type="video/mp4" />
             Your browser does not support the video tag.
-          </video>
+          </video> */}
+          <Carousel afterChange={onChange}>
+            <div>
+              <img src={Logo1} alt="logo" style={contentStyle} />
+            </div>
+            <div>
+              <img src={Logo2} alt="logo" style={contentStyle} />
+            </div>
+            <div>
+              <img src={Logo3} alt="logo" style={contentStyle} />
+            </div>
+            <div>
+              <img src={Logo4} alt="logo" style={contentStyle} />
+            </div>
+          </Carousel>
           <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center text-center text-white px-6">
             <motion.h1
               className="text-6xl font-extrabold mb-4 text-yellow-400"
@@ -361,9 +391,17 @@ const HomePage: React.FC = () => {
           exit="hidden"
         >
           <div className="container mx-auto px-4">
-            <h2 className="text-5xl font-extrabold text-gray-900 mb-12 text-center">
-              Đặt lịch tư vấn
-            </h2>
+            <div className="flex justify-between items-center mb-12 ">
+              <h2 className="text-5xl font-extrabold text-gray-900 text-center ml-80 float-right">
+                Sản phẩm và đặt lịch tư vấn
+              </h2>
+              <Link
+                to="/booking_services"
+                className="flex items-center text-lg font-semibold mr-2 text-gray-800 hover:text-green-500 transition duration-300 ease-in-out"
+              >
+                Xem tất cả
+              </Link>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
               {services.length > 0 ? (
                 services
@@ -454,7 +492,6 @@ const HomePage: React.FC = () => {
             )}
           </div>
 
-          {/* Enhanced Therapist Section with Consistent Typography */}
           <div className="container mx-auto px-4 mt-16">
             <h3 className="text-4xl font-extrabold text-gray-900 mb-12 text-center bg-gradient-to-r from-yellow-400 to-pink-500 bg-clip-text text-transparent">
               Bác sĩ hàng đầu
@@ -494,12 +531,9 @@ const HomePage: React.FC = () => {
                       <h4 className="text-2xl font-semibold text-gray-800 mb-2">
                         {therapist.name}
                       </h4>
-                      <p className="text-base text-yellow-600 font-medium mb-2">
-                        Skincare Specialist
-                      </p>
                       <p className="text-base text-gray-600 font-medium line-clamp-2">
-                        {therapist.Description ||
-                          "Chuyên gia tận tâm với nhiều năm kinh nghiệm trong lĩnh vực chăm sóc da."}
+                        Kinh nghiệm: {therapist.Description ||
+                          "Chuyên gia tận tâm với nhiều năm kinh nghiệm trong lĩnh vực chăm sóc về bệnh tiểu đường."}
                       </p>
                     </div>
                     <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-yellow-400 to-pink-500 opacity-0 hover:opacity-10 transition-opacity duration-300"></div>
@@ -534,11 +568,11 @@ const HomePage: React.FC = () => {
               <p className="text-center text-gray-600">Loading blog list...</p>
             ) : blogs.length > 0 ? (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
                   {blogs.slice(0, 3).map((blog) => (
                     <motion.div
-                      key={blog.id}
-                      className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                      key={blog._id}
+                      className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
                       variants={cardVariants}
                       initial="hidden"
                       animate="visible"
@@ -546,8 +580,9 @@ const HomePage: React.FC = () => {
                       <img
                         src={blog.image || "/placeholder.svg"}
                         alt={blog.title}
-                        className="w-full h-48 object-cover"
+                        className="w-full h-48 object-cover rounded-t-xl"
                       />
+
                       <div className="p-4">
                         <h3 className="text-xl font-semibold text-gray-900">
                           {blog.title}
@@ -555,15 +590,19 @@ const HomePage: React.FC = () => {
                         <p className="text-gray-600 mt-2 line-clamp-2">
                           {blog.description}
                         </p>
+                        <p className="mt-3 text-sm text-gray-500">
+                          Tham vấn y khoa: Bác sĩ {blog.createName}
+                        </p>
+
                         <div className="mt-4">
                           <motion.button
-                            onClick={() => navigate(`/blog/${blog.id}`)}
+                            onClick={() => navigate(`/blog/${blog._id}`)}
                             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                             variants={buttonVariants}
                             whileHover="hover"
                             whileTap="tap"
                           >
-                            Read More
+                            Đọc thêm
                           </motion.button>
                         </div>
                       </div>
@@ -578,7 +617,7 @@ const HomePage: React.FC = () => {
                     whileHover="hover"
                     whileTap="tap"
                   >
-                    View All Blogs
+                    Xem tất cả các bài viết
                   </motion.button>
                 </div>
               </>

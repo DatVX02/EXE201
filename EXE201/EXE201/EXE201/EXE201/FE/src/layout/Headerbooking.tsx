@@ -33,7 +33,7 @@ const Header: React.FC = () => {
       toast.error("Bạn cần đăng nhập trước khi đặt dịch vụ!");
       setTimeout(() => navigate("/login"), 3000);
     } else {
-      navigate("/booking_services//services");
+      navigate("/booking_services/services");
     }
   };
 

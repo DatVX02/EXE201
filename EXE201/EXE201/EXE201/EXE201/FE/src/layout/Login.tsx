@@ -4,8 +4,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import { useAuth } from "../context/AuthContext"; // Import useAuth
-import layerImage from "../assets/Logo.png";
-
+import layerImage from "../assets/Backgroundlogin_register.png";
+import Logo from "../assets/logodiabecare_1.png";
 const Login: React.FC = () => {
   const { setToken, setUser } = useAuth(); // Lấy hàm setToken và setUser từ context
   const [email, setEmail] = useState<string>("");
@@ -72,20 +72,13 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="h-[86vh] flex items-center justify-center px-5 lg:px-0">
+    <div className="flex items-center justify-center px-5 lg:px-0">
       <ToastContainer />
-      <div className="flex justify-center flex-1 max-w-screen-lg bg-white border shadow sm:rounded-lg">
-        <div className="flex-1 hidden text-center md:flex">
-          <img
-            src={layerImage}
-            alt="logo"
-            className="m-5 rounded-lg justify-center items-center aspect-square"
-          />
-        </div>
-
-        <div className="p-4 lg:w-1/2 xl:w-1/2 sm:p-12 md:w-1/3">
-          <div className="flex flex-col items-center">
-            <h1 className="text-2xl font-extrabold text-blue-900 xl:text-4xl">
+      <div className="flex justify-center flex-1 w-[100vw] h-[100vh]  bg-white ">
+        <div className="p-4 lg:w-1/2 xl:w-1/2 sm:p-12 md:w-1/3 mt-20">
+         <Link to="/"><img src={Logo} alt="logo" className="w-70 h-10" /></Link>
+         <div className="flex flex-col items-center ">
+            <h1 className="text-2xl font-extrabold text-[#00B389] xl:text-4xl">
               Đăng nhập
             </h1>
             <form
@@ -131,18 +124,25 @@ const Login: React.FC = () => {
                   to="/forgot-password"
                   className="text-sm font-medium text-blue-900 hover:underline"
                 >
-                  Forgot password
+                  Quên mật khẩu
                 </Link>
               </div>
 
               <p className="mt-6 text-xs text-center text-gray-600">
-                Don't have an account -{" "}
+                Bạn chưa có tài khoản -{" "}
                 <Link to="/register">
-                  <span className="font-semibold text-blue-900">Sign up</span>
+                  <span className="font-semibold text-blue-900">Đăng ký</span>
                 </Link>
               </p>
             </form>
           </div>
+        </div>
+        <div className="flex-1 hidden text-center md:flex">
+          <img
+            src={layerImage}
+            alt="logo"
+            className="w-full h-full  justify-center items-center aspect-square"
+          />
         </div>
       </div>
     </div>
