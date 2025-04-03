@@ -21,9 +21,9 @@ const UserSchema = new mongoose.Schema(
     otp: { type: String },
     otpExpires: { type: Date },
     isVerified: { type: Boolean, default: false },
-    Description: { type: String },
-    // 🔥 Thêm trường token để lưu JWT
+    description: { type: String },
     token: { type: String, default: null },
+    isOnline: { type: Boolean, default: false }, // 🔥 Thêm trạng thái online
   },
   { timestamps: true }
 );
