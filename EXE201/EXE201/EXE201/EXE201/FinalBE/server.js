@@ -108,56 +108,5 @@ mongoose
     process.exit(1); // Dừng server nếu kết nối thất bại
   });
 
-
-// Kết nối Socket.io
-let onlineUsers = {}; // Lưu trạng thái online của user
-
-io.on("connection", (socket) => {
-  console.log("A user connected");
-
-  // Lắng nghe sự kiện user online
-  socket.on("user-online", (userId) => {
-    onlineUsers[userId] = socket.id;
-    console.log(`User ${userId} is online`);
-  });
-
-  // Lắng nghe sự kiện gửi tin nhắn
-  socket.on("send-message", async (data) => {
-    const { senderId, receiverId, message } = data;
-
-    try {
-      // Lưu tin nhắn vào DB
-      const newMessage = new Message({
-        sender: senderId,
-        receiver: receiverId,
-        message,
-      });
-      await newMessage.save();
-
-      // Nếu receiver đang online, gửi tin nhắn trực tiếp qua socket
-      if (onlineUsers[receiverId]) {
-        io.to(onlineUsers[receiverId]).emit("receive-message", newMessage);
-      }
-
-      // Gửi lại tin nhắn đã gửi cho người gửi
-      io.to(socket.id).emit("receive-message", newMessage);
-    } catch (err) {
-      console.log(err.message);
-    }
-  });
-
-  // Khi người dùng ngắt kết nối
-  socket.on("disconnect", () => {
-    console.log("A user disconnected");
-    for (const userId in onlineUsers) {
-      if (onlineUsers[userId] === socket.id) {
-        delete onlineUsers[userId];
-        break;
-      }
-    }
-  });
-});
-
-
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
