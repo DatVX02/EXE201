@@ -14,7 +14,7 @@ export type Service = {
   };
   createDate?: string;
   __v?: number;
-  productType: "purchase" | "consultation";q
+  productType: "purchase" | "consultation";
 };
 
 export type Therapist = {
@@ -25,6 +25,12 @@ export type Therapist = {
 };
 
 export type Booking = {
+  _id: string;
+  price: number;
+  quantity: number;
+  orderCode: string;
+  createdAt: string;
+  service_name?: string;
   BookingID?:string;
   username: string | undefined;
   CartID?: string;

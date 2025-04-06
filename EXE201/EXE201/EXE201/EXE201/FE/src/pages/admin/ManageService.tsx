@@ -9,29 +9,30 @@ function ManageService() {
     []
   );
   const [productType, setProductType] = useState<string | null>(null);
-  const [form] = Form.useForm(); // ✅ Khai báo form
+  const [form] = Form.useForm();
 
-  // ✅ Fetch danh sách categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const res = await api.get("/categories");
         setCategories(res.data || []);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        if (error instanceof Error) {
+          console.error("Error fetching categories:", error.message);
+        } else {
+          console.error("Unknown error:", error);
+        }
       }
     };
     fetchCategories();
   }, []);
 
-  // ✅ Xóa `duration` khi chọn "purchase"
   useEffect(() => {
     if (productType === "purchase") {
-      form.setFieldsValue({ duration: undefined }); // ✅ Đặt undefined để tránh gửi lên API
+      form.setFieldsValue({ duration: undefined });
     }
   }, [productType, form]);
 
-  // ✅ Xử lý submit form
   const handleFormSubmit = async (values: any) => {
     console.log(
       "🚀 Raw Data before processing:",
@@ -39,7 +40,7 @@ function ManageService() {
     );
 
     if (values.productType === "purchase") {
-      delete values.duration; // ✅ Xóa duration nếu chọn "purchase"
+      delete values.duration;
     }
 
     console.log(
@@ -52,8 +53,17 @@ function ManageService() {
       message.success("Service created successfully!");
       form.resetFields();
     } catch (error) {
-      console.error("❌ API Error:", error.response?.data || error);
-      message.error(error.response?.data?.message || "Error creating service.");
+      if (error instanceof Error) {
+        console.error("❌ API Error:", error.message);
+        message.error("Error creating service.");
+      } else if (typeof error === "object" && error !== null && "response" in error) {
+        const e = error as any;
+        message.error(e.response?.data?.message || "Error creating service.");
+        console.error("❌ API Error:", e.response?.data || e);
+      } else {
+        console.error("Unknown error:", error);
+        message.error("Unknown error occurred.");
+      }
     }
   };
 
@@ -138,6 +148,7 @@ function ManageService() {
           ))}
         </Select>
       </Form.Item>
+
       <Form.Item
         name="productType"
         label="Product Type"
@@ -151,7 +162,7 @@ function ManageService() {
             form.setFieldsValue({ productType: value });
 
             if (value === "purchase") {
-              form.setFieldsValue({ duration: undefined }); // ✅ Đặt duration thành undefined để không gửi lên API
+              form.setFieldsValue({ duration: undefined });
             }
           }}
         >
@@ -173,7 +184,7 @@ function ManageService() {
         columns={columns}
         formItems={formItems}
         apiEndpoint="/products"
-        form={form} // ✅ Đảm bảo form được truyền xuống
+        form={form} // ✅ Truyền đúng
         onSubmit={handleFormSubmit}
       />
     </div>
