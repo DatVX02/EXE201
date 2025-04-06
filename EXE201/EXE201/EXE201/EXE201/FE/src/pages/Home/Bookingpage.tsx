@@ -6,9 +6,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Layout from "../../layout/Layout";
+import Rating from '@mui/material/Rating';
 import CartComponent from "../../components/Cart/CartComponent";
 import { useAuth } from "../../context/AuthContext";
 import { Service, Therapist, Booking } from "../../types/booking";
+
 
 const EnhancedBookingPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -681,7 +683,8 @@ const EnhancedBookingPage: React.FC = () => {
 
           <motion.div className="container mx-auto py-16 px-6 relative">
             {isAuthenticated && (
-              <CartComponent handleCheckout={() => {}} isBookingPage={true} />
+              <CartComponent handleCheckout={async () => {}} isBookingPage={true} />
+
             )}
 
             <div className="mt-12 bg-white p-6 rounded-lg shadow-lg">

@@ -28,7 +28,8 @@ interface ManageTemplateProps {
     | ((editingId: string | null) => React.ReactElement);
   apiEndpoint: string;
   mode?: "full" | "view-only" | "create-only" | "delete-only";
-  form?: FormInstance; // ✅ Thêm form prop để có thể truyền từ bên ngoài
+  form?: FormInstance;
+  onSubmit?: (values: any) => void | Promise<void>; // ✅ Cho phép xử lý submit từ bên ngoài
 }
 
 function ManageTemplate({
@@ -38,13 +39,14 @@ function ManageTemplate({
   apiEndpoint,
   mode = "full",
   form,
+  onSubmit,
 }: ManageTemplateProps) {
   const { token } = useAuth();
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [internalForm] = Form.useForm();
-  const formInstance = form || internalForm; // ✅ Dùng form truyền từ ngoài hoặc tạo mới
+  const formInstance = form || internalForm;
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const fetchData = async () => {
@@ -76,15 +78,11 @@ function ManageTemplate({
     fetchData();
   }, [apiEndpoint, token]);
 
-  const handleCreate = async (values: any) => {
+  const defaultHandleCreate = async (values: any) => {
     if (!token || mode === "view-only") return;
 
-    if (values.productType === "purchase") {
-      delete values.duration;
-    }
-
     try {
-      const response = await api.post(apiEndpoint, values, {
+      await api.post(apiEndpoint, values, {
         headers: { "x-auth-token": token, "Content-Type": "application/json" },
       });
       toast.success(`${title} created successfully`);
@@ -97,7 +95,7 @@ function ManageTemplate({
     }
   };
 
-  const handleEdit = async (values: any) => {
+  const defaultHandleEdit = async (values: any) => {
     if (!token || mode !== "full") return;
     try {
       await api.put(`${apiEndpoint}/${editingId}`, values, {
@@ -143,16 +141,17 @@ function ManageTemplate({
             render: (_: any, record: any) => (
               <Space>
                 <Button
-                  type='link'
+                  type="link"
                   icon={<EditOutlined />}
                   onClick={() => startEdit(record)}
                 />
                 <Popconfirm
                   title={`Are you sure you want to delete this ${title}?`}
                   onConfirm={() => handleDelete(record._id)}
-                  okText='Yes'
-                  cancelText='No'>
-                  <Button type='link' danger icon={<DeleteOutlined />} />
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button type="link" danger icon={<DeleteOutlined />} />
                 </Popconfirm>
               </Space>
             ),
@@ -168,16 +167,27 @@ function ManageTemplate({
               <Popconfirm
                 title={`Are you sure you want to delete this ${title}?`}
                 onConfirm={() => handleDelete(record._id)}
-                okText='Yes'
-                cancelText='No'>
-                <Button type='link' danger icon={<DeleteOutlined />} />
+                okText="Yes"
+                cancelText="No"
+              >
+                <Button type="link" danger icon={<DeleteOutlined />} />
               </Popconfirm>
             ),
           },
         ]
-      : mode === "create-only"
-      ? [...columns]
       : columns;
+
+  const handleFormSubmit = async (values: any) => {
+    if (onSubmit) {
+      await onSubmit(values);
+      setShowModal(false);
+      fetchData();
+    } else if (editingId) {
+      await defaultHandleEdit(values);
+    } else {
+      await defaultHandleCreate(values);
+    }
+  };
 
   return (
     <div style={{ padding: "24px" }}>
@@ -185,13 +195,14 @@ function ManageTemplate({
 
       {(mode === "full" || mode === "create-only") && (
         <Button
-          type='primary'
+          type="primary"
           onClick={() => {
             setEditingId(null);
             formInstance.resetFields();
             setShowModal(true);
           }}
-          style={{ marginBottom: "16px" }}>
+          style={{ marginBottom: "16px" }}
+        >
           Create new {title}
         </Button>
       )}
@@ -200,7 +211,7 @@ function ManageTemplate({
         columns={columnsWithActions}
         dataSource={data}
         loading={loading}
-        rowKey='_id'
+        rowKey="_id"
       />
 
       {mode !== "view-only" && formItems && (
@@ -212,11 +223,13 @@ function ManageTemplate({
             setEditingId(null);
             formInstance.resetFields();
           }}
-          onOk={() => formInstance.submit()}>
+          onOk={() => formInstance.submit()}
+        >
           <Form
             form={formInstance}
             labelCol={{ span: 24 }}
-            onFinish={editingId ? handleEdit : handleCreate}>
+            onFinish={handleFormSubmit}
+          >
             {typeof formItems === "function"
               ? formItems(editingId)
               : formItems}
