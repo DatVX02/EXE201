@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
-import { Rating } from '@mui/material';
 import "react-toastify/dist/ReactToastify.css";
 import Layout from "../../layout/Layout";
 import CartComponent from "../../components/Cart/CartComponent";
@@ -167,7 +166,7 @@ const EnhancedBookingPage: React.FC = () => {
     return slots;
   };
 
-  const handleCheckout = async (): Promise<void> => {
+  const handleCheckout = async () => {
     if (!isAuthenticated) {
       toast.warning("Please log in to proceed with checkout.");
       return;
@@ -218,7 +217,7 @@ const EnhancedBookingPage: React.FC = () => {
     }
   };
 
-  const handlePayment = async (): Promise<void> => {
+  const handlePayment = async () => {
     try {
       if (!token) throw new Error("Please log in to confirm payment.");
 
@@ -352,7 +351,7 @@ const EnhancedBookingPage: React.FC = () => {
     }
   }, [service]);
 
-  const handleSubmit = async (event: React.FormEvent): Promise<void> => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!validateForm() || !service || !user?.username) {
       toast.error("Vui lòng nhập đầy đủ thông tin!");

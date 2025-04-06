@@ -1,11 +1,20 @@
 import React, { useEffect, useState } from "react";
 import api from "../../api/apiService";
-import { Button, Form, Modal, Table, Space, Popconfirm, message } from "antd";
+import {
+  Button,
+  Form,
+  Modal,
+  Table,
+  Space,
+  Popconfirm,
+  message,
+  FormInstance,
+} from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useAuth } from "../../context/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 
-interface Columns { 
+interface Columns {
   title: string;
   dataIndex: string;
   key: string;
@@ -19,6 +28,7 @@ interface ManageTemplateProps {
     | ((editingId: string | null) => React.ReactElement);
   apiEndpoint: string;
   mode?: "full" | "view-only" | "create-only" | "delete-only";
+  form?: FormInstance; // ✅ Thêm form prop để có thể truyền từ bên ngoài
 }
 
 function ManageTemplate({
@@ -27,12 +37,14 @@ function ManageTemplate({
   formItems,
   apiEndpoint,
   mode = "full",
+  form,
 }: ManageTemplateProps) {
   const { token } = useAuth();
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [form] = Form.useForm();
+  const [internalForm] = Form.useForm();
+  const formInstance = form || internalForm; // ✅ Dùng form truyền từ ngoài hoặc tạo mới
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const fetchData = async () => {
@@ -42,11 +54,9 @@ function ManageTemplate({
     }
     try {
       setLoading(true);
-      console.log("Fetching data with token:", token);
       const res = await api.get(apiEndpoint, {
         headers: { "x-auth-token": token },
       });
-      console.log("API Response Data:", res.data);
       const responseData = Array.isArray(res.data)
         ? res.data
         : res.data.data
@@ -66,40 +76,26 @@ function ManageTemplate({
     fetchData();
   }, [apiEndpoint, token]);
 
- const handleCreate = async (values: any) => {
-   if (!token || mode === "view-only") return;
+  const handleCreate = async (values: any) => {
+    if (!token || mode === "view-only") return;
 
-   console.log(
-     "🚀 Raw Data before processing:",
-     JSON.stringify(values, null, 2)
-   );
+    if (values.productType === "purchase") {
+      delete values.duration;
+    }
 
-   // ✅ Xóa duration nếu productType là "purchase"
-   if (values.productType === "purchase") {
-     delete values.duration;
-   }
-
-   console.log(
-     "🚀 Final Data being sent to API:",
-     JSON.stringify(values, null, 2)
-   );
-
-   try {
-     const response = await api.post(apiEndpoint, values, {
-       headers: { "x-auth-token": token, "Content-Type": "application/json" },
-     });
-     console.log("✅ API Response:", response.data);
-     toast.success(`${title} created successfully`);
-     form.resetFields();
-     setShowModal(false);
-     fetchData();
-   } catch (error: any) {
-     console.error("❌ API Error:", error.response?.data || error);
-     message.error(error.response?.data?.message || `Error creating ${title}`);
-   }
- };
-
-
+    try {
+      const response = await api.post(apiEndpoint, values, {
+        headers: { "x-auth-token": token, "Content-Type": "application/json" },
+      });
+      toast.success(`${title} created successfully`);
+      formInstance.resetFields();
+      setShowModal(false);
+      fetchData();
+    } catch (error: any) {
+      console.error("❌ API Error:", error.response?.data || error);
+      message.error(error.response?.data?.message || `Error creating ${title}`);
+    }
+  };
 
   const handleEdit = async (values: any) => {
     if (!token || mode !== "full") return;
@@ -108,7 +104,7 @@ function ManageTemplate({
         headers: { "x-auth-token": token },
       });
       toast.success(`${title} updated successfully`);
-      form.resetFields();
+      formInstance.resetFields();
       setShowModal(false);
       setEditingId(null);
       fetchData();
@@ -133,7 +129,7 @@ function ManageTemplate({
   const startEdit = (record: any) => {
     if (mode !== "full") return;
     setEditingId(record._id);
-    form.setFieldsValue(record);
+    formInstance.setFieldsValue(record);
     setShowModal(true);
   };
 
@@ -181,7 +177,7 @@ function ManageTemplate({
         ]
       : mode === "create-only"
       ? [...columns]
-      : columns; // "view-only" -> No actions
+      : columns;
 
   return (
     <div style={{ padding: "24px" }}>
@@ -192,7 +188,7 @@ function ManageTemplate({
           type='primary'
           onClick={() => {
             setEditingId(null);
-            form.resetFields();
+            formInstance.resetFields();
             setShowModal(true);
           }}
           style={{ marginBottom: "16px" }}>
@@ -214,14 +210,16 @@ function ManageTemplate({
           onCancel={() => {
             setShowModal(false);
             setEditingId(null);
-            form.resetFields();
+            formInstance.resetFields();
           }}
-          onOk={() => form.submit()}>
+          onOk={() => formInstance.submit()}>
           <Form
-            form={form}
+            form={formInstance}
             labelCol={{ span: 24 }}
             onFinish={editingId ? handleEdit : handleCreate}>
-            {typeof formItems === "function" ? formItems(editingId) : formItems}
+            {typeof formItems === "function"
+              ? formItems(editingId)
+              : formItems}
           </Form>
         </Modal>
       )}

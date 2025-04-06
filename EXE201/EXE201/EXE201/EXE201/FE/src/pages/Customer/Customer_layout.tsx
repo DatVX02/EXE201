@@ -34,7 +34,7 @@ export default function Customer_layout() {
         const token = localStorage.getItem("authToken");
         const response = await fetch("http://localhost:5000/api/auth/me", {
           headers: {
-            "x-auth-token": token || undefined
+            "x-auth-token": token || ""
           },
         });
         const data = await response.json();

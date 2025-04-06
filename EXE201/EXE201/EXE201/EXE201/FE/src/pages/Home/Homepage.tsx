@@ -367,7 +367,7 @@ const HomePage: React.FC = () => {
             </motion.p>
             <motion.button
               onClick={() =>
-                services.length > 0 && handleRedirect(services[0]._id)
+                services.length > 0 && handleRedirect() //services[0]._id
               }
               className="px-8 py-4 bg-yellow-400 text-gray-900 rounded-full text-lg font-semibold hover:bg-yellow-300 transition duration-300 ease-in-out transform"
               variants={buttonVariants}

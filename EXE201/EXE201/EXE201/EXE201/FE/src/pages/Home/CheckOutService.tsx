@@ -95,7 +95,7 @@ const CheckoutService: React.FC = () => {
           price: parseFloat(
             typeof item.price === "object"
               ? item.price.$numberDecimal
-              : item.price
+              : item.price.toString()
           ),
           paymentMethod,
           productType: item.productType,
