@@ -20,8 +20,6 @@ const questionRoutes = require("./routes/questionRoutes");
 const ratingRoutes = require("./routes/ratingRoutes");
 const blogRoutes = require("./routes/blogRoutes");
 const book = require("./routes/bookingRoutes");
-const chatRoutes = require("./routes/chatRoutes");
-const Message = require("./models/Message");
 
 const app = express();
 const server = http.createServer(app);
@@ -76,8 +74,6 @@ app.use("/api/blogs", blogRoutes);
 app.use("/api/ratings", ratingRoutes);
 //booking
 app.use("/api/booking", book);
-//chat
-app.use("/api/chat", chatRoutes);
 
 // Connect DB
 // mongoose
