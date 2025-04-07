@@ -38,7 +38,7 @@ console.log("🔗 Mongo URI:", process.env.MONGO_URI);
 
 // MongoDB connect
 mongoose
-  .connect(process.env.MONGO_URI, {
+  .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -49,7 +49,7 @@ mongoose
 app.use("/api/payments/webhook", webhookRoutes);
 app.use("/api/payments", paymentRoutes);
 app.post("/create-payment-link", async (req, res) => {
-  const YOUR_DOMAIN = process.env.CLIENT_URL || "http://localhost:5000";
+  const YOUR_DOMAIN = process.env.MONGO_URL || "http://localhost:5000";
   const body = {
     orderCode: Number(String(Date.now()).slice(-6)),
     amount: 1000,
