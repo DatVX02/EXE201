@@ -50,39 +50,36 @@ app.post("/create-payment-link", async (req, res) => {
     res.redirect(paymentLinkResponse.checkoutUrl);
   } catch (error) {
     console.error(error);
-    res.send("Something went error");
+    res.send("Something went wrong");
   }
 });
 
-//user
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-//product
 app.use("/api/categories", categoryRoutes);
 app.use("/api/products", productRoutes);
-//voucher
 app.use("/api/vouchers", voucherRoutes);
-//cart
 app.use("/api/cart", cartRoutes);
-//review
 app.use("/api/reviews", reviewRoutes);
-//question
 app.use("/api/questions", questionRoutes);
-//blog
 app.use("/api/blogs", blogRoutes);
-//rating 
 app.use("/api/ratings", ratingRoutes);
-//booking
 app.use("/api/booking", book);
 
-mongoose.connect('mongodb+srv://localhost:8BBNv9kAtmub7UnU@cluster0.ugfmrlv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
-  // Loại bỏ các tùy chọn deprecated
-  // useNewUrlParser: true,
-  // useUnifiedTopology: true
+// ✅ FIX: URI MongoDB Atlas (KHÔNG DÙNG localhost)
+mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://localhost:8BBNv9kAtmub7UnU@cluster0.ugfmrlv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+  // useNewUrlParser và useUnifiedTopology không còn cần thiết
 })
 .then(() => {
-  console.log('MongoDB connected successfully');
+  console.log('✅ MongoDB connected successfully');
 })
 .catch((error) => {
-  console.log('MongoDB connection error:', error);
+  console.error('❌ MongoDB connection error:', error);
+});
+
+// Start server
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
