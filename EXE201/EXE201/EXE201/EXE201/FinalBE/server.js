@@ -112,7 +112,7 @@ app.use("/api/booking", book);
 
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb+srv://localhost:<8BBNv9kAtmub7UnU>@cluster0.ugfmrlv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+mongoose.connect('mongodb+srv://localhost:8BBNv9kAtmub7UnU@cluster0.ugfmrlv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
   // Loại bỏ các tùy chọn deprecated
   // useNewUrlParser: true,
   // useUnifiedTopology: true
