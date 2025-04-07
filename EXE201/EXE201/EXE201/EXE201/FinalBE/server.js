@@ -86,7 +86,3 @@ mongoose.connect('mongodb+srv://localhost:8BBNv9kAtmub7UnU@cluster0.ugfmrlv.mong
 .catch((error) => {
   console.log('MongoDB connection error:', error);
 });
-
-server.listen(5000, () => {
-  console.log("🚀 Server running on port 5000");
-})
