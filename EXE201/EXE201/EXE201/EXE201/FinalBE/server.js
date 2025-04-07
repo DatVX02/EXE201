@@ -75,43 +75,6 @@ app.use("/api/ratings", ratingRoutes);
 //booking
 app.use("/api/booking", book);
 
-// Connect DB
-// mongoose
-//   .connect(process.env.MONGO_URI, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//   })
-//   .then(() => console.log("MongoDB connected"))
-//   .catch((err) => console.log("MongoDB Connection Error:", err));
-// const mongoose = require("mongoose");
-
-
-// require("dotenv").config();
-
-// const MONGO_URI = process.env.MONGO_URI;
-
-// if (!MONGO_URI) {
-//   console.error("❌ ERROR: MONGO_URI is not defined. Check your .env file.");
-//   process.exit(1); // Dừng server nếu thiếu URI
-// }
-
-// mongoose
-//   .connect(MONGO_URI, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//   })
-//   .then(() => console.log("✅ MongoDB connected"))
-//   .catch((err) => {
-//     console.error("❌ MongoDB Connection Error:", err);
-//     process.exit(1); // Dừng server nếu kết nối thất bại
-//   });
-
-// const PORT = process.env.PORT || 5000;
-// server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-
-
-const mongoose = require('mongoose');
-
 mongoose.connect('mongodb+srv://localhost:8BBNv9kAtmub7UnU@cluster0.ugfmrlv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
   // Loại bỏ các tùy chọn deprecated
   // useNewUrlParser: true,
@@ -123,3 +86,7 @@ mongoose.connect('mongodb+srv://localhost:8BBNv9kAtmub7UnU@cluster0.ugfmrlv.mong
 .catch((error) => {
   console.log('MongoDB connection error:', error);
 });
+
+server.listen(5000, () => {
+  console.log("🚀 Server running on port 5000");
+})
