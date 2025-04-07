@@ -35,7 +35,14 @@ const EnhancedBookingPage: React.FC = () => {
   const [paymentUrl, setPaymentUrl] = useState<string>("");
   const [qrCode, setQrCode] = useState<string>("");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [ratings, setRatings] = useState<Rating[]>([]);
+  type RatingType = {
+    _id: string;
+    createName: string;
+    serviceRating: number;
+    serviceContent: string;
+  };
+  
+  const [ratings, setRatings] = useState<RatingType[]>([]);
   const [loadingRatings, setLoadingRatings] = useState<boolean>(true);
   const API_BASE_URL = "http://localhost:5000/api";
 
