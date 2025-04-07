@@ -6,7 +6,7 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
+    "build": "echo 'No build step needed for JS'",
     "predeploy": "npm run build",
     "deploy": "vercel --prod"
   },
@@ -44,7 +44,7 @@
     "nodemon": "^3.1.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   },
   "engines": {
     "node": "22.x"
