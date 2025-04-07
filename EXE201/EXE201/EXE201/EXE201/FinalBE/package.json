@@ -35,6 +35,7 @@
     "qs": "^6.14.0",
     "request": "^2.88.2",
     "serve-favicon": "^2.5.0",
+    "socket.io": "^4.8.1",
     "uuid": "^11.1.0",
     "webidl2js": "^18.0.0",
     "whatwg-url": "^14.1.1"
