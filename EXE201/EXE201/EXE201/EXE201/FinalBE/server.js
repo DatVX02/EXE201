@@ -67,19 +67,25 @@ app.use("/api/blogs", blogRoutes);
 app.use("/api/ratings", ratingRoutes);
 app.use("/api/booking", book);
 
-// ✅ FIX: URI MongoDB Atlas (KHÔNG DÙNG localhost)
-mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://localhost:8BBNv9kAtmub7UnU@cluster0.ugfmrlv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
-  // useNewUrlParser và useUnifiedTopology không còn cần thiết
-})
-.then(() => {
-  console.log('✅ MongoDB connected successfully');
-})
-.catch((error) => {
-  console.error('❌ MongoDB connection error:', error);
-});
+// mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://localhost:8BBNv9kAtmub7UnU@cluster0.ugfmrlv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+//   // useNewUrlParser và useUnifiedTopology không còn cần thiết
+// })
+// .then(() => {
+//   console.log('✅ MongoDB connected successfully');
+// })
+// .catch((error) => {
+//   console.error('❌ MongoDB connection error:', error);
+// });
 
-// Start server
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+// // Start server
+// const PORT = process.env.PORT || 5000;
+// server.listen(PORT, () => {
+//   console.log(`🚀 Server running on port ${PORT}`);
+// });
+
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
