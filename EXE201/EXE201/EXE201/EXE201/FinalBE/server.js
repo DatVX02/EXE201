@@ -37,9 +37,13 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 console.log("🔗 Mongo URI:", process.env.MONGO_URI);
 
 // MongoDB connect
-mongoose.connect(process.env.MONGO_URI || 'mongodb+srv://localhost:8BBNv9kAtmub7UnU@cluster0.ugfmrlv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
-  .then(() => console.log('✅ MongoDB connected successfully'))
-  .catch((error) => console.error('❌ MongoDB connection error:', error));
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.log("MongoDB Connection Error:", err));
 
 // Payment
 app.use("/api/payments/webhook", webhookRoutes);
