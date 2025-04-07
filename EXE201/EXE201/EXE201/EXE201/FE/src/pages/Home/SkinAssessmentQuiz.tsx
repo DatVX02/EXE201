@@ -22,7 +22,7 @@ const SkinAssessmentQuiz: React.FC = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/questions");
+        const response = await axios.get("https://exe201-production.up.railway.app/api/questions");
         const formattedQuestions = response.data.map((q: any) => ({
           id: q._id,
           question: q.text,
@@ -61,7 +61,7 @@ const SkinAssessmentQuiz: React.FC = () => {
         return;
       }
 
-      const response = await axios.post("http://localhost:5000/api/questions/submit", { answers: formattedAnswers });
+      const response = await axios.post("https://exe201-production.up.railway.app/api/questions/submit", { answers: formattedAnswers });
 
       setResult(response.data.message || "Kết quả đã được gửi thành công.");
       setBestMatch(response.data.bestMatch || "Không có kết quả phù hợp.");

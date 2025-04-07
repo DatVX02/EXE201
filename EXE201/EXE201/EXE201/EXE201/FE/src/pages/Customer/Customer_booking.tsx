@@ -10,7 +10,7 @@ const CustomerBooking: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const API_BASE_URL = "http://localhost:5000/api";
+  const API_BASE_URL = "https://exe201-production.up.railway.app/api";
 
   useEffect(() => {
     if (user?.username) {

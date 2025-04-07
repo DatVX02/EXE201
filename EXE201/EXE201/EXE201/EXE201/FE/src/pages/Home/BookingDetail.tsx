@@ -33,7 +33,7 @@ const BookingDetail: React.FC = () => {
   const fetchServiceDetail = async (service_id: string) => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/products/${service_id}`
+        `https://exe201-production.up.railway.app/api/products/${service_id}`
       );
       console.log("Dữ liệu chi tiết:", res.data); // 👈 Thêm dòng này
       setService(res.data);

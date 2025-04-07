@@ -56,7 +56,7 @@ const CheckoutService: React.FC = () => {
     try {
       // 1. Tạo link thanh toán
       const response = await fetch(
-        "http://localhost:5000/api/payments/create",
+        "https://exe201-production.up.railway.app/api/payments/create",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -68,8 +68,8 @@ const CheckoutService: React.FC = () => {
             paymentMethod,
             orderName: "Đơn hàng mỹ phẩm",
             description: "Thanh toán đơn hàng sản phẩm",
-            returnUrl: "http://localhost:5000/success.html",
-            cancelUrl: "http://localhost:5000/cancel.html",
+            returnUrl: "https://exe201-production.up.railway.app/success.html",
+            cancelUrl: "https://exe201-production.up.railway.app/cancel.html",
             amount: total,
           }),
         }
@@ -102,7 +102,7 @@ const CheckoutService: React.FC = () => {
           orderCode: result.data.orderCode, // ✅ thêm dòng này
         };
 
-        await fetch("http://localhost:5000/api/booking/create", {
+        await fetch("https://exe201-production.up.railway.app/api/booking/create", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(bookingPayload),

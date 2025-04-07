@@ -53,7 +53,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loadingCart, setLoadingCart] = useState<boolean>(false);
   const [cartError, setCartError] = useState<string | null>(null);
 
-  const API_BASE_URL = "http://localhost:5000/api";
+  const API_BASE_URL = "https://exe201-production.up.railway.app/api";
 
   useEffect(() => {
     if (token) {

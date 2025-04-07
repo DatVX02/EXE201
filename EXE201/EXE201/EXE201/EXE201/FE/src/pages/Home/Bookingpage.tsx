@@ -44,7 +44,10 @@ const EnhancedBookingPage: React.FC = () => {
   
   const [ratings, setRatings] = useState<RatingType[]>([]);
   const [loadingRatings, setLoadingRatings] = useState<boolean>(true);
-  const API_BASE_URL = "http://localhost:5000/api";
+  const API_BASE_URL = 
+    window.location.hostname === "localhost"
+      ? "http://localhost:5000/api"
+      : "https://exe201-production.up.railway.app/api";
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -196,8 +199,8 @@ const EnhancedBookingPage: React.FC = () => {
     let description = `Dịch vụ ${orderName.substring(0, 25)}`;
     if (description.length > 25) description = description.substring(0, 25);
 
-    const returnUrl = "http://localhost:5000/success.html";
-    const cancelUrl = "http://localhost:5000/cancel.html";
+    const returnUrl = "https://exe201-production.up.railway.app/success.html";
+    const cancelUrl = "https://exe201-production.up.railway.app/cancel.html";
 
     try {
       const response = await fetch(`${API_BASE_URL}/payments/create`, {

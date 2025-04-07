@@ -81,7 +81,7 @@ const Cart: React.FC = () => {
       }));
 
       const response = await fetch(
-        "http://localhost:5000/api/payments/create",
+        "https://exe201-production.up.railway.app/api/payments/create",
         {
           method: "POST",
           headers: {

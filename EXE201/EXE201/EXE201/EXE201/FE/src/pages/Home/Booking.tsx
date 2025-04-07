@@ -52,7 +52,7 @@ const Booking: React.FC = () => {
   const fetchServices = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/api/products/");
+      const response = await axios.get("https://exe201-production.up.railway.app/api/products/");
       setServices(response.data);
     } catch (error) {
       console.error("Error fetching services:", error);
@@ -63,7 +63,7 @@ const Booking: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/categories/");
+      const response = await axios.get("https://exe201-production.up.railway.app/api/categories/");
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories:", error);

@@ -5,7 +5,10 @@ import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = 
+  window.location.hostname === "localhost"
+      ? "http://localhost:5000/api"
+      : "https://exe201-production.up.railway.app";
 
 const SettingPage = () => {
   const { token } = useAuth();
