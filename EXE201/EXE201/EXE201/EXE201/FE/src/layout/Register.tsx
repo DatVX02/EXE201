@@ -157,7 +157,11 @@ const Register: React.FC = () => {
       <div className="flex justify-center flex-1 bg-white h-[100vh] w-[100vw]">
         <div className="p-4 lg:w-1/2 mt-6">
           <Link to="/">
-            <img src={logo1} alt="logo" className="w-70 h-10 ml-8 object-contain" />
+            <img
+              src={logo1}
+              alt="logo"
+              className="w-70 h-10 ml-8 object-contain"
+            />
           </Link>
           <div className="flex flex-col items-center ">
             {/* <div className="text-center "> */}
@@ -228,6 +232,17 @@ const Register: React.FC = () => {
                   name="address"
                   placeholder="Vui lòng nhập địa chỉ"
                   value={formData.address}
+                  onChange={handleInputChange}
+                />
+                <label className="text-sm font-medium text-left text-gray-700">
+                  Số điện thoại
+                </label>
+                <input
+                  className="w-full px-4 py-2 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
+                  type="text"
+                  name="phone_number"
+                  placeholder="Vui lòng nhập số điện thoại"
+                  value={formData.phone_number}
                   onChange={handleInputChange}
                 />
 
