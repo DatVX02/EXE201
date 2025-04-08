@@ -38,7 +38,7 @@ console.log("🔗 Mongo URI:", process.env.MONGO_URI);
 
 // MongoDB connect
 mongoose
-  .connect(process.env.MONGO_URL, {
+  .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -49,7 +49,7 @@ mongoose
 app.use("/api/payments/webhook", webhookRoutes);
 app.use("/api/payments", paymentRoutes);
 app.post("/create-payment-link", async (req, res) => {
-  const YOUR_DOMAIN = process.env.MONGO_URL || "http://localhost:5000";
+  const YOUR_DOMAIN = process.env.MONGO_URI || "http://localhost:5000";
   const body = {
     orderCode: Number(String(Date.now()).slice(-6)),
     amount: 1000,
@@ -84,4 +84,8 @@ app.use("/api/booking", book);
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
+});
+
+app.get("/", (req, res) => {
+  res.send("Server is running!");
 });
