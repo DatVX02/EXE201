@@ -36,15 +36,6 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // Debug: Check URI đúng chưa
 console.log("🔗 Mongo URI:", process.env.MONGO_URI);
 
-// MongoDB connect
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log("MongoDB Connection Error:", err));
-
 // Payment
 app.use("/api/payments/webhook", webhookRoutes);
 app.use("/api/payments", paymentRoutes);
@@ -79,6 +70,16 @@ app.use("/api/questions", questionRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/ratings", ratingRoutes);
 app.use("/api/booking", book);
+
+
+// MongoDB connect
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.log("MongoDB Connection Error:", err));
 
 // Start server
 const PORT = process.env.PORT || 5000;
