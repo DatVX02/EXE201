@@ -453,7 +453,7 @@ const HomePage: React.FC = () => {
                             <span className="text-lg text-gray-600">
                               {service.duration
                                 ? `${service.duration} minutes`
-                                : "Duration TBD"}
+                                : ""}
                             </span>
                           </div>
                           <motion.button

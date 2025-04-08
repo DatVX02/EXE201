@@ -106,7 +106,7 @@ const Booking: React.FC = () => {
                     {service.description}
                   </p>
                   <p className="text-lg font-bold text-gray-900 mb-2">
-                    {service.price ? `${service.price} VNĐ` : "Liên hệ"}
+                    {service.price ? `${(service.price).toLocaleString("vi-VN")} VNĐ` : "Liên hệ"}
                   </p>
                 </motion.div>
               ))}
