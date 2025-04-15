@@ -6,11 +6,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Layout from "../../layout/Layout";
-import Rating from '@mui/material/Rating';
+import Rating from "@mui/material/Rating";
 import CartComponent from "../../components/Cart/CartComponent";
 import { useAuth } from "../../context/AuthContext";
 import { Service, Therapist, Booking } from "../../types/booking";
-
 
 const EnhancedBookingPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -41,10 +40,10 @@ const EnhancedBookingPage: React.FC = () => {
     serviceRating: number;
     serviceContent: string;
   };
-  
+
   const [ratings, setRatings] = useState<RatingType[]>([]);
   const [loadingRatings, setLoadingRatings] = useState<boolean>(true);
-  const API_BASE_URL = 
+  const API_BASE_URL =
     window.location.hostname === "localhost"
       ? "http://localhost:5000/api"
       : "https://exe201-production.up.railway.app/api";
@@ -58,23 +57,23 @@ const EnhancedBookingPage: React.FC = () => {
     setCustomerEmail(user?.email || user?.username || "");
   }, [user]);
 
- const addToCart = async (bookingData: any) => {
-   try {
-     const response = await fetch(`${API_BASE_URL}/cart`, {
-       method: "POST",
-       headers: {
-         "Content-Type": "application/json",
-         "x-auth-token": token || "",
-       },
-       body: JSON.stringify(bookingData),
-     });
-     if (!response.ok) throw new Error("Không thể thêm vào giỏ hàng.");
-     await fetchCart();
-     toast.success("Đã thêm dịch vụ vào giỏ hàng.");
-   } catch (error: any) {
-     toast.error(error.message);
-   }
- };
+  const addToCart = async (bookingData: any) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/cart`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-auth-token": token || "",
+        },
+        body: JSON.stringify(bookingData),
+      });
+      if (!response.ok) throw new Error("Không thể thêm vào giỏ hàng.");
+      await fetchCart();
+      toast.success("Đã thêm dịch vụ vào giỏ hàng.");
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
 
   const validateForm = (): boolean => {
     const errors: string[] = [];
@@ -108,15 +107,14 @@ const EnhancedBookingPage: React.FC = () => {
     return `${priceValue.toLocaleString("vi-VN")} VNĐ`;
   };
 
- const calculateTotal = (): number => {
-   return cart
-     .filter(
-       (item) =>
-         item.status === "completed" && item.productType === "consultation"
-     )
-     .reduce((sum, item) => sum + (item.totalPrice || 0), 0);
- };
-
+  const calculateTotal = (): number => {
+    return cart
+      .filter(
+        (item) =>
+          item.status === "completed" && item.productType === "consultation"
+      )
+      .reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+  };
 
   const formatTotal = (): string => {
     const totalValue = calculateTotal();
@@ -345,27 +343,27 @@ const EnhancedBookingPage: React.FC = () => {
     }
   }, [service]);
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!selectedDate || !selectedSlot || !service) return;
-  const bookingData = {
-    username: user?.username,
-    service_id: service.service_id,
-    serviceName: service.name,
-    bookingDate: selectedDate,
-    startTime: selectedSlot,
-    customerName,
-    customerEmail,
-    customerPhone,
-    totalPrice:
-      typeof service.price === "number"
-        ? service.price
-        : parseFloat(service.price?.$numberDecimal || "0"),
-    status: "completed",
-    productType: "consultation",
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedDate || !selectedSlot || !service) return;
+    const bookingData = {
+      username: user?.username,
+      service_id: service.service_id,
+      serviceName: service.name,
+      bookingDate: selectedDate,
+      startTime: selectedSlot,
+      customerName,
+      customerEmail,
+      customerPhone,
+      totalPrice:
+        typeof service.price === "number"
+          ? service.price
+          : parseFloat(service.price?.$numberDecimal || "0"),
+      status: "completed",
+      productType: "consultation",
+    };
+    await addToCart(bookingData);
   };
-  await addToCart(bookingData);
-};
 
   return (
     <Layout>
@@ -656,8 +654,10 @@ const handleSubmit = async (e: React.FormEvent) => {
 
           <motion.div className="container mx-auto py-16 px-6 relative">
             {isAuthenticated && (
-              <CartComponent handleCheckout={async () => {}} isBookingPage={true} />
-
+              <CartComponent
+                handleCheckout={async () => {}}
+                isBookingPage={true}
+              />
             )}
 
             <div className="mt-12 bg-white p-6 rounded-lg shadow-lg">

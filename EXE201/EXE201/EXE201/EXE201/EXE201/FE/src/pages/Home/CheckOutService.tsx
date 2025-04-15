@@ -102,11 +102,14 @@ const CheckoutService: React.FC = () => {
           orderCode: result.data.orderCode, // ✅ thêm dòng này
         };
 
-        await fetch("https://exe201-production.up.railway.app/api/booking/create", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(bookingPayload),
-        });
+        await fetch(
+          "https://exe201-production.up.railway.app/api/booking/create",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(bookingPayload),
+          }
+        );
       }
 
       // 3. Xoá giỏ hàng và chuyển sang trang thanh toán
