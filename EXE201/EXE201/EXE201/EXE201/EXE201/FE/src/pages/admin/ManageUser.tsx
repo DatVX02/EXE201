@@ -39,7 +39,7 @@ function ManageUser() {
     }
     try {
       console.log("Fetching users with token:", token);
-      const response = await axios.get("https://exe201-production.up.railway.app/api/users/", {
+      const response = await axios.get("http://localhost:5000/api/users/", {
         headers: { "x-auth-token": token },
       });
       console.log("Fetched users:", response.data);

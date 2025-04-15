@@ -125,7 +125,7 @@ const AdminHeader: React.FC = () => {
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-        <Badge count={5} size='small'>
+        {/* <Badge count={5} size='small'>
           <BellOutlined
             style={{
               fontSize: "20px",
@@ -135,7 +135,7 @@ const AdminHeader: React.FC = () => {
               borderRadius: "50%",
             }}
           />
-        </Badge>
+        </Badge> */}
 
         <Dropdown
           overlay={userMenu}

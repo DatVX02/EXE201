@@ -32,7 +32,7 @@ const Login: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await fetch("https://exe201-production.up.railway.app/api/auth/login", {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

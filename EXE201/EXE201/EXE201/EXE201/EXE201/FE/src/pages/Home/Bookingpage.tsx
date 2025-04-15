@@ -58,41 +58,23 @@ const EnhancedBookingPage: React.FC = () => {
     setCustomerEmail(user?.email || user?.username || "");
   }, [user]);
 
-  const addToCart = async (bookingData: any) => {
-    try {
-      if (!token) {
-        throw new Error("Bạn cần đăng nhập để thêm vào giỏ hàng.");
-      }
-
-      console.log("📌 Dữ liệu gửi lên API:", bookingData);
-
-      const response = await fetch(`${API_BASE_URL}/cart`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-auth-token": token,
-        },
-        body: JSON.stringify(bookingData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          `Failed to add to cart: ${response.status} - ${
-            errorData.message || "Bad Request"
-          }`
-        );
-      }
-
-      const responseData = await response.json();
-      console.log("📌 API Response:", responseData);
-      await fetchCart();
-      toast.success("Đã thêm dịch vụ vào giỏ hàng.");
-    } catch (error: any) {
-      console.error("Error adding to cart:", error.message);
-      toast.error(error.message || "Không thể thêm vào giỏ hàng.");
-    }
-  };
+ const addToCart = async (bookingData: any) => {
+   try {
+     const response = await fetch(`${API_BASE_URL}/cart`, {
+       method: "POST",
+       headers: {
+         "Content-Type": "application/json",
+         "x-auth-token": token || "",
+       },
+       body: JSON.stringify(bookingData),
+     });
+     if (!response.ok) throw new Error("Không thể thêm vào giỏ hàng.");
+     await fetchCart();
+     toast.success("Đã thêm dịch vụ vào giỏ hàng.");
+   } catch (error: any) {
+     toast.error(error.message);
+   }
+ };
 
   const validateForm = (): boolean => {
     const errors: string[] = [];
@@ -363,46 +345,27 @@ const EnhancedBookingPage: React.FC = () => {
     }
   }, [service]);
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!validateForm() || !service || !user?.username) {
-      toast.error("Vui lòng nhập đầy đủ thông tin!");
-      return;
-    }
-
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(selectedDate)) {
-      toast.error("Ngày đặt lịch không hợp lệ!");
-      return;
-    }
-
-    console.log("📌 Selected Date from Form:", selectedDate);
-
-    const bookingData = {
-      username: user.username,
-      service_id: service.service_id,
-      serviceName: service.name,
-      bookingDate: selectedDate,
-      startTime: selectedSlot!,
-      customerName,
-      customerEmail,
-      customerPhone,
-      notes: notes || undefined,
-      Skincare_staff: selectedTherapist?.name || undefined,
-      totalPrice:
-        typeof service.price === "number"
-          ? service.price
-          : service.price?.$numberDecimal
-          ? parseFloat(service.price.$numberDecimal)
-          : 0,
-      status: "pending",
-    };
-
-    console.log("📌 Dữ liệu gửi lên API:", bookingData);
-    await addToCart(bookingData);
-
-    setSelectedDate("");
-    setSelectedSlot(null);
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!selectedDate || !selectedSlot || !service) return;
+  const bookingData = {
+    username: user?.username,
+    service_id: service.service_id,
+    serviceName: service.name,
+    bookingDate: selectedDate,
+    startTime: selectedSlot,
+    customerName,
+    customerEmail,
+    customerPhone,
+    totalPrice:
+      typeof service.price === "number"
+        ? service.price
+        : parseFloat(service.price?.$numberDecimal || "0"),
+    status: "completed",
+    productType: "consultation",
   };
+  await addToCart(bookingData);
+};
 
   return (
     <Layout>

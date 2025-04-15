@@ -52,11 +52,11 @@ const items: MenuItem[] = [
   getItem("BlogManagement", "/admin/blog-management", <InboxOutlined />),
   getItem("PaymentManagement", "/admin/payment-management", <QrcodeOutlined />),
   getItem("RatingManagement", "/admin/rating-management", <StarOutlined />),
-  getItem(
-    "QuestionManagement",
-    "/admin/question-management",
-    <QuestionOutlined />
-  ),
+  // getItem(
+  //   "QuestionManagement",
+  //   "/admin/question-management",
+  //   <QuestionOutlined />
+  // ),
 ];
 
 const AdminDashboard: React.FC = () => {

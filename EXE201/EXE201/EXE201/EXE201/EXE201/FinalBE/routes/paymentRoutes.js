@@ -30,7 +30,7 @@ router.post("/create", async (req, res) => {
   const truncatedDescription =
     description.length > 25 ? description.substring(0, 25) : description;
 
-  const orderCode = Number(String(new Date().getTime()).slice(-6));
+  const orderCode = Date.now(); // đảm bảo không bị trùng
 
   try {
     // 🔹 Lưu từng sản phẩm booking vào DB
@@ -50,13 +50,15 @@ router.post("/create", async (req, res) => {
         price,
         paymentMethod,
         productType: item.productType || "purchase",
-        orderCode, // ✅ bắt buộc để cập nhật về sau
+        orderCode,
       });
       await newBooking.save();
     }
 
-    // 🔹 Nếu là phương thức PayOS → gọi API tạo link
-    if (paymentMethod === "payos") {
+    // 🔹 Kiểm tra nếu có ít nhất một sản phẩm là "purchase"
+    const hasPurchase = cart.some((item) => item.productType === "purchase");
+
+    if (paymentMethod === "payos" && hasPurchase) {
       const paymentLinkRes = await payOS.createPaymentLink({
         orderCode,
         amount,
@@ -66,7 +68,6 @@ router.post("/create", async (req, res) => {
         orderName,
       });
 
-      // 🔹 Lưu payment
       const newPayment = new Payment({
         orderCode,
         orderName,
@@ -76,7 +77,6 @@ router.post("/create", async (req, res) => {
         returnUrl,
         cancelUrl,
       });
-
       await newPayment.save();
 
       return res.json({
@@ -91,12 +91,26 @@ router.post("/create", async (req, res) => {
         },
       });
     } else {
-      // 🔹 Nếu thanh toán COD hoặc Bank → không cần tạo link
+      // 🔹 Trường hợp consultation hoặc thanh toán khác (bank, cod,...)
+      const newPayment = new Payment({
+        orderCode,
+        orderName,
+        amount,
+        description: truncatedDescription,
+        status: "pending",
+        returnUrl,
+        cancelUrl,
+      });
+      await newPayment.save();
+
       return res.json({
         error: 0,
         message: "Đơn hàng đã được lưu. Không cần thanh toán online.",
         data: {
           checkoutUrl: returnUrl,
+          orderCode,
+          amount,
+          description: truncatedDescription,
         },
       });
     }
@@ -112,6 +126,7 @@ router.post("/create", async (req, res) => {
     });
   }
 });
+
 
 // 🔹 API kiểm tra trạng thái thanh toán
 router.get("/:orderId", async (req, res) => {
