@@ -22,7 +22,9 @@ const SkinAssessmentQuiz: React.FC = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await axios.get("https://exe201-production.up.railway.app/api/questions");
+        const response = await axios.get(
+          "https://exe201-production.up.railway.app/api/questions"
+        );
         const formattedQuestions = response.data.map((q: any) => ({
           id: q._id,
           question: q.text,
@@ -47,13 +49,19 @@ const SkinAssessmentQuiz: React.FC = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const formattedAnswers = Object.entries(answers).map(([questionId, answer]) => {
-        const question = questions.find((q) => q.id.toString() === questionId);
-        return {
-          questionId: questionId,
-          selectedOptionIndex: question ? question.options.indexOf(answer) : -1,
-        };
-      });
+      const formattedAnswers = Object.entries(answers).map(
+        ([questionId, answer]) => {
+          const question = questions.find(
+            (q) => q.id.toString() === questionId
+          );
+          return {
+            questionId: questionId,
+            selectedOptionIndex: question
+              ? question.options.indexOf(answer)
+              : -1,
+          };
+        }
+      );
 
       if (formattedAnswers.some((ans) => ans.selectedOptionIndex === -1)) {
         message.error("Có câu trả lời không hợp lệ. Vui lòng kiểm tra lại.");
@@ -61,7 +69,10 @@ const SkinAssessmentQuiz: React.FC = () => {
         return;
       }
 
-      const response = await axios.post("https://exe201-production.up.railway.app/api/questions/submit", { answers: formattedAnswers });
+      const response = await axios.post(
+        "https://exe201-production.up.railway.app/api/questions/submit",
+        { answers: formattedAnswers }
+      );
 
       setResult(response.data.message || "Kết quả đã được gửi thành công.");
       setBestMatch(response.data.bestMatch || "Không có kết quả phù hợp.");
@@ -74,7 +85,9 @@ const SkinAssessmentQuiz: React.FC = () => {
   return (
     <Layout>
       <div className="p-8 bg-gradient-to-r from-green-100 to-blue-200 rounded-lg shadow-xl max-w-4xl mx-auto transition-all duration-500">
-        <h2 className="text-4xl font-semibold text-center text-gray-800 mb-8">Trắc nghiệm đánh giá về bệnh tiểu đường</h2>
+        <h2 className="text-4xl font-semibold text-center text-gray-800 mb-8">
+          Trắc nghiệm đánh giá về bệnh tiểu đường
+        </h2>
         <Steps current={current} onChange={setCurrent} className="mb-6">
           {questions.map((_, index) => (
             <Step key={index} />
@@ -83,11 +96,20 @@ const SkinAssessmentQuiz: React.FC = () => {
 
         {questions[current] && (
           <Card
-            title={<span className="font-medium text-2xl">{questions[current].question}</span>}
+            title={
+              <span className="font-medium text-2xl">
+                {questions[current].question}
+              </span>
+            }
             bordered={false}
             className="shadow-lg mb-6 p-6 bg-white rounded-lg transition-all"
           >
-            <Radio.Group onChange={(e) => handleAnswerChange(questions[current].id, e.target.value)} className="w-full">
+            <Radio.Group
+              onChange={(e) =>
+                handleAnswerChange(questions[current].id, e.target.value)
+              }
+              className="w-full"
+            >
               {questions[current].options.map((option, index) => (
                 <Radio
                   key={index}
@@ -131,12 +153,18 @@ const SkinAssessmentQuiz: React.FC = () => {
 
         {result && (
           <div className="mt-8">
-            <Card title="Kết quả" bordered={false} className="shadow-lg mb-6 p-6 bg-white rounded-lg">
+            <Card
+              title="Kết quả"
+              bordered={false}
+              className="shadow-lg mb-6 p-6 bg-white rounded-lg"
+            >
               <p className="text-2xl text-green-600 font-semibold">{result}</p>
               {bestMatch && (
                 <div className="mt-4">
                   <h4 className="text-xl font-medium">Kết quả phù hợp nhất:</h4>
-                  <p className="text-lg">{bestMatch.charAt(0).toUpperCase() + bestMatch.slice(1)}</p>
+                  <p className="text-lg">
+                    {bestMatch.charAt(0).toUpperCase() + bestMatch.slice(1)}
+                  </p>
                 </div>
               )}
             </Card>

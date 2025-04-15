@@ -34,7 +34,9 @@ const ServicePage: React.FC = () => {
   const fetchServices = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("https://exe201-production.up.railway.app/api/products/");
+      const response = await axios.get(
+        "https://exe201-production.up.railway.app/api/products/"
+      );
       const filteredServices = response.data.filter(
         (service: Service) => service.productType === "consultation"
       );

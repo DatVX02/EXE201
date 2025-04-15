@@ -34,7 +34,9 @@ const Servicepagebooking: React.FC = () => {
   const fetchServices = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("https://exe201-production.up.railway.app/api/products/");
+      const response = await axios.get(
+        "https://exe201-production.up.railway.app/api/products/"
+      );
       const filteredServices = response.data.filter(
         (service: Service) => service.productType === "consultation"
       );
@@ -73,8 +75,6 @@ const Servicepagebooking: React.FC = () => {
 
   return (
     <div className="container mx-auto px-6 py-16">
-      
-
       {loading ? (
         <div className="text-xl font-semibold text-center text-gray-500">
           Đang tải dịch vụ...

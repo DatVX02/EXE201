@@ -70,7 +70,7 @@ const HomePage: React.FC = () => {
   const [showCheckoutModal, setShowCheckoutModal] = useState<boolean>(false);
   const [paymentUrl, setPaymentUrl] = useState<string>("");
   const [qrCode, setQrCode] = useState<string>("");
-  const API_BASE_URL = 
+  const API_BASE_URL =
     window.location.hostname === "localhost"
       ? "http://localhost:5000/api"
       : "https://exe201-production.up.railway.app/api";
@@ -369,8 +369,8 @@ const HomePage: React.FC = () => {
               Bạn cần nắm
             </motion.p>
             <motion.button
-              onClick={() =>
-                services.length > 0 && handleRedirect() //services[0]._id
+              onClick={
+                () => services.length > 0 && handleRedirect() //services[0]._id
               }
               className="px-8 py-4 bg-yellow-400 text-gray-900 rounded-full text-lg font-semibold hover:bg-yellow-300 transition duration-300 ease-in-out transform"
               variants={buttonVariants}
@@ -535,7 +535,8 @@ const HomePage: React.FC = () => {
                         {therapist.name}
                       </h4>
                       <p className="text-base text-gray-600 font-medium line-clamp-2">
-                        Kinh nghiệm: {therapist.Description ||
+                        Kinh nghiệm:{" "}
+                        {therapist.Description ||
                           "Chuyên gia tận tâm với nhiều năm kinh nghiệm trong lĩnh vực chăm sóc về bệnh tiểu đường."}
                       </p>
                     </div>

@@ -101,7 +101,10 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
               },
               body: JSON.stringify({ status: "checked-out", action: null }),
             }).then((res) => {
-              if (!res.ok) throw new Error(`Không thể cập nhật mục giỏ hàng ${item.CartID}`);
+              if (!res.ok)
+                throw new Error(
+                  `Không thể cập nhật mục giỏ hàng ${item.CartID}`
+                );
             })
           )
       );
@@ -137,14 +140,21 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
             className="bg-white rounded-lg shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
           >
             <div className="p-6">
-              <h3 className="text-2xl font-semibold mb-6 text-gray-800">Xác Nhận Thanh Toán</h3>
+              <h3 className="text-2xl font-semibold mb-6 text-gray-800">
+                Xác Nhận Thanh Toán
+              </h3>
 
               {loadingCart ? (
-                <p className="text-center text-gray-600">Đang tải giỏ hàng...</p>
+                <p className="text-center text-gray-600">
+                  Đang tải giỏ hàng...
+                </p>
               ) : cartError ? (
                 <p className="text-center text-red-600">{cartError}</p>
-              ) : cart.filter((item) => item.status === "completed").length === 0 ? (
-                <p className="text-center text-gray-600">Không có mục nào để thanh toán.</p>
+              ) : cart.filter((item) => item.status === "completed").length ===
+                0 ? (
+                <p className="text-center text-gray-600">
+                  Không có mục nào để thanh toán.
+                </p>
               ) : (
                 <>
                   <ul className="space-y-4 max-h-[40vh] overflow-y-auto">
@@ -156,12 +166,16 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                           className="flex justify-between py-2 border-b last:border-b-0"
                         >
                           <div className="text-sm">
-                            <p className="font-semibold text-gray-800">{item.serviceName}</p>
+                            <p className="font-semibold text-gray-800">
+                              {item.serviceName}
+                            </p>
                             <p className="text-gray-600">
                               {item.bookingDate} - {item.startTime}
                             </p>
                             {item.Skincare_staff && (
-                              <p className="text-gray-600">ID Nhân viên: {item.Skincare_staff}</p>
+                              <p className="text-gray-600">
+                                ID Nhân viên: {item.Skincare_staff}
+                              </p>
                             )}
                           </div>
                           <span className="font-bold text-gray-800 whitespace-nowrap">
@@ -179,12 +193,22 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
                   {qrCode && (
                     <div className="mt-6 text-center">
-                      <p className="text-lg font-semibold mb-2">Quét QR để thanh toán:</p>
+                      <p className="text-lg font-semibold mb-2">
+                        Quét QR để thanh toán:
+                      </p>
                       {/* Uncomment nếu sử dụng gói QRCode */}
                       {/* <QRCode value={paymentUrl} size={180} className="mx-auto" /> */}
-                      <img src={qrCode} alt="QR Code" className="mx-auto max-w-[180px]" />
+                      <img
+                        src={qrCode}
+                        alt="QR Code"
+                        className="mx-auto max-w-[180px]"
+                      />
                       <p className="mt-4 text-blue-600">
-                        <a href={paymentUrl} target="_blank" rel="noopener noreferrer">
+                        <a
+                          href={paymentUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
                           Nhấn vào đây nếu QR không hoạt động
                         </a>
                       </p>

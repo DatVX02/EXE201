@@ -15,11 +15,14 @@ interface CartComponentProps {
   isBookingPage?: boolean;
 }
 
-const CartComponent: React.FC<CartComponentProps> = ({ handleCheckout, isBookingPage = false }) => {
+const CartComponent: React.FC<CartComponentProps> = ({
+  handleCheckout,
+  isBookingPage = false,
+}) => {
   const { cart, fetchCart, loadingCart, cartError, user, token } = useAuth();
   const [showCart, setShowCart] = useState<boolean>(false);
 
-  const API_BASE_URL = "http://localhost:5000/api";
+  const API_BASE_URL = "https://exe201-production.up.railway.app/api";
 
   useEffect(() => {
     let isMounted = true;
@@ -44,7 +47,9 @@ const CartComponent: React.FC<CartComponentProps> = ({ handleCheckout, isBooking
   }, [fetchCart, user]);
 
   // Filter cart items for the current user
-  const userCart = cart.filter((item) => item.username === (user as AuthUser)?.username);
+  const userCart = cart.filter(
+    (item) => item.username === (user as AuthUser)?.username
+  );
 
   // Debug: Log the cart data
   useEffect(() => {
@@ -126,7 +131,9 @@ const CartComponent: React.FC<CartComponentProps> = ({ handleCheckout, isBooking
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Không thể hủy giỏ hàng: Lỗi server");
+        throw new Error(
+          errorData.message || "Không thể hủy giỏ hàng: Lỗi server"
+        );
       }
 
       const data = await response.json();
@@ -137,7 +144,9 @@ const CartComponent: React.FC<CartComponentProps> = ({ handleCheckout, isBooking
       toast.success("Giỏ hàng đã được hủy thành công!");
     } catch (error) {
       console.error("Lỗi khi hủy giỏ hàng:", error);
-      toast.error(error instanceof Error ? error.message : "Không thể hủy giỏ hàng.");
+      toast.error(
+        error instanceof Error ? error.message : "Không thể hủy giỏ hàng."
+      );
     }
   };
 

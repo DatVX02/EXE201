@@ -61,7 +61,7 @@ const BookingDetail: React.FC = () => {
     toast.success(`Đã thêm sản phẩm ${service?.name} giỏ hàng!`);
     setTimeout(() => {
       navigate("/cart");
-    }, 1000);   
+    }, 1000);
   };
 
   const addToCart = () => {
