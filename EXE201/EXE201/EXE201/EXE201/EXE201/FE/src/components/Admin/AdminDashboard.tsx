@@ -9,6 +9,7 @@ import {
   QuestionOutlined,
   ProductOutlined,
   MoneyCollectOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Layout, Menu } from "antd";
@@ -52,11 +53,11 @@ const items: MenuItem[] = [
   getItem("Quản lý bài viết", "/admin/blog-management", <InboxOutlined />),
   getItem("Quản lý thanh toán", "/admin/payment-management", <QrcodeOutlined />),
   getItem("Quản lý đánh giá", "/admin/rating-management", <StarOutlined />),
-  // getItem(
-  //   "QuestionManagement",
-  //   "/admin/question-management",
-  //   <QuestionOutlined />
-  // ),
+  getItem(
+    "Cài đặt",
+    "/admin/settings",
+    <SettingOutlined />
+  ),
 ];
 
 const AdminDashboard: React.FC = () => {

@@ -34,7 +34,7 @@ const SettingPage = () => {
     }
 
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/auth/me`, {
+      const response = await axios.get(`${API_BASE_URL}/auth/me`, {
         headers: { "x-auth-token": token },
       });
 
@@ -63,7 +63,7 @@ const SettingPage = () => {
 
     try {
       const response = await axios.put(
-        `${API_BASE_URL}/api/auth/update-profile`,
+        `${API_BASE_URL}/auth/update-profile`,
         formData,
         {
           headers: {

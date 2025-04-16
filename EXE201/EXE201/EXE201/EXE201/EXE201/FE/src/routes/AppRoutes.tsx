@@ -47,6 +47,9 @@ import BookingDetail from "../pages/Home/BookingDetail";
 import Cart from "../pages/Home/Cart";
 import CheckOutService from "../pages/Home/CheckOutService";
 import Customer_layout from "../pages/Customer/Customer_layout";
+import ChatBox from "../pages/Chatbox/ChatBox";
+import DoctorChatList from "../pages/Therapist/DoctorChatList";
+import DoctorChat from "../pages/Therapist/DoctorChat";
 const AppRoutes: React.FC = () => {
   return (
     <AuthProvider>
@@ -86,12 +89,15 @@ const AppRoutes: React.FC = () => {
             <Route path="payment-management" element={<ManagePayment />} />
             <Route path="rating-management" element={<ManageRating />} />
             <Route path="question-management" element={<ManageQuestion />} />
+            <Route path="settings" element={<SettingPage />} />
           </Route>
           {/* The therapist router */}
           <Route path="/doctor_staff" element={<TherapistManagement />}>
             <Route path="list-of-assigned" element={<ListOfAssigned />} />
             <Route path="perfom-service" element={<PerformService />} />
-            <Route path="service-history" element={<ServiceHistory />} />
+            <Route path="/doctor_staff/chat" element={<DoctorChatList />} />
+            <Route path="/doctor_staff/chat/:cartId" element={<DoctorChat />} />
+            <Route path="settings" element={<SettingPage />} />
           </Route>
           {/* Staff router */}
           <Route path="/staff" element={<StaffManagement />}>
@@ -126,6 +132,7 @@ const AppRoutes: React.FC = () => {
               </>
             }
           />
+          <Route path="/chat" element={<ChatBox />} />
         </Routes>
       </Router>
     </AuthProvider>

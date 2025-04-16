@@ -3,6 +3,7 @@ import {
   HistoryOutlined,
   ScheduleOutlined,
   CustomerServiceOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Layout, Menu } from "antd";
@@ -29,21 +30,17 @@ function getItem(
 
 const items: MenuItem[] = [
   getItem(
-    "List of Assigned ",
+    "Đơn hàng bác sĩ ",
     "/doctor_staff/list-of-assigned",
     <ScheduleOutlined />
   ),
 
-  getItem(
-    "Perform Service",
-    "/doctor_staff/perfom-service",
-    <CustomerServiceOutlined />
-  ),
-  getItem(
-    "Service History",
-    "/doctor_staff/service-history ",
-    <HistoryOutlined />
-  ),
+  getItem("Cài đặt", "/doctor_staff/settings", <SettingOutlined />),
+  // getItem(
+  //   "Service History",
+  //   "/doctor_staff/chat ",
+  //   <HistoryOutlined />
+  // ),
 ];
 
 const TherapistManagement: React.FC = () => {
@@ -54,13 +51,14 @@ const TherapistManagement: React.FC = () => {
       <AdminHeader />
       <Layout style={{ marginTop: "80px" }}>
         <Sider
-          className='mt-5'
-          theme='light'
+          className="mt-5"
+          theme="light"
           collapsible
           collapsed={collapsed}
-          onCollapse={(value) => setCollapsed(value)}>
-          <div className='demo-logo-vertical' />
-          <Menu defaultSelectedKeys={["1"]} mode='inline' items={items} />
+          onCollapse={(value) => setCollapsed(value)}
+        >
+          <div className="demo-logo-vertical" />
+          <Menu defaultSelectedKeys={["1"]} mode="inline" items={items} />
         </Sider>
         <Layout>
           <Content style={{ margin: " 16px" }}>

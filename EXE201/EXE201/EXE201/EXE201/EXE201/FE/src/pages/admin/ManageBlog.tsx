@@ -2,10 +2,10 @@ import { Form, Input, Select } from "antd";
 import { useEffect, useState } from "react";
 import api from "../../api/apiService";
 import ManageTemplate from "../../components/ManageTemplate/ManageTemplate";
-import { render } from "react-dom";
+// import { render } from "react-dom";
 
 function ManageBlog() {
-  const title = "Blog";
+  const title = "bài viết";
   const [categories, setCategories] = useState<{ _id: string; name: string }[]>(
     []
   );
@@ -25,11 +25,11 @@ function ManageBlog() {
 
   // Cấu hình cột hiển thị trong bảng
   const columns = [
-    { title: "Title", dataIndex: "title", key: "title" },
-    { title: "Author", dataIndex: "createName", key: "createName" },
+    { title: "Tên", dataIndex: "title", key: "title" },
+    { title: "Tác giả", dataIndex: "createName", key: "createName" },
 
     {
-      title: "Category",
+      title: "Danh mục",
       dataIndex: "categoryId",
       key: "categoryName",
       render: (categoryId: string) => {
@@ -37,9 +37,9 @@ function ManageBlog() {
         return category ? category.name : "N/A";
       },
     },
-    { title: "Content", dataIndex: "content", key: "content" },
+    { title: "Nội dung", dataIndex: "content", key: "content" },
     {
-      title: "Image",
+      title: "Hình ảnh",
       dataIndex: "image",
       key: "image",
       render: (image: string) => (
@@ -53,25 +53,25 @@ function ManageBlog() {
     <>
       <Form.Item
         name='title'
-        label='Title'
+        label='Tên'
         rules={[{ required: true, message: "Please input blog title" }]}>
         <Input />
       </Form.Item>
       <Form.Item
         name='content'
-        label='Content'
+        label='Nội dung'
         rules={[{ required: true, message: "Please input blog content" }]}>
         <Input.TextArea />
       </Form.Item>
       <Form.Item
         name='createName'
-        label='Author Name'
+        label='Tác giả'
         rules={[{ required: true, message: "Please input author name" }]}>
         <Input />
       </Form.Item>
       <Form.Item
         name='categoryId'
-        label='Category'
+        label='Danh mục'
         rules={[{ required: true, message: "Please select a category" }]}>
         <Select placeholder='Select category'>
           {categories.map((cat) => (
@@ -81,7 +81,7 @@ function ManageBlog() {
           ))}
         </Select>
       </Form.Item>
-      <Form.Item name='image' label='Image URL'>
+      <Form.Item name='image' label='Hình ảnh '>
         <Input />
       </Form.Item>
     </>

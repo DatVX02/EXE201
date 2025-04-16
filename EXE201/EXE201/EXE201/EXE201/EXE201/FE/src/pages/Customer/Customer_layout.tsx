@@ -32,9 +32,9 @@ export default function Customer_layout() {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("authToken");
-        const response = await fetch("https://exe201-production.up.railway.app/api/auth/me", {
+        const response = await fetch("http://localhost:5000/api/auth/me", {
           headers: {
-            "x-auth-token": token || ""
+            "x-auth-token": token || "",
           },
         });
         const data = await response.json();

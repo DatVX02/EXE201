@@ -3,6 +3,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../../context/AuthContext";
 import { Therapist, Booking } from "../../types/booking";
+import { useNavigate } from "react-router-dom";
 
 const statusStyles = {
   pending: { bg: "bg-yellow-100", text: "text-yellow-800", icon: "⏳" },
@@ -12,12 +13,24 @@ const statusStyles = {
   cancel: { bg: "bg-red-100", text: "text-red-800", icon: "✖" },
 } as const;
 
+interface Message {
+  cartId: string;
+  content: string;
+  sender: string;
+  receiver: string;
+  timestamp?: string;
+}
+
 const ListOfAssign: React.FC = () => {
   const { user, cart, setCart, fetchCart, loadingCart, cartError } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [latestMessages, setLatestMessages] = useState<Record<string, Message>>(
+    {}
+  );
   const [currentPage, setCurrentPage] = useState(1);
   const bookingsPerPage = 5;
-  const API_BASE_URL = 
+  const navigate = useNavigate();
+  const API_BASE_URL =
     window.location.hostname === "localhost"
       ? "http://localhost:5000/api"
       : "https://exe201-production.up.railway.app/api";
@@ -29,8 +42,42 @@ const ListOfAssign: React.FC = () => {
   }, [user, fetchCart]);
 
   useEffect(() => {
-    setBookings(cart); // Use cart directly as it’s filtered by Skincare_staff for therapists
+    setBookings(cart);
   }, [cart]);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/messages`, {
+          headers: { "x-auth-token": localStorage.getItem("authToken") || "" },
+        });
+
+        if (!res.ok) throw new Error("Không thể lấy dữ liệu tin nhắn");
+        const data = await res.json();
+        if (!Array.isArray(data))
+          throw new Error("Dữ liệu tin nhắn không hợp lệ");
+
+        const grouped: Record<string, Message> = {};
+        data.forEach((msg: Message) => {
+          const cartMatch = cart.some((b) => b.CartID === msg.cartId);
+          const receiverMatch =
+            msg.receiver?.toLowerCase() === user?.username?.toLowerCase();
+
+          if (cartMatch && receiverMatch) {
+            grouped[msg.cartId] = msg;
+          }
+        });
+
+        setLatestMessages(grouped);
+      } catch (err) {
+        console.error("❌ Lỗi tải tin nhắn:", err);
+      }
+    };
+
+    if (user?.username) {
+      fetchMessages();
+    }
+  }, [cart, user]);
 
   const handleComplete = async (cartId: string) => {
     if (!cartId) {
@@ -44,7 +91,8 @@ const ListOfAssign: React.FC = () => {
 
       const booking = bookings.find((b) => b.CartID === cartId);
       if (!booking) throw new Error("Booking not found.");
-      if (booking.status !== "checked-in") throw new Error("Can only complete 'checked-in' bookings.");
+      if (booking.status !== "checked-in")
+        throw new Error("Can only complete 'checked-in' bookings.");
 
       const response = await fetch(`${API_BASE_URL}/cart/${cartId}`, {
         method: "PUT",
@@ -57,23 +105,39 @@ const ListOfAssign: React.FC = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(`Failed to mark as complete: ${response.status} - ${errorData.message || "Unknown error"}`);
+        throw new Error(
+          `Failed to mark as complete: ${response.status} - ${
+            errorData.message || "Unknown error"
+          }`
+        );
       }
 
       const updatedCart = await response.json();
-      setBookings((prev) => prev.map((b) => (b.CartID === cartId ? { ...b, ...updatedCart.cart } : b)));
-      setCart((prev) => prev.map((b) => (b.CartID === cartId ? { ...b, ...updatedCart.cart } : b)));
+      setBookings((prev) =>
+        prev.map((b) =>
+          b.CartID === cartId ? { ...b, ...updatedCart.cart } : b
+        )
+      );
+      setCart((prev) =>
+        prev.map((b) =>
+          b.CartID === cartId ? { ...b, ...updatedCart.cart } : b
+        )
+      );
       toast.success("Booking marked as completed!");
-      await fetchCart(); // Refresh to sync with server
+      await fetchCart();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
       toast.error(`Failed to complete: ${errorMessage}`);
     }
   };
 
   const indexOfLastBooking = currentPage * bookingsPerPage;
   const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
-  const currentBookings = bookings.slice(indexOfFirstBooking, indexOfLastBooking);
+  const currentBookings = bookings.slice(
+    indexOfFirstBooking,
+    indexOfLastBooking
+  );
   const totalPages = Math.ceil(bookings.length / bookingsPerPage);
 
   const goToPreviousPage = () => {
@@ -87,7 +151,9 @@ const ListOfAssign: React.FC = () => {
   return (
     <div className="container mx-auto p-6">
       <ToastContainer />
-      <h1 className="text-3xl font-bold text-center mb-6">Doctor Assigned Bookings</h1>
+      <h1 className="text-3xl font-bold text-center mb-6">
+        Lịch bác sĩ được giao
+      </h1>
       {loadingCart ? (
         <div className="text-center">
           <svg
@@ -96,7 +162,14 @@ const ListOfAssign: React.FC = () => {
             fill="none"
             viewBox="0 0 24 24"
           >
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
             <path
               className="opacity-75"
               fill="currentColor"
@@ -116,20 +189,37 @@ const ListOfAssign: React.FC = () => {
               <thead className="bg-gray-100">
                 <tr>
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap sticky left-0 bg-gray-100 z-10">
-                    CartID
+                    Mã đơn hàng
                   </th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Customer Name</th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Service Name</th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Booking Date</th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Start Time</th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Total Price (VND)</th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Status</th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Action</th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">
+                    Tên khách hàng
+                  </th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">
+                    Tên dịch vụ
+                  </th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">
+                    Ngày đặt
+                  </th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">
+                    Thời gian bắt đầu
+                  </th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">
+                   Tổng (VND)
+                  </th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">
+                    Trạng thái
+                  </th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">
+                    Nhắn tin
+                  </th>
+                  
                 </tr>
               </thead>
               <tbody>
                 {currentBookings.map((booking) => {
-                  const statusStyle = statusStyles[booking.status] || statusStyles.pending;
+                  const statusStyle =
+                    statusStyles[booking.status] || statusStyles.pending;
+                  const message = latestMessages[booking.CartID || ""];
                   return (
                     <tr
                       key={booking.CartID || Math.random().toString()}
@@ -138,10 +228,18 @@ const ListOfAssign: React.FC = () => {
                       <td className="py-2 px-4 border-b whitespace-nowrap sticky left-0 bg-white z-10">
                         {booking.BookingID || "N/A"}
                       </td>
-                      <td className="py-2 px-4 border-b whitespace-nowrap">{booking.customerName}</td>
-                      <td className="py-2 px-4 border-b whitespace-nowrap">{booking.serviceName}</td>
-                      <td className="py-2 px-4 border-b whitespace NOWRAP">{booking.bookingDate}</td>
-                      <td className="py-2 px-4 border-b whitespace-nowrap">{booking.startTime}</td>
+                      <td className="py-2 px-4 border-b whitespace-nowrap">
+                        {booking.customerName}
+                      </td>
+                      <td className="py-2 px-4 border-b whitespace-nowrap">
+                        {booking.serviceName}
+                      </td>
+                      <td className="py-2 px-4 border-b whitespace-nowrap">
+                        {booking.bookingDate}
+                      </td>
+                      <td className="py-2 px-4 border-b whitespace-nowrap">
+                        {booking.startTime}
+                      </td>
                       <td className="py-2 px-4 border-b whitespace-nowrap">
                         {booking.totalPrice?.toLocaleString("vi-VN") || "N/A"}
                       </td>
@@ -152,18 +250,17 @@ const ListOfAssign: React.FC = () => {
                           {statusStyle.icon} {booking.status}
                         </span>
                       </td>
-                      <td className="py-2 px-4 border-b whitespace-nowrap">
-                        {booking.status === "checked-in" ? (
-                          <button
-                            onClick={() => handleComplete(booking.CartID || "")}
-                            className="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600 transition-all duration-300 whitespace-nowrap"
-                          >
-                            Complete
-                          </button>
-                        ) : (
-                          <span className="text-gray-500">No Action</span>
-                        )}
+                      <td className="py-2 px-4 border-b whitespace-nowrap max-w-xs">
+                        <button
+                          onClick={() =>
+                            navigate(`/doctor_staff/chat/${booking.CartID}`)
+                          }
+                          className="text-blue-600 underline hover:text-blue-800"
+                        >
+                          Nhắn tin
+                        </button>
                       </td>
+                      
                     </tr>
                   );
                 })}

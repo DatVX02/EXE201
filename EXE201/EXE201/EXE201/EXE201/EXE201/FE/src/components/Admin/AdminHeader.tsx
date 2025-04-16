@@ -64,21 +64,21 @@ const AdminHeader: React.FC = () => {
     <Menu
       style={dropdownMenuStyle.menu}
       items={[
-        {
-          key: "profile",
-          icon: <UserOutlined style={dropdownMenuStyle.icon} />,
-          label: "My Profile",
-          style: dropdownMenuStyle.item,
-          className: "hover:bg-yellow-50",
-        },
-        {
-          key: "settings",
-          icon: <SettingOutlined style={dropdownMenuStyle.icon} />,
-          label: "Settings",
-          style: dropdownMenuStyle.item,
-          className: "hover:bg-yellow-50",
-          onClick: () => navigate("/settings"),
-        },
+        // {
+        //   key: "profile",
+        //   icon: <UserOutlined style={dropdownMenuStyle.icon} />,
+        //   label: "My Profile",
+        //   style: dropdownMenuStyle.item,
+        //   className: "hover:bg-yellow-50",
+        // },
+        // {
+        //   key: "settings",
+        //   icon: <SettingOutlined style={dropdownMenuStyle.icon} />,
+        //   label: "Cài đặt",
+        //   style: dropdownMenuStyle.item,
+        //   className: "hover:bg-yellow-50",
+        //   onClick: () => navigate("/settings"),
+        // },
         {
           type: "divider",
           style: dropdownMenuStyle.divider,
@@ -114,13 +114,13 @@ const AdminHeader: React.FC = () => {
         boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
       }}>
       <div className='flex items-center'>
-        <Link to='/'>
+        {/* <Link to='/'> */}
           <img
             src={logo || "/placeholder.svg"}
             alt='LuLuSpa Logo'
             className='w-16 h-16 rounded-full'
           />
-        </Link>
+        {/* </Link> */}
         
       </div>
 

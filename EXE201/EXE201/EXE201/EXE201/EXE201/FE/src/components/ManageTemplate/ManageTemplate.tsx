@@ -85,7 +85,7 @@ function ManageTemplate({
       await api.post(apiEndpoint, values, {
         headers: { "x-auth-token": token, "Content-Type": "application/json" },
       });
-      toast.success(`${title} created successfully`);
+      toast.success(`${title} tạo thành công`);
       formInstance.resetFields();
       setShowModal(false);
       fetchData();
@@ -101,7 +101,7 @@ function ManageTemplate({
       await api.put(`${apiEndpoint}/${editingId}`, values, {
         headers: { "x-auth-token": token },
       });
-      toast.success(`${title} updated successfully`);
+      toast.success(`${title} câp nhật thành công`);
       formInstance.resetFields();
       setShowModal(false);
       setEditingId(null);
@@ -117,7 +117,7 @@ function ManageTemplate({
       await api.delete(`${apiEndpoint}/${id}`, {
         headers: { "x-auth-token": token },
       });
-      toast.success(`${title} deleted successfully`);
+      toast.success(`${title} xóa thành công`);
       fetchData();
     } catch (error: any) {
       message.error(error.response?.data?.message || `Error deleting ${title}`);
@@ -146,7 +146,7 @@ function ManageTemplate({
                   onClick={() => startEdit(record)}
                 />
                 <Popconfirm
-                  title={`Are you sure you want to delete this ${title}?`}
+                  title={`Bạn có muốn xóa ${title}?`}
                   onConfirm={() => handleDelete(record._id)}
                   okText="Yes"
                   cancelText="No"
@@ -165,7 +165,7 @@ function ManageTemplate({
             key: "actions",
             render: (_: any, record: any) => (
               <Popconfirm
-                title={`Are you sure you want to delete this ${title}?`}
+                title={`Bạn có muốn xóa ${title}?`}
                 onConfirm={() => handleDelete(record._id)}
                 okText="Yes"
                 cancelText="No"
@@ -203,7 +203,7 @@ function ManageTemplate({
           }}
           style={{ marginBottom: "16px" }}
         >
-          Create new {title}
+          Tạo mới {title}
         </Button>
       )}
 
@@ -216,7 +216,7 @@ function ManageTemplate({
 
       {mode !== "view-only" && formItems && (
         <Modal
-          title={editingId ? `Edit ${title}` : `Create new ${title}`}
+          title={editingId ? `Thay đổi ${title}` : `Tạo mới ${title}`}
           open={showModal}
           onCancel={() => {
             setShowModal(false);
@@ -230,9 +230,7 @@ function ManageTemplate({
             labelCol={{ span: 24 }}
             onFinish={handleFormSubmit}
           >
-            {typeof formItems === "function"
-              ? formItems(editingId)
-              : formItems}
+            {typeof formItems === "function" ? formItems(editingId) : formItems}
           </Form>
         </Modal>
       )}

@@ -17,18 +17,18 @@ interface User {
 
 function ManageUser() {
   const { token } = useAuth();
-  const title = "user";
+  const title = "người dùng";
   const [users, setUsers] = useState<User[]>([]);
   const [form] = Form.useForm();
   const [editingId, setEditingId] = useState(null);
 
   const columns = [
-    { title: "Name", dataIndex: "username", key: "username" },
+    { title: "Tên", dataIndex: "username", key: "username" },
     { title: "Email", dataIndex: "email", key: "email" },
-    { title: "Phone", dataIndex: "phone_number", key: "phone_number" },
-    { title: "Gender", dataIndex: "gender", key: "gender" },
-    { title: "Description", dataIndex: "Description", key: "Description" },
-    { title: "Address", dataIndex: "address", key: "address" },
+    { title: "Số điện thoại", dataIndex: "phone_number", key: "phone_number" },
+    { title: "Giới tính", dataIndex: "gender", key: "gender" },
+    { title: "Mô tả", dataIndex: "Description", key: "Description" },
+    { title: "Địa chỉ", dataIndex: "address", key: "address" },
     { title: "Role", dataIndex: "role", key: "role" },
   ];
 
@@ -67,7 +67,7 @@ function ManageUser() {
         JSON.stringify(values, null, 2)
       );
       const response = await axios.post(
-        "https://exe201-production.up.railway.app/api/users/",
+        "http://localhost:5000/api/users/",
         values,
         {
           headers: {
@@ -170,7 +170,7 @@ function ManageUser() {
         >
           <Select disabled={editingUser?.role === "admin"}>
             <Select.Option value="admin">Admin</Select.Option>
-            <Select.Option value="skincare_staff">Doctor staff</Select.Option>
+            <Select.Option value="skincare_staff">Skincare_staff</Select.Option>
             <Select.Option value="staff">Staff</Select.Option>
           </Select>
         </Form.Item>

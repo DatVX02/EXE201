@@ -2,12 +2,12 @@ import { Form, Input, Rate } from "antd";
 import ManageTemplate from "../../components/ManageTemplate/ManageTemplate";
 
 function ManageRating() {
-  const title = "rating";
+  const title = "đánh giá";
   const columns = [
-    { title: "ServiceName", dataIndex: "serviceName", key: "serviceName" },
-    { title: "Rating", dataIndex: "serviceRating", key: "serviceRating" ,render: (rating: number) => <Rate disabled defaultValue={rating} />,},
-    { title: "Comment", dataIndex: "serviceContent", key: "serviceContent" },
-    { title: "User Rating", dataIndex: "createName", key: "createName" },
+    { title: "Tên sản phẩm", dataIndex: "serviceName", key: "serviceName" },
+    { title: "Đánh giá", dataIndex: "serviceRating", key: "serviceRating" ,render: (rating: number) => <Rate disabled defaultValue={rating} />,},
+    { title: "Ghi chú", dataIndex: "serviceContent", key: "serviceContent" },
+    { title: "Người đánh giá", dataIndex: "createName", key: "createName" },
 
     
   ];

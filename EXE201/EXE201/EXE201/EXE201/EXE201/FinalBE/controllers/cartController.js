@@ -317,3 +317,30 @@ exports.getBookedSlots = async (req, res) => {
       .json({ message: "Lỗi khi lấy danh sách giờ đã đặt!", error });
   }
 };
+
+// Lấy thông tin bác sĩ đã được đặt gần nhất cho user
+// Lấy thông tin bác sĩ đã được đặt gần nhất cho user
+exports.getLastBookedDoctor = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const lastBooking = await Cart.findOne({ username })
+      .sort({ bookingDate: -1, startTime: -1 })
+      .select("Skincare_staff CartID");
+
+    if (!lastBooking || !lastBooking.Skincare_staff) {
+      return res.status(404).json({ message: "Không tìm thấy bác sĩ đã đặt." });
+    }
+
+    // ✅ Trả về thêm CartID để dùng trong ChatBox
+    res.status(200).json({
+      doctorUsername: lastBooking.Skincare_staff,
+      cartId: lastBooking.CartID,
+    });
+  } catch (error) {
+    console.error("❌ Lỗi khi lấy bác sĩ:", error);
+    res.status(500).json({ message: "Lỗi server", error });
+  }
+};
+
+

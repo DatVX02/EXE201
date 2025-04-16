@@ -12,16 +12,16 @@ function ManagePayment() {
   };
 
   const columns = [
-    { title: "Order Code", dataIndex: "orderCode", key: "orderCode" },
-    { title: "Order Name", dataIndex: "orderName", key: "orderName" },
+    { title: "Mã đặt hàng", dataIndex: "orderCode", key: "orderCode" },
+    { title: "Tên sản phẩm", dataIndex: "orderName", key: "orderName" },
     {
-      title: "Amount (VND)",
+      title: "Giá trị",
       dataIndex: "amount",
       key: "amount",
       render: (amount: number) => amount.toLocaleString("vi-VN"),
     },
     {
-      title: "Status",
+      title: "Trạng thái",
       dataIndex: "status",
       key: "status",
       render: (status: string) => (

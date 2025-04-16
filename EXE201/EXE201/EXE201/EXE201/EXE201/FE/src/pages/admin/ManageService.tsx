@@ -4,7 +4,7 @@ import api from "../../api/apiService";
 import ManageTemplate from "../../components/ManageTemplate/ManageTemplate";
 
 function ManageService() {
-  const title = "Service";
+  const title = "dịch vụ";
   const [categories, setCategories] = useState<{ _id: string; name: string }[]>(
     []
   );
@@ -50,7 +50,7 @@ function ManageService() {
 
     try {
       const response = await api.post("/products", values);
-      message.success("Service created successfully!");
+      message.success("Tạo dịch vụ thành công");
       form.resetFields();
     } catch (error) {
       if (error instanceof Error) {
@@ -68,25 +68,25 @@ function ManageService() {
   };
 
   const columns = [
-    { title: "Service Name", dataIndex: "name", key: "name" },
-    { title: "Description", dataIndex: "description", key: "description" },
-    { title: "Price", dataIndex: "price", key: "price" },
-    { title: "Duration", dataIndex: "duration", key: "duration" },
+    { title: "Tên dịch vụ", dataIndex: "name", key: "name" },
+    { title: "Mô tả", dataIndex: "description", key: "description" },
+    { title: "Giá", dataIndex: "price", key: "price" },
+    { title: "Thời gian", dataIndex: "duration", key: "duration" },
     {
-      title: "Category",
+      title: "Danh mục",
       dataIndex: "category",
       key: "category",
       render: (category: any) => category?.name || "N/A",
     },
     {
-      title: "Type",
+      title: "Thể loại  ",
       dataIndex: "productType",
       key: "productType",
       render: (type: string) =>
         type === "purchase" ? "Purchase" : "Consultation",
     },
     {
-      title: "Image",
+      title: "Hình ảnh",
       dataIndex: "image",
       key: "image",
       render: (image: string) =>
@@ -102,19 +102,19 @@ function ManageService() {
     <>
       <Form.Item
         name="name"
-        label="Name"
+        label="Tên dịch vụ"
         rules={[{ required: true, message: "Please input service name" }]}
       >
         <Input />
       </Form.Item>
 
-      <Form.Item name="description" label="Description">
+      <Form.Item name="description" label="Mô tả">
         <Input.TextArea />
       </Form.Item>
 
       <Form.Item
         name="price"
-        label="Price"
+        label="Giá"
         rules={[{ required: true, message: "Please input price" }]}
       >
         <InputNumber min={0} style={{ width: "100%" }} />
@@ -123,7 +123,7 @@ function ManageService() {
       {productType !== "purchase" && (
         <Form.Item
           name="duration"
-          label="Duration (minutes)"
+          label="Thời gian (phút)"
           rules={[
             {
               required: productType === "consultation",
@@ -137,7 +137,7 @@ function ManageService() {
 
       <Form.Item
         name="category"
-        label="Category"
+        label="Danh mục"
         rules={[{ required: true, message: "Please select a category" }]}
       >
         <Select placeholder="Select category">
@@ -151,7 +151,7 @@ function ManageService() {
 
       <Form.Item
         name="productType"
-        label="Product Type"
+        label="Loại sản phẩm"
         rules={[{ required: true, message: "Please select a product type" }]}
       >
         <Select
@@ -171,7 +171,7 @@ function ManageService() {
         </Select>
       </Form.Item>
 
-      <Form.Item name="image" label="Image URL">
+      <Form.Item name="image" label="Hình ảnh">
         <Input placeholder="Enter image URL" />
       </Form.Item>
     </>

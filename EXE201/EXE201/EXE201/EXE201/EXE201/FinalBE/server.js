@@ -21,7 +21,7 @@ const questionRoutes = require("./routes/questionRoutes");
 const ratingRoutes = require("./routes/ratingRoutes");
 const blogRoutes = require("./routes/blogRoutes");
 const book = require("./routes/bookingRoutes");
-
+const messageRoutes = require("./routes/messageRoutes");
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*", methods: ["GET", "POST"] } });
@@ -71,7 +71,7 @@ app.use("/api/blogs", blogRoutes);
 app.use("/api/ratings", ratingRoutes);
 app.use("/api/booking", book);
 
-
+app.use("/api/messages", messageRoutes); 
 // MongoDB connect
 mongoose
   .connect(process.env.MONGO_URI, {
@@ -81,6 +81,18 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log("MongoDB Connection Error:", err));
 
+  io.on("connection", (socket) => {
+    console.log("👤 Client connected:", socket.id);
+
+    socket.on("send_message", (data) => {
+      socket.broadcast.emit("receive_message", data);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("👋 Client disconnected:", socket.id);
+    });
+  });
+app.use("/api/messages", require("./routes/messageRoutes"));
 // Start server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {

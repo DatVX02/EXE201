@@ -5,21 +5,21 @@ function ManageCategory() {
   const title = "category";
   const columns = [
    
-    { title: "Name", dataIndex: "name", key: "name" },
-    { title: "Description", dataIndex: "description", key: "description" },
+    { title: "Tên danh mục", dataIndex: "name", key: "name" },
+    { title: "Mô tả", dataIndex: "description", key: "description" },
   ];
 
   const formItems = (
     <>
       <Form.Item
         name="name"
-        label="Name"
+        label="Tên danh mục"
         rules={[{ required: true, message: "Please input category name" }]}
       >
         <Input placeholder="Enter category name" />
       </Form.Item>
 
-      <Form.Item name="description" label="Description">
+      <Form.Item name="description" label="Mô tả">
         <Input.TextArea placeholder="Enter description" />
       </Form.Item>
     </>

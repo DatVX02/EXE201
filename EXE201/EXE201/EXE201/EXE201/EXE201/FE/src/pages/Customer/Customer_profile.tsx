@@ -5,8 +5,8 @@ import { Skeleton, Modal, Rate, Input, Button, message } from "antd";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Booking } from "../../types/booking";
+import ChatBox from "../Chatbox/ChatBox";
 
-// Define status styles
 const statusStyles = {
   pending: { bg: "bg-yellow-100", text: "text-yellow-800", icon: "⏳" },
   "checked-in": { bg: "bg-blue-100", text: "text-blue-800", icon: "✔" },
@@ -22,8 +22,9 @@ const CustomerProfile: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const ordersPerPage = 15;
-  const API_BASE_URL = "https://exe201-production.up.railway.app/api";
-
+  const API_BASE_URL = "http://localhost:5000/api";
+  const [chatCartId, setChatCartId] = useState<string | null>(null);
+  const [chatModalOpen, setChatModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Booking | null>(null);
   const [rating, setRating] = useState<number>(5);
@@ -33,7 +34,7 @@ const CustomerProfile: React.FC = () => {
     if (user?.username) {
       fetchOrders();
     } else {
-      setOrders([]); // Đặt orders rỗng nếu user chưa đăng nhập
+      setOrders([]);
       setLoading(false);
     }
   }, [user]);
@@ -71,19 +72,19 @@ const CustomerProfile: React.FC = () => {
       const data: Booking[] = await response.json();
       setOrders(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Đã xảy ra lỗi không xác định.");
+      setError(
+        err instanceof Error ? err.message : "Đã xảy ra lỗi không xác định."
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // Open Modal for review
   const openReviewModal = (order: Booking) => {
     setSelectedOrder(order);
     setIsModalOpen(true);
   };
 
-  // Close Modal
   const closeReviewModal = () => {
     setIsModalOpen(false);
     setSelectedOrder(null);
@@ -91,7 +92,6 @@ const CustomerProfile: React.FC = () => {
     setReviewText("");
   };
 
-  // Handle Review Submission
   const handleSubmitReview = async () => {
     if (!selectedOrder || !user?.username) {
       message.error("Lỗi: Không có đơn hàng được chọn hoặc chưa đăng nhập.");
@@ -133,6 +133,11 @@ const CustomerProfile: React.FC = () => {
     }
   };
 
+  const openChatWithCart = (cartId: string) => {
+    setChatCartId(cartId);
+    setChatModalOpen(true);
+  };
+
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold text-center mb-6">Lịch Sử Đơn Hàng</h1>
@@ -153,6 +158,7 @@ const CustomerProfile: React.FC = () => {
                 <th className="py-3 px-4 border-b text-left">Khách Hàng</th>
                 <th className="py-3 px-4 border-b text-left">Trạng Thái</th>
                 <th className="py-3 px-4 border-b text-left">Đánh Giá</th>
+                <th className="py-3 px-4 border-b text-left">Hành Động</th>
               </tr>
             </thead>
             <tbody>
@@ -173,15 +179,23 @@ const CustomerProfile: React.FC = () => {
                     </span>
                   </td>
                   <td className="py-2 px-4 border-b">
-                    {order.status === "checked-out" ? (
+                    {order.status === "checked-out" && (
                       <Button
                         type="primary"
                         onClick={() => openReviewModal(order)}
                       >
                         Đánh Giá
                       </Button>
-                    ) : (
-                      <span className="text-gray-400">Chưa thể đánh giá</span>
+                    )}
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    {order.status === "pending" && (
+                      <Button
+                        onClick={() => openChatWithCart(order.CartID)}
+                        type="default"
+                      >
+                        Nhắn Tin
+                      </Button>
                     )}
                   </td>
                 </tr>
@@ -191,6 +205,16 @@ const CustomerProfile: React.FC = () => {
         )}
       </div>
 
+      {/* Modal ChatBox */}
+
+      {/* Modal ChatBox */}
+      <ChatBox
+        cartId={chatCartId || ""}
+        open={chatModalOpen}
+        onClose={() => setChatModalOpen(false)}
+      />
+
+      {/* Modal đánh giá */}
       <Modal
         title="Đánh Giá Dịch Vụ"
         open={isModalOpen}
