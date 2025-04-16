@@ -4,22 +4,22 @@ const axios = require("axios");
 const payOS = require("../utils/payos");
 const Payment = require("../models/Payment");
 const Booking = require("../models/booking");
-//API tạo link thanh toán
+
+// API tạo link thanh toán
 router.post("/create", async (req, res) => {
-  const {
+  let {
     cart,
     customerName,
     customerEmail,
     customerPhone,
     paymentMethod,
-    orderName = "Đơn hàng sản phẩm",
-    description = "Thanh toán đơn hàng",
+    orderName,
+    description,
     returnUrl,
     cancelUrl,
     amount,
   } = req.body;
 
-  // Kiểm tra dữ liệu đầu vào
   if (!cart || cart.length === 0 || !amount || !returnUrl || !cancelUrl) {
     return res.status(400).json({
       error: -1,
@@ -27,13 +27,17 @@ router.post("/create", async (req, res) => {
     });
   }
 
+  const productNames = cart
+    .map((item) => item.name || item.service_name)
+    .join(", ");
+  orderName = orderName || `Đơn hàng: ${productNames}`;
+  description = description || `Thanh toán cho: ${productNames}`;
   const truncatedDescription =
-    description.length > 25 ? description.substring(0, 25) : description;
+    description.length > 50 ? description.substring(0, 50) : description;
 
-  const orderCode = Date.now(); // đảm bảo không bị trùng
+  const orderCode = Date.now();
 
   try {
-    // 🔹 Lưu từng sản phẩm booking vào DB
     for (const item of cart) {
       const price =
         typeof item.price === "object"
@@ -41,6 +45,8 @@ router.post("/create", async (req, res) => {
           : item.price;
 
       const newBooking = new Booking({
+        BookingID: `${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        BookingCode: `${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         service_id: item._id,
         service_name: item.name,
         customerName,
@@ -52,71 +58,56 @@ router.post("/create", async (req, res) => {
         productType: item.productType || "purchase",
         orderCode,
       });
+
       await newBooking.save();
     }
 
-    // 🔹 Kiểm tra nếu có ít nhất một sản phẩm là "purchase"
     const hasPurchase = cart.some((item) => item.productType === "purchase");
+    const hasConsultation = cart.some(
+      (item) => item.productType === "consultation"
+    );
 
-    if (paymentMethod === "payos" && hasPurchase) {
-      const paymentLinkRes = await payOS.createPaymentLink({
+    let paymentLinkRes = null;
+    if ((paymentMethod === "payos" && hasPurchase) || hasConsultation) {
+      paymentLinkRes = await payOS.createPaymentLink({
         orderCode,
         amount,
         description: truncatedDescription,
         returnUrl,
         cancelUrl,
         orderName,
-      });
-
-      const newPayment = new Payment({
-        orderCode,
-        orderName,
-        amount,
-        description: truncatedDescription,
-        status: "pending",
-        returnUrl,
-        cancelUrl,
-      });
-      await newPayment.save();
-
-      return res.json({
-        error: 0,
-        message: "Tạo thanh toán thành công",
-        data: {
-          checkoutUrl: paymentLinkRes.checkoutUrl,
-          qrCode: paymentLinkRes.qrCode,
-          orderCode: paymentLinkRes.orderCode,
-          amount: paymentLinkRes.amount,
-          description: truncatedDescription,
-        },
-      });
-    } else {
-      // 🔹 Trường hợp consultation hoặc thanh toán khác (bank, cod,...)
-      const newPayment = new Payment({
-        orderCode,
-        orderName,
-        amount,
-        description: truncatedDescription,
-        status: "pending",
-        returnUrl,
-        cancelUrl,
-      });
-      await newPayment.save();
-
-      return res.json({
-        error: 0,
-        message: "Đơn hàng đã được lưu. Không cần thanh toán online.",
-        data: {
-          checkoutUrl: returnUrl,
-          orderCode,
-          amount,
-          description: truncatedDescription,
-        },
       });
     }
+
+    const newPayment = new Payment({
+      paymentID: `PAY-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      orderCode,
+      orderName,
+      amount,
+      description: truncatedDescription,
+      status: "pending",
+      returnUrl,
+      cancelUrl,
+      checkoutUrl: paymentLinkRes?.checkoutUrl || returnUrl,
+      qrCode: paymentLinkRes?.qrCode || null,
+    });
+
+    await newPayment.save();
+
+    return res.json({
+      error: 0,
+      message: "Tạo thanh toán thành công",
+      data: {
+        checkoutUrl: paymentLinkRes?.checkoutUrl || returnUrl,
+        qrCode: paymentLinkRes?.qrCode || null,
+        orderCode,
+        amount,
+        description: truncatedDescription,
+      },
+    });
   } catch (error) {
     console.error(
-      "❌ Lỗi khi tạo thanh toán:",
+      "\u274c Lỗi khi tạo thanh toán:",
       error.response?.data || error.message
     );
     return res.status(500).json({
@@ -126,8 +117,6 @@ router.post("/create", async (req, res) => {
     });
   }
 });
-
-
 // 🔹 API kiểm tra trạng thái thanh toán
 router.get("/:orderId", async (req, res) => {
   try {
@@ -142,7 +131,9 @@ router.get("/:orderId", async (req, res) => {
     return res.json({
       error: 0,
       message: "Order retrieved",
-      data: order,
+      data: {
+        ...order._doc, // đảm bảo có checkoutUrl, qrCode
+      },
     });
   } catch (error) {
     console.error("Get Order Error:", error);

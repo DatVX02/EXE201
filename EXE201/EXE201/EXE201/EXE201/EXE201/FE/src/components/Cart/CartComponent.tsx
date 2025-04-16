@@ -3,24 +3,27 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import { useAuth } from "../../context/AuthContext";
 import { Booking } from "../../types/booking";
+import CheckoutModal from "./CheckoutModal";
 
-// Define a minimal type for the user object from useAuth
 type AuthUser = {
   username?: string;
   email?: string;
 };
 
 interface CartComponentProps {
-  handleCheckout?: () => Promise<void>;
   isBookingPage?: boolean;
 }
 
 const CartComponent: React.FC<CartComponentProps> = ({
-  handleCheckout,
   isBookingPage = false,
 }) => {
   const { cart, fetchCart, loadingCart, cartError, user, token } = useAuth();
   const [showCart, setShowCart] = useState<boolean>(false);
+
+  // ✅ Modal & Payment states
+  const [showModal, setShowModal] = useState(false);
+  const [paymentUrl, setPaymentUrl] = useState("");
+  const [qrCode, setQrCode] = useState("");
 
   const API_BASE_URL = "https://exe201-production.up.railway.app/api";
 
@@ -46,16 +49,9 @@ const CartComponent: React.FC<CartComponentProps> = ({
     };
   }, [fetchCart, user]);
 
-  // Filter cart items for the current user
   const userCart = cart.filter(
     (item) => item.username === (user as AuthUser)?.username
   );
-
-  // Debug: Log the cart data
-  useEffect(() => {
-    console.log("Cart data:", cart);
-    console.log("User cart filtered:", userCart);
-  }, [cart, userCart]);
 
   const calculateTotal = (): number => {
     return userCart
@@ -68,7 +64,6 @@ const CartComponent: React.FC<CartComponentProps> = ({
     return `${totalValue.toLocaleString("vi-VN")} VNĐ`;
   };
 
-  // Map status to user-friendly Vietnamese labels
   const getStatusLabel = (status: string | undefined): string => {
     switch (status) {
       case "pending":
@@ -82,12 +77,10 @@ const CartComponent: React.FC<CartComponentProps> = ({
       case "cancel":
         return "Đã hủy";
       default:
-        console.warn("Unexpected status value:", status); // Debug log
         return "Không xác định";
     }
   };
 
-  // Map status to corresponding colors
   const getStatusColor = (status: string | undefined): string => {
     switch (status) {
       case "pending":
@@ -118,8 +111,6 @@ const CartComponent: React.FC<CartComponentProps> = ({
         throw new Error("Bạn cần đăng nhập để hủy giỏ hàng.");
       }
 
-      console.log(`Attempting to cancel cart item with ID: ${cartID}`); // Debug log
-
       const response = await fetch(`${API_BASE_URL}/cart/${cartID}`, {
         method: "PUT",
         headers: {
@@ -136,10 +127,6 @@ const CartComponent: React.FC<CartComponentProps> = ({
         );
       }
 
-      const data = await response.json();
-      console.log(`Successfully canceled cart item with ID: ${cartID}`, data); // Debug log
-
-      // Làm mới giỏ hàng từ server
       await fetchCart();
       toast.success("Giỏ hàng đã được hủy thành công!");
     } catch (error) {
@@ -180,10 +167,10 @@ const CartComponent: React.FC<CartComponentProps> = ({
             </h3>
             {loadingCart ? (
               <p className="text-gray-600">Đang tải giỏ hàng...</p>
-            ) : cartError && cartError.includes("404") ? ( // Kiểm tra lỗi 404
+            ) : cartError && cartError.includes("404") ? (
               <p className="text-gray-600">Giỏ hàng của bạn trống.</p>
             ) : cartError ? (
-              <p className="text-red-600">{cartError}</p> // Hiển thị lỗi khác nếu có
+              <p className="text-red-600">{cartError}</p>
             ) : userCart.length > 0 ? (
               <>
                 {userCart.map((item) => (
@@ -232,10 +219,7 @@ const CartComponent: React.FC<CartComponentProps> = ({
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={
-                    handleCheckout ||
-                    (() => (window.location.href = "/booking"))
-                  }
+                  onClick={() => setShowModal(true)}
                   disabled={
                     !userCart.some((item) => item.status === "completed")
                   }
@@ -263,6 +247,21 @@ const CartComponent: React.FC<CartComponentProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ✅ Gắn Modal */}
+      <CheckoutModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        cart={userCart}
+        fetchCart={fetchCart}
+        loadingCart={loadingCart}
+        cartError={cartError}
+        paymentUrl={paymentUrl}
+        setPaymentUrl={setPaymentUrl}
+        qrCode={qrCode}
+        setQrCode={setQrCode}
+        API_BASE_URL={API_BASE_URL}
+      />
     </>
   );
 };

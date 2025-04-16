@@ -41,48 +41,53 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
     return `${totalValue.toLocaleString("vi-VN")} VNĐ`;
   };
 
-  const handleCheckout = async () => {
-    const checkedInItems = cart.filter((item) => item.status === "completed");
-    if (checkedInItems.length === 0) {
-      toast.error("Không có mục nào được chọn để thanh toán.");
-      setShowModal(false);
-      return;
+  const [showQrCode, setShowQrCode] = React.useState(false);
+
+const handleCheckout = async () => {
+  const checkedInItems = cart.filter((item) => item.status === "completed");
+  if (checkedInItems.length === 0) {
+    toast.error("Không có mục nào được chọn để thanh toán.");
+    setShowModal(false);
+    return;
+  }
+
+  const totalAmount = calculateTotal();
+  const orderName = checkedInItems[0]?.serviceName || "Nhiều dịch vụ";
+  let description = `Dịch vụ ${orderName.substring(0, 25)}`;
+  if (description.length > 25) description = description.substring(0, 25);
+
+  const returnUrl = "http://localhost:5000/success.html";
+  const cancelUrl = "http://localhost:5000/cancel.html";
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/payments/create`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        cart: checkedInItems,
+        amount: totalAmount,
+        orderName,
+        description,
+        returnUrl,
+        cancelUrl,
+        paymentMethod: "payos",
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok || data.error !== 0 || !data.data) {
+      throw new Error(`Lỗi API: ${data.message || "Lỗi không xác định"}`);
     }
 
-    const totalAmount = calculateTotal();
-    const orderName = checkedInItems[0]?.serviceName || "Nhiều dịch vụ";
-    let description = `Dịch vụ ${orderName.substring(0, 25)}`;
-    if (description.length > 25) description = description.substring(0, 25);
-
-    const returnUrl = "https://exe201-production.up.railway.app/success.html";
-    const cancelUrl = "https://exe201-production.up.railway.app/cancel.html";
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/payments/create`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: totalAmount,
-          orderName,
-          description,
-          returnUrl,
-          cancelUrl,
-        }),
-      });
-
-      const data = await response.json();
-      if (!response.ok || data.error !== 0 || !data.data) {
-        throw new Error(`Lỗi API: ${data.message || "Lỗi không xác định"}`);
-      }
-
-      setPaymentUrl(data.data.checkoutUrl);
-      setQrCode(data.data.qrCode);
-    } catch (error: any) {
-      console.error("❌ Lỗi trong quá trình thanh toán:", error);
-      toast.error("Khởi tạo thanh toán thất bại. Vui lòng thử lại.");
-      setShowModal(false);
-    }
-  };
+    setPaymentUrl(data.data.checkoutUrl);
+    setQrCode(data.data.qrCode);
+    setShowQrCode(true); // ✅ Đảm bảo QR hiển thị
+  } catch (error: any) {
+    console.error("❌ Lỗi trong quá trình thanh toán:", error);
+    toast.error("Khởi tạo thanh toán thất bại. Vui lòng thử lại.");
+    setShowModal(false);
+  }
+};
 
   const handlePayment = async () => {
     try {
@@ -191,27 +196,40 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     </p>
                   </div>
 
-                  {qrCode && (
+                  {paymentUrl && (
                     <div className="mt-6 text-center">
-                      <p className="text-lg font-semibold mb-2">
-                        Quét QR để thanh toán:
-                      </p>
-                      {/* Uncomment nếu sử dụng gói QRCode */}
-                      {/* <QRCode value={paymentUrl} size={180} className="mx-auto" /> */}
-                      <img
-                        src={qrCode}
-                        alt="QR Code"
-                        className="mx-auto max-w-[180px]"
-                      />
-                      <p className="mt-4 text-blue-600">
-                        <a
-                          href={paymentUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Nhấn vào đây nếu QR không hoạt động
-                        </a>
-                      </p>
+                      {!showQrCode ? (
+                        <p className="text-blue-600 underline text-sm text-center">
+                          <button
+                            onClick={() => setShowQrCode(true)}
+                            className="text-blue-600 underline"
+                          >
+                            👉 Nhấn vào đây để mở link thanh toán nếu QR không
+                            hoạt động
+                          </button>
+                        </p>
+                      ) : (
+                        <>
+                          <p className="text-lg font-semibold mb-2">
+                            Quét QR để thanh toán:
+                          </p>
+                          <img
+                            src={qrCode}
+                            alt="QR Code"
+                            className="mx-auto max-w-[180px]"
+                          />
+                          <p className="mt-4 text-blue-600 text-sm text-center">
+                            <a
+                              href={paymentUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="underline"
+                            >
+                              👉 Nhấn vào đây để mở trang PayOS nếu muốn
+                            </a>
+                          </p>
+                        </>
+                      )}
                     </div>
                   )}
 

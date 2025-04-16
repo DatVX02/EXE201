@@ -77,8 +77,12 @@ const Cart: React.FC = () => {
     try {
       const cartWithProductType = cart.map((item) => ({
         ...item,
-        productType: "purchase", // hoặc lấy từ DB nếu đã có
+        productType: "purchase",
       }));
+
+      const productNames = cart.map((item) => item.name).join(", ");
+      const orderName = `Đơn hàng: ${productNames}`;
+      const description = `Thanh toán cho: ${productNames}`;
 
       const response = await fetch(
         "https://exe201-production.up.railway.app/api/payments/create",
@@ -89,20 +93,18 @@ const Cart: React.FC = () => {
           },
           body: JSON.stringify({
             cart: cartWithProductType,
-            orderName: "Thanh toán đơn hàng",
-            description: "Đơn hàng mua sản phẩm",
+            orderName,
+            description,
             returnUrl: "http://localhost:3000/payment-success",
             cancelUrl: "http://localhost:3000/payment-cancel",
             amount: total,
-            paymentMethod: "payos", // hoặc để chọn sau
+            paymentMethod: "payos",
           }),
         }
       );
 
       const data = await response.json();
       if (response.ok && data?.data?.checkoutUrl) {
-        // clear cart nếu muốn
-        // localStorage.removeItem("cart");
         window.location.href = data.data.checkoutUrl;
       } else {
         alert(data.message || "Lỗi khi tạo đơn hàng.");
@@ -112,6 +114,7 @@ const Cart: React.FC = () => {
       alert("Không thể kết nối đến máy chủ.");
     }
   };
+
 
   return (
     <Layout>

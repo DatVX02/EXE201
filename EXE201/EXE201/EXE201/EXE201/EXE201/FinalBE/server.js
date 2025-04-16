@@ -39,24 +39,24 @@ console.log("🔗 Mongo URI:", process.env.MONGO_URI);
 // Payment
 app.use("/api/payments/webhook", webhookRoutes);
 app.use("/api/payments", paymentRoutes);
-app.post("/create-payment-link", async (req, res) => {
-  const YOUR_DOMAIN = process.env.MONGO_URI || "http://localhost:5000";
-  const body = {
-    orderCode: Number(String(Date.now()).slice(-6)),
-    amount: 1000,
-    description: "Thanh toan don hang",
-    returnUrl: `${YOUR_DOMAIN}/success.html`,
-    cancelUrl: `${YOUR_DOMAIN}/cancel.html`,
-  };
+// app.post("/create-payment-link", async (req, res) => {
+//   const YOUR_DOMAIN = process.env.MONGO_URI || "http://localhost:5000";
+//   const body = {
+//     orderCode: Number(String(Date.now()).slice(-6)),
+//     amount: 1000,
+//     description: "Thanh toan don hang",
+//     returnUrl: `${YOUR_DOMAIN}/success.html`,
+//     cancelUrl: `${YOUR_DOMAIN}/cancel.html`,
+//   };
 
-  try {
-    const paymentLinkResponse = await payOS.createPaymentLink(body);
-    res.redirect(paymentLinkResponse.checkoutUrl);
-  } catch (error) {
-    console.error(error);
-    res.send("Something went wrong");
-  }
-});
+//   try {
+//     const paymentLinkResponse = await payOS.createPaymentLink(body);
+//     res.redirect(paymentLinkResponse.checkoutUrl);
+//   } catch (error) {
+//     console.error(error);
+//     res.send("Something went wrong");
+//   }
+// });
 
 // Routes
 app.use("/api/auth", authRoutes);
