@@ -513,8 +513,8 @@ const EnhancedBookingPage: React.FC = () => {
       service.discountedPrice ??
       (typeof service.price === "number"
         ? service.price
-        : service.price
-        ? parseFloat(service.price)
+        : typeof service.price === "object" && service.price.$numberDecimal
+        ? parseFloat(service.price.$numberDecimal)
         : 0);
 
     const bookingData = {
