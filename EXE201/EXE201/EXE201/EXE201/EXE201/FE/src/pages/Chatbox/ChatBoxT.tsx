@@ -11,12 +11,14 @@ interface Message {
 }
 
 interface ChatBoxProps {
-  cartId: string; // 👈 CartID từ đơn hàng đã đặt
+  cartId: string;
+  doctorUsername: string;
   open: boolean;
   onClose: () => void;
 }
 
-const ChatBox: React.FC<ChatBoxProps> = ({ cartId, open, onClose }) => {
+
+const ChatBoxT: React.FC<ChatBoxProps> = ({ cartId, open, onClose }) => {
   const { user, token } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMsg, setNewMsg] = useState("");
@@ -154,4 +156,4 @@ const ChatBox: React.FC<ChatBoxProps> = ({ cartId, open, onClose }) => {
   );
 };
 
-export default ChatBox;
+export default ChatBoxT;

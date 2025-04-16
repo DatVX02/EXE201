@@ -31,7 +31,7 @@ import StaffManagement from "../components/Staff/StaffManagement";
 import CheckOut from "../pages/Staff/CheckOut"; // Sử dụng component CheckOut
 
 //therapist
-import ServiceHistory from "../pages/Therapist/ServiceHistory";
+// import ServiceHistory from "../pages/Therapist/ServiceHistory";
 import TherapistManagement from "../components/Therapist/TherapistManagement";
 import ListOfAssigned from "../pages/Therapist/ListOfAssigned";
 import PerformService from "../pages/Therapist/PerformService";
@@ -47,9 +47,11 @@ import BookingDetail from "../pages/Home/BookingDetail";
 import Cart from "../pages/Home/Cart";
 import CheckOutService from "../pages/Home/CheckOutService";
 import Customer_layout from "../pages/Customer/Customer_layout";
-import ChatBox from "../pages/Chatbox/ChatBox";
+// import ChatBox from "../pages/Chatbox/ChatBoxT";
 import DoctorChatList from "../pages/Therapist/DoctorChatList";
 import DoctorChat from "../pages/Therapist/DoctorChat";
+// import ChatBoxT from "../pages/Chatbox/ChatBoxT";
+import ChatPage from "../pages/Chatbox/ChatPage";
 const AppRoutes: React.FC = () => {
   return (
     <AuthProvider>
@@ -132,7 +134,7 @@ const AppRoutes: React.FC = () => {
               </>
             }
           />
-          <Route path="/chat" element={<ChatBox />} />
+          <Route path="/chat/:cartId" element={<ChatPage />} />
         </Routes>
       </Router>
     </AuthProvider>

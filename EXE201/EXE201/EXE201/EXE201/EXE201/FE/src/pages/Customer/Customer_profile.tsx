@@ -5,7 +5,8 @@ import { Skeleton, Modal, Rate, Input, Button, message } from "antd";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Booking } from "../../types/booking";
-import ChatBox from "../Chatbox/ChatBox";
+// import ChatBox from "../Chatbox/ChatBoxT";
+import ChatBoxT from "../Chatbox/ChatBoxT";
 
 const statusStyles = {
   pending: { bg: "bg-yellow-100", text: "text-yellow-800", icon: "⏳" },
@@ -133,10 +134,15 @@ const CustomerProfile: React.FC = () => {
     }
   };
 
-  const openChatWithCart = (cartId: string) => {
-    setChatCartId(cartId);
-    setChatModalOpen(true);
-  };
+ const openChatWithCart = (cartId?: string) => {
+   if (!cartId) {
+     console.warn("CartID không hợp lệ khi mở chat");
+     return;
+   }
+   setChatCartId(cartId);
+   setChatModalOpen(true);
+ };
+
 
   return (
     <div className="container mx-auto p-6">
@@ -189,12 +195,9 @@ const CustomerProfile: React.FC = () => {
                     )}
                   </td>
                   <td className="py-2 px-4 border-b">
-                    {[
-                      
-                      "checked-in",
-                      "completed",
-                      "checked-out",
-                    ].includes(order.status) && (
+                    {["checked-in", "completed", "checked-out"].includes(
+                      order.status
+                    ) && (
                       <Button
                         onClick={() => openChatWithCart(order.CartID)}
                         type="default"
@@ -213,8 +216,9 @@ const CustomerProfile: React.FC = () => {
       {/* Modal ChatBox */}
 
       {/* Modal ChatBox */}
-      <ChatBox
+      <ChatBoxT
         cartId={chatCartId || ""}
+        doctorUsername={user?.username || ""}
         open={chatModalOpen}
         onClose={() => setChatModalOpen(false)}
       />

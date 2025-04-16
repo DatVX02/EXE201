@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import ChatBox from "./ChatBox";
+import ChatBoxT from "./ChatBoxT";
 
 const ChatWithDoctorWrapper = () => {
   const { user, token } = useAuth();
   const [doctorUsername, setDoctorUsername] = useState<string | null>(null);
+  const [cartId, setCartId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const API_BASE_URL =
@@ -27,7 +28,7 @@ const ChatWithDoctorWrapper = () => {
         );
         const data = await res.json();
         setDoctorUsername(data.doctorUsername);
-        setCartId(data.cartId); // 👈 truyền vào ChatBox
+        setCartId(data.cartId);
       } catch (error) {
         console.error("❌ Lỗi khi lấy bác sĩ:", error);
       } finally {
@@ -39,13 +40,17 @@ const ChatWithDoctorWrapper = () => {
   }, [user?.username]);
 
   if (loading) return <p>Đang tải bác sĩ...</p>;
-  if (!doctorUsername) return <p>Bạn chưa đặt lịch với bác sĩ nào.</p>;
+  if (!doctorUsername || !cartId)
+    return <p>Bạn chưa đặt lịch với bác sĩ nào.</p>;
 
- return doctorUsername && cartId ? (
-   <ChatBox doctorUsername={doctorUsername} cartId={cartId} />
- ) : (
-   <p>Bạn chưa đặt lịch với bác sĩ nào.</p>
- );
+  return (
+    <ChatBoxT
+      doctorUsername={doctorUsername}
+      cartId={cartId}
+      open={true}
+      onClose={() => {}}
+    />
+  );
 
 };
 
