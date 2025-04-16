@@ -62,7 +62,7 @@ const AppRoutes: React.FC = () => {
             path="/forgot-password"
             element={
               <>
-                <Header />
+                {/* <Header /> */}
                 <Forgot_password />
               </>
             }

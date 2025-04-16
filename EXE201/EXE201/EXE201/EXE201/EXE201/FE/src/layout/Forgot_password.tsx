@@ -4,8 +4,8 @@ import { Modal, Input, Button, message, Spin } from "antd";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import layerImage from "../assets/Logo.png";
-
+import layerImage from "../assets/Backgroundlogin_register.png";
+import Logo from "../assets/logodiabecare_1.png";
 const Forgot_password: React.FC = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -93,20 +93,15 @@ const Forgot_password: React.FC = () => {
 
 
   return (
-    <div className="h-[86vh] flex items-center justify-center px-5 lg:px-0">
+    <div className=" flex items-center justify-center px-5 lg:px-0">
       <ToastContainer />
-      <div className="flex justify-center flex-1 max-w-screen-lg bg-white border shadow sm:rounded-lg">
-        <div className="flex-1 hidden text-center md:flex">
-          <img
-            src={layerImage}
-            alt="logo"
-            className="m-5 rounded-lg aspect-square"
-          />
-        </div>
-
-        <div className="p-4 lg:w-1/2 xl:w-1/2 sm:p-12 md:w-1/3">
-          <div className="flex flex-col items-center">
-            <h1 className="text-2xl font-extrabold text-blue-900 xl:text-4xl">
+      <div className="flex justify-center flex-1 w-[100vw] h-[100vh]  bg-white ">
+        <div className="p-4 lg:w-1/2 xl:w-1/2 sm:p-12 md:w-1/3 mt-20">
+          <Link to="/">
+            <img src={Logo} alt="logo" className="w-70 h-10" />
+          </Link>
+          <div className="flex flex-col items-center mt-24">
+            <h1 className="text-2xl font-extrabold text-[#00B389] xl:text-4xl">
               Forgot password
             </h1>
             <form
@@ -140,6 +135,13 @@ const Forgot_password: React.FC = () => {
               </p>
             </form>
           </div>
+        </div>
+        <div className="flex-1 hidden text-center md:flex">
+          <img
+            src={layerImage}
+            alt="logo"
+            className="w-full h-full  justify-center items-center aspect-square"
+          />
         </div>
       </div>
 
