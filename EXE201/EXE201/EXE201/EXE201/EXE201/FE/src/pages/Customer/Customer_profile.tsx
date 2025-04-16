@@ -189,7 +189,12 @@ const CustomerProfile: React.FC = () => {
                     )}
                   </td>
                   <td className="py-2 px-4 border-b">
-                    {order.status === "pending" && (
+                    {[
+                      
+                      "checked-in",
+                      "completed",
+                      "checked-out",
+                    ].includes(order.status) && (
                       <Button
                         onClick={() => openChatWithCart(order.CartID)}
                         type="default"
