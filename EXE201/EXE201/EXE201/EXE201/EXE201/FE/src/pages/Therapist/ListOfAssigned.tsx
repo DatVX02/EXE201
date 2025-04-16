@@ -212,6 +212,8 @@ const ListOfAssign: React.FC = () => {
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap">
                     Nhắn tin
                   </th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">
+                  </th>
                   
                 </tr>
               </thead>
@@ -260,7 +262,20 @@ const ListOfAssign: React.FC = () => {
                           Nhắn tin
                         </button>
                       </td>
-                      
+                      <td className="py-2 px-4 border-b whitespace-nowrap">
+                        {booking.status !== "completed" ? (
+                          <button
+                            onClick={() => handleComplete(booking.CartID || "")}
+                            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                          >
+                            Success
+                          </button>
+                        ) : (
+                          <span className="text-gray-500 italic">
+                            Đã hoàn tất
+                          </span>
+                        )}
+                      </td>
                     </tr>
                   );
                 })}
