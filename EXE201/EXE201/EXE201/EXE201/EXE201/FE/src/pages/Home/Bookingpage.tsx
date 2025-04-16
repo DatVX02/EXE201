@@ -6,10 +6,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Layout from "../../layout/Layout";
-import Rating from "@mui/material/Rating";
 import CartComponent from "../../components/Cart/CartComponent";
 import { useAuth } from "../../context/AuthContext";
-import { Service, Therapist, Booking } from "../../types/booking";
+import { Service, Therapist, Booking, Rating } from "../../types/booking";
+import { JSX } from "react/jsx-runtime";
 
 const EnhancedBookingPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,32 +21,28 @@ const EnhancedBookingPage: React.FC = () => {
   const [therapistError, setTherapistError] = useState<string | null>(null);
   const [customerName, setCustomerName] = useState<string>("");
   const [customerPhone, setCustomerPhone] = useState<string>("");
-  const [customerEmail, setCustomerEmail] = useState<string>(
-    user?.username || user?.email || ""
-  );
+  const [customerEmail, setCustomerEmail] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
-  const [selectedTherapist, setSelectedTherapist] = useState<Therapist | null>(
-    null
-  );
+  const [selectedTherapist, setSelectedTherapist] = useState<Therapist | null>(null);
   const [showCheckoutModal, setShowCheckoutModal] = useState<boolean>(false);
   const [paymentUrl, setPaymentUrl] = useState<string>("");
   const [qrCode, setQrCode] = useState<string>("");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  type RatingType = {
-    _id: string;
-    createName: string;
-    serviceRating: number;
-    serviceContent: string;
-  };
-
-  const [ratings, setRatings] = useState<RatingType[]>([]);
+  const [ratings, setRatings] = useState<Rating[]>([]);
   const [loadingRatings, setLoadingRatings] = useState<boolean>(true);
+  const [bookedSlots, setBookedSlots] = useState<
+    { startTime: string; endTime: string }[]
+  >([]);
+  const [currentReviewPage, setCurrentReviewPage] = useState(1);
+  const [filterRating, setFilterRating] = useState<string>("All");
+  const reviewsPerPage = 3;
+
   const API_BASE_URL =
     window.location.hostname === "localhost"
       ? "http://localhost:5000/api"
-      : "https://exe201-production.up.railway.app/api";
+      : "https://luluspa-production.up.railway.app/api";
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -54,41 +50,116 @@ const EnhancedBookingPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    setCustomerEmail(user?.email || user?.username || "");
+    setCustomerEmail("");
   }, [user]);
+
+  useEffect(() => {
+    const fetchBookedSlots = async () => {
+      if (!selectedDate || !selectedTherapist) {
+        setBookedSlots([]);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/cart/booked-slots?date=${encodeURIComponent(
+            selectedDate
+          )}&staff=${encodeURIComponent(selectedTherapist.name)}`
+        );
+
+        if (!response.ok) {
+          throw new Error(`API Error: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log("Booked Slots Data:", data);
+
+        const validSlots = (data || []).filter(
+          (slot: any) =>
+            slot.startTime &&
+            slot.endTime &&
+            slot.startTime.match(/^\d{2}:\d{2}$/) &&
+            slot.endTime.match(/^\d{2}:\d{2}$/)
+        );
+
+        if (validSlots.length !== data.length) {
+          console.warn(
+            "Some booked slots have invalid format:",
+            data.filter(
+              (slot: any) =>
+                !slot.startTime ||
+                !slot.endTime ||
+                !slot.startTime.match(/^\d{2}:\d{2}$/) ||
+                !slot.endTime.match(/^\d{2}:\d{2}$/)
+            )
+          );
+          toast.warn("Some booked slots could not be loaded due to invalid format.");
+        }
+
+        setBookedSlots(validSlots);
+      } catch (error) {
+        console.error("Error fetching booked slots:", error);
+        setBookedSlots([]);
+      }
+    };
+
+    fetchBookedSlots();
+  }, [selectedDate, selectedTherapist]);
 
   const addToCart = async (bookingData: any) => {
     try {
+      if (!token) {
+        toast.warning("You need to log in to book.");
+        return;
+      }
+
       const response = await fetch(`${API_BASE_URL}/cart`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-auth-token": token || "",
+          "x-auth-token": token,
         },
         body: JSON.stringify(bookingData),
       });
-      if (!response.ok) throw new Error("Không thể thêm vào giỏ hàng.");
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        if (typeof responseData === "string") {
+          toast.error(responseData);
+        } else if (responseData.message?.includes("Staff")) {
+          toast.warning(responseData.message);
+        } else {
+          toast.error(responseData.message || "Unable to add to cart.");
+        }
+        return;
+      }
+
       await fetchCart();
-      toast.success("Đã thêm dịch vụ vào giỏ hàng.");
-    } catch (error: any) {
-      toast.error(error.message);
+      toast.success("Service added to cart successfully.");
+    } catch {
+      const staffName = bookingData.Skincare_staff || "Unknown";
+      const startTime = bookingData.startTime || "not specified";
+
+      toast.error(
+        `${staffName} is already booked from ${startTime} to unknown. Please choose another time.`
+      );
     }
   };
 
   const validateForm = (): boolean => {
     const errors: string[] = [];
 
-    if (!customerName.trim())
-      errors.push("Tên khách hàng không được để trống.");
+    if (!customerName.trim()) errors.push("Customer name is required.");
     if (!customerPhone.trim() || !/^\d{10}$/.test(customerPhone))
-      errors.push("Số điện thoại phải là 10 chữ số hợp lệ.");
+      errors.push("Phone number must be a valid 10-digit number.");
     if (
       !customerEmail.trim() ||
-      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0.9.-]+\.[a-zA-Z]{2,}$/.test(customerEmail)
+      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(customerEmail)
     )
-      errors.push("Email phải có định dạng hợp lệ.");
-    if (!selectedDate) errors.push("Vui lòng chọn ngày đặt lịch.");
-    if (!selectedSlot) errors.push("Vui lòng chọn khung giờ.");
+      errors.push("Email must be in a valid format.");
+    if (!selectedDate) errors.push("Please select a booking date.");
+    if (!selectedSlot) errors.push("Please select a time slot.");
 
     if (errors.length > 0) {
       toast.error(errors.join(" "));
@@ -97,28 +168,62 @@ const EnhancedBookingPage: React.FC = () => {
     return true;
   };
 
-  const formatPrice = (price?: number | { $numberDecimal: string }): string => {
+  const calculateDiscountPercentage = (
+    price?: number | { $numberDecimal: string },
+    discountedPrice?: number | null | undefined
+  ): number => {
     let priceValue = 0;
     if (typeof price === "object" && price?.$numberDecimal) {
       priceValue = Number.parseFloat(price.$numberDecimal);
     } else if (typeof price === "number") {
       priceValue = price;
     }
-    return `${priceValue.toLocaleString("vi-VN")} VNĐ`;
+
+    if (isNaN(priceValue) || priceValue === 0 || discountedPrice == null) return 0;
+
+    return Math.round(((priceValue - discountedPrice) / priceValue) * 100);
+  };
+
+  const formatPriceDisplay = (
+    price?: number | { $numberDecimal: string },
+    discountedPrice?: number | null | undefined
+  ): JSX.Element => {
+    let priceValue = 0;
+    if (typeof price === "object" && price?.$numberDecimal) {
+      priceValue = Number.parseFloat(price.$numberDecimal);
+    } else if (typeof price === "number") {
+      priceValue = price;
+    }
+
+    if (isNaN(priceValue)) priceValue = 0;
+
+    return (
+      <>
+        <span
+          style={{
+            textDecoration: discountedPrice != null ? "line-through" : "none",
+          }}
+        >
+          {priceValue.toLocaleString("en-US")} VNĐ
+        </span>
+        {discountedPrice != null && (
+          <span style={{ color: "green", marginLeft: "8px" }}>
+            {discountedPrice.toLocaleString("en-US")} VNĐ
+          </span>
+        )}
+      </>
+    );
   };
 
   const calculateTotal = (): number => {
     return cart
-      .filter(
-        (item) =>
-          item.status === "completed" && item.productType === "consultation"
-      )
+      .filter((item) => item.status === "completed")
       .reduce((sum, item) => sum + (item.totalPrice || 0), 0);
   };
 
   const formatTotal = (): string => {
     const totalValue = calculateTotal();
-    return `${totalValue.toLocaleString("vi-VN")} VNĐ`;
+    return `${totalValue.toLocaleString("en-US")} VNĐ`;
   };
 
   const getTodayDate = () => {
@@ -128,8 +233,35 @@ const EnhancedBookingPage: React.FC = () => {
       .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
   };
 
+  const toMinutes = (time: string | undefined): number => {
+    if (!time || !time.match(/^\d{2}:\d{2}$/)) {
+      console.warn(`Invalid time format: ${time}, defaulting to 0 minutes`);
+      return 0;
+    }
+
+    const [h, m] = time.split(":").map(Number);
+    return h * 60 + m;
+  };
+
+  const isTimeOverlap = (
+    slot: string,
+    start: string | undefined,
+    end: string | undefined
+  ): boolean => {
+    if (!start || !end || !start.match(/^\d{2}:\d{2}$/) || !end.match(/^\d{2}:\d{2}$/)) {
+      console.warn(`Invalid startTime (${start}) or endTime (${end})`);
+      return false;
+    }
+
+    const slotTime = toMinutes(slot);
+    const startTime = toMinutes(start);
+    const endTime = toMinutes(end);
+
+    return slotTime >= startTime && slotTime < endTime;
+  };
+
   const generateTimeSlots = () => {
-    const slots = [];
+    const slots: string[] = [];
     const now = new Date();
     const today = getTodayDate();
     const isToday = selectedDate === today;
@@ -141,20 +273,26 @@ const EnhancedBookingPage: React.FC = () => {
         const slot = `${hour.toString().padStart(2, "0")}:${minute
           .toString()
           .padStart(2, "0")}`;
+
         if (isToday) {
-          const slotHour = parseInt(slot.split(":")[0]);
-          const slotMinute = parseInt(slot.split(":")[1]);
           if (
-            slotHour > currentHour ||
-            (slotHour === currentHour && slotMinute > currentMinute)
+            hour < currentHour ||
+            (hour === currentHour && minute < currentMinute)
           ) {
-            slots.push(slot);
+            continue;
           }
-        } else {
+        }
+
+        const isOverlapping = bookedSlots.some((b) =>
+          isTimeOverlap(slot, b.startTime, b.endTime)
+        );
+
+        if (!isOverlapping) {
           slots.push(slot);
         }
       }
     }
+
     return slots;
   };
 
@@ -164,10 +302,12 @@ const EnhancedBookingPage: React.FC = () => {
       return;
     }
 
-    const completedItems = cart.filter(
-      (item) =>
-        item.status === "completed" && item.productType === "consultation"
-    );
+    const completedItems = cart.filter((item) => item.status === "completed");
+    const shouldShowCheckoutButton = completedItems.length > 0;
+    if (completedItems.length === 0) {
+      toast.error("No completed items in the cart to checkout.");
+      return;
+    }
 
     setShowCheckoutModal(true);
 
@@ -176,11 +316,16 @@ const EnhancedBookingPage: React.FC = () => {
       0
     );
     const orderName = completedItems[0]?.serviceName || "Multiple Services";
-    let description = `Dịch vụ ${orderName.substring(0, 25)}`;
+    let description = `Service ${orderName.substring(0, 25)}`;
     if (description.length > 25) description = description.substring(0, 25);
 
-    const returnUrl = "https://exe201-production.up.railway.app/success.html";
-    const cancelUrl = "https://exe201-production.up.railway.app/cancel.html";
+    const BASE_URL =
+      window.location.hostname === "localhost"
+        ? "http://localhost:5000"
+        : "https://luluspa-production.up.railway.app";
+
+    const returnUrl = `${BASE_URL}/success.html`;
+    const cancelUrl = `${BASE_URL}/cancel.html`;
 
     try {
       const response = await fetch(`${API_BASE_URL}/payments/create`, {
@@ -203,8 +348,8 @@ const EnhancedBookingPage: React.FC = () => {
       setPaymentUrl(data.data.checkoutUrl);
       setQrCode(data.data.qrCode);
     } catch (error: any) {
-      console.error("❌ Error during checkout:", error);
-      toast.error("Khởi tạo thanh toán thất bại. Vui lòng thử lại.");
+      console.error("Error during checkout:", error);
+      toast.error("Failed to initiate payment. Please try again.");
       setShowCheckoutModal(false);
     }
   };
@@ -215,23 +360,16 @@ const EnhancedBookingPage: React.FC = () => {
 
       await Promise.all(
         cart
-          .filter(
-            (item) =>
-              item.status === "completed" && item.productType === "consultation"
-          )
+          .filter((item) => item.status === "completed")
           .map((item) =>
-            fetch(
-              `${API_BASE_URL}/cart/${item.CartID}`,
-
-              {
-                method: "PUT",
-                headers: {
-                  "Content-Type": "application/json",
-                  "x-auth-token": token,
-                },
-                body: JSON.stringify({ status: "checked-out" }),
-              }
-            ).then((res) => {
+            fetch(`${API_BASE_URL}/cart/${item.CartID}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                "x-auth-token": token,
+              },
+              body: JSON.stringify({ status: "checked-out" }),
+            }).then((res) => {
               if (!res.ok)
                 throw new Error(`Failed to update cart item ${item.CartID}`);
             })
@@ -240,28 +378,30 @@ const EnhancedBookingPage: React.FC = () => {
 
       await fetchCart();
       setShowCheckoutModal(false);
-      toast.success("Thanh toán và check-out thành công!");
+      toast.success("Payment and checkout completed successfully!");
     } catch (error) {
       console.error("Error updating cart status:", error);
-      toast.error("Lỗi khi cập nhật trạng thái thanh toán.");
+      toast.error("Error updating payment status.");
     }
   };
 
   useEffect(() => {
     const fetchService = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/products/`, {
+        if (!id) {
+          throw new Error("Service ID is missing.");
+        }
+        const response = await fetch(`${API_BASE_URL}/products/${id}`, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
         if (!response.ok)
           throw new Error(`Failed to fetch service: ${response.status}`);
-        const productsData = await response.json();
-        const foundService = productsData.find((s: Service) => s._id === id);
-        setService(foundService || null);
+        const serviceData = await response.json();
+        setService(serviceData || null);
       } catch (error) {
         console.error("Error fetching service data:", error);
-        toast.error("Không thể tải dịch vụ.");
+        toast.error("Failed to load service.");
       } finally {
         setLoading(false);
       }
@@ -274,8 +414,8 @@ const EnhancedBookingPage: React.FC = () => {
   useEffect(() => {
     const fetchTherapists = async () => {
       if (!token) {
-        setTherapistError("Bạn chưa đăng nhập.");
-        toast.error("Bạn chưa đăng nhập.");
+        setTherapistError("You are not logged in.");
+        toast.error("You are not logged in.");
         return;
       }
       setLoadingTherapists(true);
@@ -306,10 +446,8 @@ const EnhancedBookingPage: React.FC = () => {
         );
       } catch (error: any) {
         console.error("Error fetching therapists:", error.message);
-        setTherapistError(
-          `Không thể tải danh sách chuyên viên: ${error.message}`
-        );
-        toast.error(`Không thể tải danh sách chuyên viên: ${error.message}`);
+        setTherapistError(`Failed to load therapists: ${error.message}`);
+        toast.error(`Failed to load therapists: ${error.message}`);
       } finally {
         setLoadingTherapists(false);
       }
@@ -328,13 +466,13 @@ const EnhancedBookingPage: React.FC = () => {
             )}`
           );
           if (!response.ok) {
-            throw new Error("Không thể tải đánh giá.");
+            throw new Error("Failed to load reviews.");
           }
           const data = await response.json();
           setRatings(data);
         } catch (error) {
-          console.error("Lỗi khi lấy đánh giá:", error);
-          // toast.error("Không thể tải đánh giá.");
+          // console.error("Error fetching reviews:", error);
+          // toast.error("Failed to load reviews.");
         } finally {
           setLoadingRatings(false);
         }
@@ -343,34 +481,83 @@ const EnhancedBookingPage: React.FC = () => {
     }
   }, [service]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedDate || !selectedSlot || !service) return;
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!validateForm() || !service || !user?.username) {
+      toast.error("Please fill in all required information!");
+      return;
+    }
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(selectedDate)) {
+      toast.error("Invalid booking date!");
+      return;
+    }
+
+    const totalPrice =
+      service.discountedPrice ??
+      (typeof service.price === "number"
+        ? service.price
+        : service.price
+        ? parseFloat(service.price)
+        : 0);
+
     const bookingData = {
-      username: user?.username,
+      username: user.username,
       service_id: service.service_id,
       serviceName: service.name,
       bookingDate: selectedDate,
-      startTime: selectedSlot,
+      startTime: selectedSlot!,
       customerName,
       customerEmail,
       customerPhone,
-      totalPrice:
-        typeof service.price === "number"
-          ? service.price
-          : parseFloat(service.price?.$numberDecimal || "0"),
-      status: "completed",
-      productType: "consultation",
+      notes: notes || undefined,
+      Skincare_staff: selectedTherapist ? selectedTherapist.name : undefined,
+      totalPrice,
+      status: "pending",
     };
+
     await addToCart(bookingData);
+
+    setCustomerName("");
+    setCustomerPhone("");
+    setCustomerEmail("");
+    setNotes("");
+    setSelectedDate("");
+    setSelectedSlot(null);
+    setSelectedTherapist(null);
+  };
+
+  const filteredRatings =
+    filterRating === "All"
+      ? ratings
+      : ratings.filter(
+          (rating) => rating.serviceRating === Number(filterRating)
+        );
+
+  const indexOfLastReview = currentReviewPage * reviewsPerPage;
+  const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
+  const currentReviews = filteredRatings.slice(
+    indexOfFirstReview,
+    indexOfLastReview
+  );
+  const totalReviewPages = Math.ceil(filteredRatings.length / reviewsPerPage);
+
+  const handleReviewPageChange = (page: number) => {
+    setCurrentReviewPage(page);
   };
 
   return (
     <Layout>
-      <motion.div className="container mx-auto py-16 relative">
-        <h2 className="text-4xl font-bold text-center mb-10 text-gray-800">
-          Đặt lịch dịch vụ
-        </h2>
+      <motion.div className="container mx-auto py-16 px-6 bg-gray-50 min-h-screen">
+        <motion.h2
+          className="text-4xl font-extrabold text-center mb-10 bg-gradient-to-r from-yellow-600 to-white-500 bg-clip-text text-transparent drop-shadow-lg tracking-wide"
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          Đặt lịch
+          <div className="mt-2 h-1 w-24 bg-gradient-to-r from-yellow-600 to-white-500 rounded mx-auto"></div>
+        </motion.h2>
 
         {isAuthenticated && (
           <CartComponent handleCheckout={handleCheckout} isBookingPage={true} />
@@ -388,18 +575,14 @@ const EnhancedBookingPage: React.FC = () => {
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full"
+                className="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full"
               >
                 <h3 className="text-2xl font-semibold mb-6 text-gray-800">
                   Confirm Payment
                 </h3>
                 <ul className="space-y-4">
                   {cart
-                    .filter(
-                      (item) =>
-                        item.status === "completed" &&
-                        item.productType === "consultation"
-                    )
+                    .filter((item) => item.status === "completed")
                     .map((item, index) => (
                       <li
                         key={item.CartID || index}
@@ -419,7 +602,10 @@ const EnhancedBookingPage: React.FC = () => {
                           )}
                         </div>
                         <span className="font-bold text-gray-800">
-                          {item.totalPrice?.toLocaleString("vi-VN")} VNĐ
+                          {formatPriceDisplay(
+                            item.originalPrice || item.totalPrice || 0,
+                            item.discountedPrice
+                          )}
                         </span>
                       </li>
                     ))}
@@ -427,11 +613,18 @@ const EnhancedBookingPage: React.FC = () => {
                 <div className="text-right text-xl font-bold mt-6 text-gray-800">
                   Total: {formatTotal()}
                 </div>
-                <div className="mt-6">
-                  <p className="text-lg font-semibold mb-2">
-                    Scan QR Code to Pay:
-                  </p>
-                </div>
+                {qrCode && (
+                  <div className="mt-6 text-center">
+                    <p className="text-lg font-semibold mb-2">
+                      Scan QR Code to Pay:
+                    </p>
+                    <img
+                      src={qrCode}
+                      alt="QR Code"
+                      className="mx-auto max-w-[180px]"
+                    />
+                  </div>
+                )}
                 <p className="mt-4 text-blue-600 text-center">
                   <a
                     href={paymentUrl}
@@ -446,18 +639,10 @@ const EnhancedBookingPage: React.FC = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setShowCheckoutModal(false)}
-                    className="p-3 bg-gray-200 rounded-lg hover:bg-gray-300"
+                    className="p-3 bg-gray-200 rounded-lg hover:bg-gray-300 text-gray-800 font-medium"
                   >
                     Cancel
                   </motion.button>
-                  {/* <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handlePayment}
-                    className="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                  >
-                    Confirm Payment
-                  </motion.button> */}
                 </div>
               </motion.div>
             </motion.div>
@@ -465,19 +650,21 @@ const EnhancedBookingPage: React.FC = () => {
         </AnimatePresence>
 
         <div className="flex flex-wrap -mx-4">
+          {/* Left Column: Service Info + Reviews */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="w-full lg:w-1/3 px-4 mb-8 lg:mb-0"
           >
+            {/* Service Information */}
             {loading ? (
-              <div className="flex items-center justify-center h-64 bg-gray-100 rounded-lg">
+              <div className="flex items-center justify-center h-64 bg-gray-100 rounded-xl shadow-lg">
                 <p className="text-lg text-gray-600">
                   Loading service details...
                 </p>
               </div>
             ) : service ? (
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <div className="bg-white rounded-xl shadow-lg overflow-hidden relative">
                 <motion.img
                   whileHover={{ scale: 1.05 }}
                   src={service.image || "/default-service.jpg"}
@@ -487,8 +674,19 @@ const EnhancedBookingPage: React.FC = () => {
                     (e.target as HTMLImageElement).src = "/default-service.jpg";
                   }}
                 />
+                {/* Ô tròn đỏ hiển thị % discount */}
+                {service.discountedPrice != null && (
+                  <div className="absolute top-4 right-4 z-20 flex items-center justify-center">
+                    <div className="bg-red-500 text-white font-bold rounded-full h-16 w-16 flex items-center justify-center transform rotate-12 shadow-lg">
+                      <span className="text-lg">
+                        {calculateDiscountPercentage(service.price, service.discountedPrice)}%
+                      </span>
+                      <span className="text-xs block -mt-1">OFF</span>
+                    </div>
+                  </div>
+                )}
                 <div className="p-6">
-                  <h3 className="text-3xl font-bold text-gray-800 mb-4">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-4">
                     {service.name}
                   </h3>
                   <p className="text-gray-600 mb-6 line-clamp-3">
@@ -497,72 +695,177 @@ const EnhancedBookingPage: React.FC = () => {
                   <div className="flex justify-between items-center mb-4">
                     <div>
                       <p className="text-xl font-semibold text-yellow-500">
-                        Giá: {formatPrice(service.price)}
+                        Price:{" "}
+                        {formatPriceDisplay(service.price, service.discountedPrice)}
                       </p>
                       <p className="text-lg text-gray-600">
-                        Thời gian tư vấn: {service.duration || "N/A"} minutes
+                        Duration: {service.duration || "N/A"} minutes
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-64 bg-red-100 rounded-lg">
+              <div className="flex items-center justify-center h-64 bg-red-100 rounded-xl shadow-lg">
                 <p className="text-lg text-red-600">
                   Service not found. Please try again.
                 </p>
               </div>
             )}
+
+            {/* Reviews */}
+            <motion.div
+              className="mt-8 bg-white p-6 rounded-xl shadow-lg"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <h3 className="text-xl font-bold mb-4 text-gray-800 border-b pb-2">
+                Customer Reviews
+              </h3>
+              {/* Star Filter */}
+              <div className="mb-4">
+                <select
+                  value={filterRating}
+                  onChange={(e) => {
+                    setFilterRating(e.target.value);
+                    setCurrentReviewPage(1);
+                  }}
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                >
+                  <option value="All">All Ratings</option>
+                  <option value="5">5 Stars ⭐</option>
+                  <option value="4">4 Stars ⭐</option>
+                  <option value="3">3 Stars ⭐</option>
+                  <option value="2">2 Stars ⭐</option>
+                  <option value="1">1 Star ⭐</option>
+                </select>
+              </div>
+
+              {loadingRatings ? (
+                <p className="text-gray-600 text-center">Loading reviews...</p>
+              ) : filteredRatings.length === 0 ? (
+                <p className="text-gray-600 text-center">
+                  No reviews match this rating.
+                </p>
+              ) : (
+                <>
+                  <div className="space-y-4">
+                    {currentReviews.map((rating) => (
+                      <motion.div
+                        key={rating._id}
+                        className="p-4 border rounded-lg shadow-md bg-gray-50 hover:bg-gray-100 transition duration-300"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <p className="font-bold text-lg text-blue-600">
+                          {rating.createName}
+                        </p>
+                        <p className="text-yellow-500 text-lg">
+                          Rating: {rating.serviceRating} ⭐
+                        </p>
+                        <p className="text-gray-600 mt-2">
+                          {rating.serviceContent}
+                        </p>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* Pagination */}
+                  {filteredRatings.length > reviewsPerPage && (
+                    <div className="flex justify-center mt-6">
+                      <motion.button
+                        onClick={() =>
+                          handleReviewPageChange(currentReviewPage - 1)
+                        }
+                        disabled={currentReviewPage === 1}
+                        className="mx-2 w-10 h-10 rounded-full border-none bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        ←
+                      </motion.button>
+                      {Array.from({ length: totalReviewPages }, (_, i) => (
+                        <motion.button
+                          key={i + 1}
+                          onClick={() => handleReviewPageChange(i + 1)}
+                          className={`mx-2 w-10 h-10 rounded-full ${
+                            currentReviewPage === i + 1
+                              ? "bg-blue-600 text-white hover:bg-blue-700"
+                              : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+                          }`}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          {i + 1}
+                        </motion.button>
+                      ))}
+                      <motion.button
+                        onClick={() =>
+                          handleReviewPageChange(currentReviewPage + 1)
+                        }
+                        disabled={currentReviewPage === totalReviewPages}
+                        className="mx-2 w-10 h-10 rounded-full border-none bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        →
+                      </motion.button>
+                    </div>
+                  )}
+                </>
+              )}
+            </motion.div>
           </motion.div>
 
+          {/* Right Column: Booking Form */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             className="w-full lg:w-2/3 px-4"
           >
-            <h3 className="text-3xl font-bold mb-6 text-gray-800">
-              Đặt lịch khám
-            </h3>
+            
             <form
               onSubmit={handleSubmit}
-              className="space-y-6 bg-white p-6 rounded-lg shadow-md"
+              className="space-y-6 bg-white p-8 rounded-xl shadow-lg"
             >
               <div>
-                <label className="block text-lg text-gray-700 mb-2">
-                  Họ và tên
+                <label className="block text-lg font-medium text-gray-700 mb-2">
+                  Tên người đặt lịch
                 </label>
                 <input
                   type="text"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
-                  className="w-full p-3 border rounded-lg"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                 />
               </div>
               <div>
-                <label className="block text-lg text-gray-700 mb-2">
-                  Số điện thoại
+                <label className="block text-lg font-medium text-gray-700 mb-2">
+                  Số điện thoại 
                 </label>
                 <input
                   type="tel"
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
-                  className="w-full p-3 border rounded-lg"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                 />
               </div>
               <div>
-                <label className="block text-lg text-gray-700 mb-2">
-                  Email (để chúng tôi gửi bạn đơn khám)
+                <label className="block text-lg font-medium text-gray-700 mb-2">
+                  Email
                 </label>
                 <input
                   type="email"
                   value={customerEmail}
                   onChange={(e) => setCustomerEmail(e.target.value)}
-                  className="w-full p-3 border rounded-lg"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                 />
               </div>
               <div>
-                <label className="block text-lg text-gray-700 mb-2">
-                  Ngày đặt khám
+                <label className="block text-lg font-medium text-gray-700 mb-2">
+                  Ngày đặt
                 </label>
                 <input
                   type="date"
@@ -570,28 +873,29 @@ const EnhancedBookingPage: React.FC = () => {
                   onChange={(e) => {
                     const newDate = e.target.value;
                     setSelectedDate(newDate);
-                    console.log("Date Changed:", newDate);
                   }}
                   min={getTodayDate()}
-                  className="w-full p-3 border rounded-lg"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                   required
                 />
               </div>
               <div>
-                <label className="block text-lg text-gray-700 mb-2">
-                  Giờ đặt khám
+                <label className="block text-lg font-medium text-gray-700 mb-2">
+                  Thời gian đặt lịch
                 </label>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-4 gap-3">
                   {generateTimeSlots().map((slot) => (
                     <motion.button
                       key={slot}
                       type="button"
                       onClick={() => setSelectedSlot(slot)}
-                      className={`p-2 border rounded-lg ${
+                      className={`p-3 border rounded-lg text-lg font-medium transition ${
                         selectedSlot === slot
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-100"
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-800"
                       }`}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
                       {slot}
                     </motion.button>
@@ -599,8 +903,8 @@ const EnhancedBookingPage: React.FC = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-lg text-gray-700 mb-2">
-                  Chọn bác sĩ
+                <label className="block text-lg font-medium text-gray-700 mb-2">
+                  Choose Therapist (Optional)
                 </label>
                 {loadingTherapists ? (
                   <p className="text-gray-600">Loading therapists...</p>
@@ -615,12 +919,12 @@ const EnhancedBookingPage: React.FC = () => {
                       );
                       setSelectedTherapist(therapist || null);
                     }}
-                    className="w-full p-3 border rounded-lg"
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                     disabled={therapists.length === 0}
                   >
                     <option value="">
                       {therapists.length > 0
-                        ? "Lựa chọn bác sĩ"
+                        ? "Select a therapist"
                         : "No therapists available"}
                     </option>
                     {therapists.map((therapist) => (
@@ -632,65 +936,26 @@ const EnhancedBookingPage: React.FC = () => {
                 )}
               </div>
               <div>
-                <label className="block text-lg text-gray-700 mb-2">
-                  Lưu ý
+                <label className="block text-lg font-medium text-gray-700 mb-2">
+                  Notes
                 </label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full p-3 border rounded-lg"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                   rows={3}
                 />
               </div>
               <motion.button
                 type="submit"
-                className="w-full p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="w-full p-4 bg-gradient-to-r from-yellow-600 to-white-500 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-green-600 transition duration-300"
                 disabled={!isAuthenticated}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                Đặt lịch
+                Book Now
               </motion.button>
             </form>
-          </motion.div>
-
-          <motion.div className="container mx-auto py-16 px-6 relative">
-            {isAuthenticated && (
-              <CartComponent
-                handleCheckout={async () => {}}
-                isBookingPage={true}
-              />
-            )}
-
-            <div className="mt-12 bg-white p-6 rounded-lg shadow-lg">
-              <h3 className="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">
-                Đánh giá
-              </h3>
-              {loadingRatings ? (
-                <p className="text-gray-600 text-center">Loading ratings...</p>
-              ) : ratings.length === 0 ? (
-                <p className="text-gray-600 text-center">
-                  Chưa có đánh giá về dịch vụ này
-                </p>
-              ) : (
-                <div className="space-y-6">
-                  {ratings.map((rating) => (
-                    <div
-                      key={rating._id}
-                      className="p-4 border rounded-lg shadow-md bg-gray-50 hover:bg-gray-100 transition duration-300"
-                    >
-                      <p className="font-bold text-lg text-blue-600">
-                        {rating.createName}
-                      </p>
-                      <p className="text-yellow-500 text-lg">
-                        Rating: {rating.serviceRating} ⭐
-                      </p>
-                      <p className="text-gray-600 mt-2">
-                        {rating.serviceContent}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
           </motion.div>
         </div>
       </motion.div>

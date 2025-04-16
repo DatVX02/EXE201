@@ -48,9 +48,14 @@ const ListOfAssign: React.FC = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/messages`, {
-          headers: { "x-auth-token": localStorage.getItem("authToken") || "" },
-        });
+        const res = await fetch(
+          `https://exe201-production.up.railway.app/api/messages`,
+          {
+            headers: {
+              "x-auth-token": localStorage.getItem("authToken") || "",
+            },
+          }
+        );
 
         if (!res.ok) throw new Error("Không thể lấy dữ liệu tin nhắn");
         const data = await res.json();

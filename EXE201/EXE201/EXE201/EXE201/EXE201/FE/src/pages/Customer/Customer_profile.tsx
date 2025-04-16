@@ -23,7 +23,7 @@ const CustomerProfile: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const ordersPerPage = 15;
-  const API_BASE_URL = "http://localhost:5000/api";
+  const API_BASE_URL = "https://exe201-production.up.railway.app/api";
   const [chatCartId, setChatCartId] = useState<string | null>(null);
   const [chatModalOpen, setChatModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);

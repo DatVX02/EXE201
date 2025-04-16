@@ -76,7 +76,7 @@ const Forgot_password: React.FC = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/forgot-password/reset",
+        "https://exe201-production.up.railway.app/api/auth/forgot-password/reset",
         {
           email,
           otp,

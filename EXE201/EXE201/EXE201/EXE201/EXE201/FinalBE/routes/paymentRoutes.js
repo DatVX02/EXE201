@@ -33,7 +33,7 @@ router.post("/create", async (req, res) => {
   orderName = orderName || `Đơn hàng: ${productNames}`;
   description = description || `Thanh toán cho: ${productNames}`;
   const truncatedDescription =
-    description.length > 50 ? description.substring(0, 50) : description;
+    description.length > 25 ? description.substring(0, 25) : description;
 
   const orderCode = Date.now();
 

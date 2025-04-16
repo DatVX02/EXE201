@@ -10,7 +10,7 @@ const CustomerBooking: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const API_BASE_URL = "http://localhost:5000/api";
+  const API_BASE_URL = "https://exe201-production.up.railway.app/api";
 
   useEffect(() => {
     if (user?.username) {
@@ -95,9 +95,9 @@ const CustomerBooking: React.FC = () => {
         </p>
       ) : (
         <>
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
-              <thead className="bg-gray-100">
+          <div className="max-h-[500px] overflow-auto rounded-lg border">
+            <table className="min-w-full bg-white border border-gray-300 shadow-md">
+              <thead className="bg-gray-100 sticky top-0 z-10">
                 <tr>
                   <th className="py-3 px-4 border-b text-left">Dịch vụ</th>
                   <th className="py-3 px-4 border-b text-left">Thời gian</th>
@@ -136,22 +136,13 @@ const CustomerBooking: React.FC = () => {
                           ? "Đã thanh toán"
                           : "Chờ xử lý"}
                       </span>
-                      {/* {item.status === "pending" && (
-                        <button
-                          onClick={() =>
-                            updateBookingStatus(item.orderCode, "checked-out")
-                          }
-                          className="ml-2 text-sm text-blue-600 underline hover:text-blue-800"
-                        >
-                          Đánh dấu đã thanh toán
-                        </button>
-                      )} */}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+
           <div className="mt-6 text-right">
             <p className="text-xl font-bold text-gray-800">
               Tổng cộng: {formatTotal()}

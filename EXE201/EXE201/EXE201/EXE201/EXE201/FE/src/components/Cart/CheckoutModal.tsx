@@ -56,8 +56,8 @@ const handleCheckout = async () => {
   let description = `Dịch vụ ${orderName.substring(0, 25)}`;
   if (description.length > 25) description = description.substring(0, 25);
 
-  const returnUrl = "http://localhost:5000/success.html";
-  const cancelUrl = "http://localhost:5000/cancel.html";
+  const returnUrl = "https://exe201-production.up.railway.app/success.html";
+  const cancelUrl = "https://exe201-production.up.railway.app/cancel.html";
 
   try {
     const response = await fetch(`${API_BASE_URL}/payments/create`, {

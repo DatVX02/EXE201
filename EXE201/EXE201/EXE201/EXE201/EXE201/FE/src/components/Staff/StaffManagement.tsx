@@ -29,19 +29,19 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-  getItem("Check In", "/staff/check-in", <CheckOutlined />),
+  getItem("Điểm danh", "/staff/check-in", <CheckOutlined />),
 
-  getItem(
-    "Assign Specialists",
-    "/staff/assign-specialists",
-    <ScheduleOutlined />
-  ),
-  getItem("Check Out", "/staff/check-out", <LogoutOutlined />),
-  getItem(
-    "Appointment Schedules",
-    "/staff/appointment-schedules",
-    <HistoryOutlined />
-  ),
+  // getItem(
+  //   "Assign Specialists",
+  //   "/staff/assign-specialists",
+  //   <ScheduleOutlined />
+  // ),
+  getItem("Xác nhận", "/staff/check-out", <LogoutOutlined />),
+  // getItem(
+  //   "Appointment Schedules",
+  //   "/staff/appointment-schedules",
+  //   <HistoryOutlined />
+  // ),
 ];
 
 const StaffManagement: React.FC = () => {

@@ -209,7 +209,7 @@ const StaffCheckIn: React.FC = () => {
   return (
     <div className="container mx-auto p-6">
       <ToastContainer />
-      <h1 className="text-3xl font-bold text-center mb-6">Staff Check-in Management</h1>
+      <h1 className="text-3xl font-bold text-center mb-6">Quản lý điểm danh </h1>
       {loadingCart ? (
         <div className="text-center">
           <svg
@@ -238,18 +238,18 @@ const StaffCheckIn: React.FC = () => {
               <thead className="bg-gray-100">
                 <tr>
              
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap sticky left-0 bg-gray-100 z-10">Customer Name</th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap sticky left-0 bg-gray-100 z-10">Tên khách hàng</th>
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap">Email</th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Phone</th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Service Name</th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Booking Date</th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Start Time</th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">End Time</th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Total Price (VND)</th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Status</th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Action</th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Doctor</th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Notes</th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Số điện thoại</th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Tên dịch vụ</th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Ngày đặt</th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Thời gian bắt đầu</th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Thời gian kết thúc </th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Tổng (VND)</th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Trạng thái</th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Điểm danh</th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">Bác sĩ đảm nhận </th>
+                  {/* <th className="py-3 px-4 border-b text-left whitespace-nowrap">Ghi chú</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -329,7 +329,7 @@ const StaffCheckIn: React.FC = () => {
                           </select>
                         ) : null}
                       </td>
-                      <td className="py-2 px-4 border-b whitespace-nowrap">{booking.notes || "N/A"}</td>
+                      {/* <td className="py-2 px-4 border-b whitespace-nowrap">{booking.notes || "N/A"}</td> */}
                     </tr>
                   );
                 })}
@@ -346,10 +346,10 @@ const StaffCheckIn: React.FC = () => {
                   : "bg-blue-500 text-white hover:bg-blue-600"
               } transition-all duration-300`}
             >
-              Previous
+              Trang trước 
             </button>
             <span className="py-2 px-4">
-              Page {currentPage} of {totalPages}
+              Trang {currentPage} of {totalPages}
             </span>
             <button
               onClick={goToNextPage}
@@ -360,7 +360,7 @@ const StaffCheckIn: React.FC = () => {
                   : "bg-blue-500 text-white hover:bg-blue-600"
               } transition-all duration-300`}
             >
-              Next
+              Kế tiếp
             </button>
           </div>
           <div className="text-center mt-6">
@@ -369,7 +369,7 @@ const StaffCheckIn: React.FC = () => {
               className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition-all duration-300"
               disabled={loadingCart}
             >
-              {loadingCart ? "Refreshing..." : "Refresh Bookings"}
+              {loadingCart ? "Refreshing..." : "Cập nhật lại trang "}
             </button>
           </div>
         </>
