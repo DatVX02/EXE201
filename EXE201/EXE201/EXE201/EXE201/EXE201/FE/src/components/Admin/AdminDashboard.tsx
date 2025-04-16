@@ -34,10 +34,10 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-  getItem("AdminOverview", "/admin", <DashboardOutlined />),
-  getItem("UserManagement", "/admin/user-management", <UserOutlined />),
+  getItem("Tổng quát", "/admin", <DashboardOutlined />),
+  getItem("Quản lý người dùng", "/admin/user-management", <UserOutlined />),
   getItem(
-    "SevicesManagement",
+    "Quản lý dịch vụ",
     "/admin/service-management",
     <ProductOutlined />
   ),
@@ -47,11 +47,11 @@ const items: MenuItem[] = [
   //   <MoneyCollectOutlined />
   // ),
 
-  getItem("CategoryManagement", "/admin/category-management", <ReadOutlined />),
+  getItem("Quản lý danh mục", "/admin/category-management", <ReadOutlined />),
 
-  getItem("BlogManagement", "/admin/blog-management", <InboxOutlined />),
-  getItem("PaymentManagement", "/admin/payment-management", <QrcodeOutlined />),
-  getItem("RatingManagement", "/admin/rating-management", <StarOutlined />),
+  getItem("Quản lý bài viết", "/admin/blog-management", <InboxOutlined />),
+  getItem("Quản lý thanh toán", "/admin/payment-management", <QrcodeOutlined />),
+  getItem("Quản lý đánh giá", "/admin/rating-management", <StarOutlined />),
   // getItem(
   //   "QuestionManagement",
   //   "/admin/question-management",

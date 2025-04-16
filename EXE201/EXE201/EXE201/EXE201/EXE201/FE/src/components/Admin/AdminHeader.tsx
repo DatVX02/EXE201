@@ -121,7 +121,7 @@ const AdminHeader: React.FC = () => {
             className='w-16 h-16 rounded-full'
           />
         </Link>
-        <div className='text-xl font-semibold ml-4 p'>Welcome</div>
+        
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
@@ -160,7 +160,7 @@ const AdminHeader: React.FC = () => {
                 color: "#000",
               }}
             />
-            {user && <span style={{ fontWeight: 500 }}>{user.username}</span>}
+            {user && <span style={{ fontWeight: 500 }}>Chào mừng, {user.username}</span>}
             <svg
               xmlns='http://www.w3.org/2000/svg'
               width='16'

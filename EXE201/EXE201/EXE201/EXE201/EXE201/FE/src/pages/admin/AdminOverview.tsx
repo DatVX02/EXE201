@@ -43,12 +43,12 @@ const AdminOverview: React.FC = () => {
       icon: <AppstoreOutlined />,
       color: "#722ed1",
     },
-    {
-      title: "Lịch hẹn",
-      value: bookingCount,
-      icon: <ShoppingOutlined />,
-      color: "#1890ff",
-    },
+    // {
+    //   title: "Lịch hẹn",
+    //   value: bookingCount,
+    //   icon: <ShoppingOutlined />,
+    //   color: "#1890ff",
+    // },
     {
       title: "Doanh thu",
       value: paymentTotal,
