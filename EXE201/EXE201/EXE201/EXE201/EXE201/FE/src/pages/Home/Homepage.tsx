@@ -489,7 +489,7 @@ const HomePage: React.FC = () => {
                   whileHover="hover"
                   whileTap="tap"
                 >
-                  Explore More Packages
+                  Xem thêm
                 </motion.button>
               </div>
             )}
