@@ -12,6 +12,7 @@ type AuthUser = {
 
 interface CartComponentProps {
   isBookingPage?: boolean;
+  handleCheckout?: () => void;
 }
 
 const CartComponent: React.FC<CartComponentProps> = ({
