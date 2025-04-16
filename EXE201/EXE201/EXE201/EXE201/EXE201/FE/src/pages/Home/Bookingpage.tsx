@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Layout from "../../layout/Layout";
 import CartComponent from "../../components/Cart/CartComponent";
 import { useAuth } from "../../context/AuthContext";
-import { Service, Therapist, Booking, Rating } from "../../types/booking";
+import { Service, Therapist, Booking } from "../../types/booking";
 import { JSX } from "react/jsx-runtime";
 
 const EnhancedBookingPage: React.FC = () => {
@@ -25,12 +25,20 @@ const EnhancedBookingPage: React.FC = () => {
   const [notes, setNotes] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
-  const [selectedTherapist, setSelectedTherapist] = useState<Therapist | null>(null);
+  const [selectedTherapist, setSelectedTherapist] = useState<Therapist | null>(
+    null
+  );
   const [showCheckoutModal, setShowCheckoutModal] = useState<boolean>(false);
   const [paymentUrl, setPaymentUrl] = useState<string>("");
   const [qrCode, setQrCode] = useState<string>("");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [ratings, setRatings] = useState<Rating[]>([]);
+  type Rating = {
+    _id: string;
+    createName: string;
+    serviceRating: number;
+    serviceContent: string;
+  };
   const [loadingRatings, setLoadingRatings] = useState<boolean>(true);
   const [bookedSlots, setBookedSlots] = useState<
     { startTime: string; endTime: string }[]
@@ -93,7 +101,9 @@ const EnhancedBookingPage: React.FC = () => {
                 !slot.endTime.match(/^\d{2}:\d{2}$/)
             )
           );
-          toast.warn("Some booked slots could not be loaded due to invalid format.");
+          toast.warn(
+            "Some booked slots could not be loaded due to invalid format."
+          );
         }
 
         setBookedSlots(validSlots);
@@ -179,7 +189,8 @@ const EnhancedBookingPage: React.FC = () => {
       priceValue = price;
     }
 
-    if (isNaN(priceValue) || priceValue === 0 || discountedPrice == null) return 0;
+    if (isNaN(priceValue) || priceValue === 0 || discountedPrice == null)
+      return 0;
 
     return Math.round(((priceValue - discountedPrice) / priceValue) * 100);
   };
@@ -248,7 +259,12 @@ const EnhancedBookingPage: React.FC = () => {
     start: string | undefined,
     end: string | undefined
   ): boolean => {
-    if (!start || !end || !start.match(/^\d{2}:\d{2}$/) || !end.match(/^\d{2}:\d{2}$/)) {
+    if (
+      !start ||
+      !end ||
+      !start.match(/^\d{2}:\d{2}$/) ||
+      !end.match(/^\d{2}:\d{2}$/)
+    ) {
       console.warn(`Invalid startTime (${start}) or endTime (${end})`);
       return false;
     }
@@ -679,7 +695,11 @@ const EnhancedBookingPage: React.FC = () => {
                   <div className="absolute top-4 right-4 z-20 flex items-center justify-center">
                     <div className="bg-red-500 text-white font-bold rounded-full h-16 w-16 flex items-center justify-center transform rotate-12 shadow-lg">
                       <span className="text-lg">
-                        {calculateDiscountPercentage(service.price, service.discountedPrice)}%
+                        {calculateDiscountPercentage(
+                          service.price,
+                          service.discountedPrice
+                        )}
+                        %
                       </span>
                       <span className="text-xs block -mt-1">OFF</span>
                     </div>
@@ -696,7 +716,10 @@ const EnhancedBookingPage: React.FC = () => {
                     <div>
                       <p className="text-xl font-semibold text-yellow-500">
                         Price:{" "}
-                        {formatPriceDisplay(service.price, service.discountedPrice)}
+                        {formatPriceDisplay(
+                          service.price,
+                          service.discountedPrice
+                        )}
                       </p>
                       <p className="text-lg text-gray-600">
                         Duration: {service.duration || "N/A"} minutes
@@ -825,7 +848,6 @@ const EnhancedBookingPage: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             className="w-full lg:w-2/3 px-4"
           >
-            
             <form
               onSubmit={handleSubmit}
               className="space-y-6 bg-white p-8 rounded-xl shadow-lg"
@@ -843,7 +865,7 @@ const EnhancedBookingPage: React.FC = () => {
               </div>
               <div>
                 <label className="block text-lg font-medium text-gray-700 mb-2">
-                  Số điện thoại 
+                  Số điện thoại
                 </label>
                 <input
                   type="tel"
