@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import { useAuth } from "../../context/AuthContext";
-import { Booking } from "../../types/booking";
 import CheckoutModal from "./CheckoutModal";
 
 type AuthUser = {
@@ -20,13 +19,12 @@ const CartComponent: React.FC<CartComponentProps> = ({
 }) => {
   const { cart, fetchCart, loadingCart, cartError, user, token } = useAuth();
   const [showCart, setShowCart] = useState<boolean>(false);
-
-  // ✅ Modal & Payment states
   const [showModal, setShowModal] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState("");
   const [qrCode, setQrCode] = useState("");
+  const [localCart, setLocalCart] = useState<any[]>([]);
 
-  const API_BASE_URL = "https://exe201-production.up.railway.app/api";
+  const API_BASE_URL = "http://localhost:5000/api";
 
   useEffect(() => {
     let isMounted = true;
@@ -36,7 +34,7 @@ const CartComponent: React.FC<CartComponentProps> = ({
         await fetchCart();
       } catch (error) {
         if (isMounted) {
-          console.error("Failed to load cart in CartComponent:", error);
+          console.error("Failed to load cart:", error);
         }
       }
     };
@@ -50,7 +48,12 @@ const CartComponent: React.FC<CartComponentProps> = ({
     };
   }, [fetchCart, user]);
 
-  const userCart = cart.filter(
+  useEffect(() => {
+    setLocalCart(cart);
+  }, [cart]);
+
+  // ✅ DÙNG localCart thay cho cart gốc
+  const userCart = localCart.filter(
     (item) => item.username === (user as AuthUser)?.username
   );
 
@@ -108,9 +111,7 @@ const CartComponent: React.FC<CartComponentProps> = ({
     }
 
     try {
-      if (!token) {
-        throw new Error("Bạn cần đăng nhập để hủy giỏ hàng.");
-      }
+      if (!token) throw new Error("Bạn cần đăng nhập để hủy giỏ hàng.");
 
       const response = await fetch(`${API_BASE_URL}/cart/${cartID}`, {
         method: "PUT",
@@ -123,12 +124,11 @@ const CartComponent: React.FC<CartComponentProps> = ({
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(
-          errorData.message || "Không thể hủy giỏ hàng: Lỗi server"
-        );
+        throw new Error(errorData.message || "Không thể hủy giỏ hàng");
       }
 
-      await fetchCart();
+      // ✅ Xóa khỏi localCart
+      setLocalCart((prev) => prev.filter((item) => item.CartID !== cartID));
       toast.success("Giỏ hàng đã được hủy thành công!");
     } catch (error) {
       console.error("Lỗi khi hủy giỏ hàng:", error);
@@ -168,8 +168,6 @@ const CartComponent: React.FC<CartComponentProps> = ({
             </h3>
             {loadingCart ? (
               <p className="text-gray-600">Đang tải giỏ hàng...</p>
-            ) : cartError && cartError.includes("404") ? (
-              <p className="text-gray-600">Giỏ hàng của bạn trống.</p>
             ) : cartError ? (
               <p className="text-red-600">{cartError}</p>
             ) : userCart.length > 0 ? (
@@ -249,7 +247,6 @@ const CartComponent: React.FC<CartComponentProps> = ({
         )}
       </AnimatePresence>
 
-      {/* ✅ Gắn Modal */}
       <CheckoutModal
         showModal={showModal}
         setShowModal={setShowModal}

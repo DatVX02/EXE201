@@ -32,7 +32,7 @@ const Forgot_password: React.FC = () => {
 
     try {
       await axios.post(
-        "https://exe201-production.up.railway.app/api/auth/forgot-password/send-otp",
+        "http://localhost:5000/api/auth/forgot-password/send-otp",
         { email }
       );
 
@@ -76,7 +76,7 @@ const Forgot_password: React.FC = () => {
 
     try {
       const response = await axios.post(
-        "https://exe201-production.up.railway.app/api/auth/forgot-password/reset",
+        "http://localhost:5000/api/auth/forgot-password/reset",
         {
           email,
           otp,

@@ -50,7 +50,7 @@ const Header: React.FC = () => {
 
     setLoadingSearch(true);
     try {
-      const response = await fetch("https://exe201-production.up.railway.app/api/products/");
+      const response = await fetch("http://localhost:5000/api/products/");
       const products = await response.json();
 
       const filtered = products.filter((product: any) =>

@@ -6,8 +6,6 @@ export type Service = {
   description: string;
   image?: string;
   duration?: number;
-  discountedPrice?: number; // ✅ thêm dòng này nếu bạn có logic giảm giá
-  originalPrice?: number;   // ✅ nếu cần
   price?: number | { $numberDecimal: string }; // Support both number and MongoDB Decimal128 format
   category: {
     _id: string;
@@ -44,8 +42,6 @@ export type Booking = {
   notes?: string;
   bookingDate: string;
   startTime: string;
-  discountedPrice?: number;
-  originalPrice?: number;
   endTime?: string;
   selectedTherapist?: Therapist | null; // From EnhancedBookingPage
   Skincare_staff?: string; // From EnhancedBookingPage, optional therapist name

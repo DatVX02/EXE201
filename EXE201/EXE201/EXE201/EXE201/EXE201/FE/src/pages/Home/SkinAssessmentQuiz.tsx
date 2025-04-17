@@ -22,9 +22,7 @@ const SkinAssessmentQuiz: React.FC = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await axios.get(
-          "https://exe201-production.up.railway.app/api/questions"
-        );
+        const response = await axios.get("http://localhost:5000/api/questions");
         const formattedQuestions = response.data.map((q: any) => ({
           id: q._id,
           question: q.text,
@@ -70,7 +68,7 @@ const SkinAssessmentQuiz: React.FC = () => {
       }
 
       const response = await axios.post(
-        "https://exe201-production.up.railway.app/api/questions/submit",
+        "http://localhost:5000/api/questions/submit",
         { answers: formattedAnswers }
       );
 

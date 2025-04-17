@@ -14,9 +14,6 @@ const BlogDetailPage: React.FC = () => {
     window.location.hostname === "localhost"
       ? "http://localhost:5000/api"
       : "https://exe201-production.up.railway.app/api";
-    // window.location.hostname === "localhost"
-    //   ? "http://localhost:5000/api"
-    //   : "https://luluspa-production.up.railway.app/api";
 
   useEffect(() => {
     const fetchBlogDetail = async () => {

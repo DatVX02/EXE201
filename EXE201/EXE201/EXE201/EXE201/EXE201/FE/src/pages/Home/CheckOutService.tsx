@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Layout from "../../layout/Layout";
+import { useAuth } from "../../context/AuthContext";
 
 interface CartItem {
   _id: string;
@@ -16,6 +17,7 @@ const CheckoutService: React.FC = () => {
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
+  const { user } = useAuth();
 
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
@@ -46,62 +48,89 @@ const CheckoutService: React.FC = () => {
       return;
     }
 
-    const username = localStorage.getItem("username"); // 👈 Lấy từ localStorage
-    const orderCode = "ORDER_" + Date.now(); // sinh mã đơn tạm thời
-
-    const cartWithInfo = cart.map((item) => ({
-      service_id: item._id,
-      service_name: item.name,
-      customerName,
-      customerEmail,
-      customerPhone,
-      username,
-      quantity: item.quantity,
-      price:
-        typeof item.price === "object"
-          ? parseFloat(item.price.$numberDecimal)
-          : item.price,
-      paymentMethod,
+    const cartWithType = cart.map((item) => ({
+      ...item,
       productType: "purchase",
-      orderCode,
     }));
+const orderName = cartWithType.map((item) => item.name).join(", ");
 
     try {
-      for (const item of cartWithInfo) {
-        const response = await fetch(
-          "https://exe201-production.up.railway.app/api/booking/create",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(item),
-          }
-        );
+      // 1. Tạo link thanh toán
+      const response = await fetch(
+        "http://localhost:5000/api/payments/create",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            cart: cartWithType,
+            customerName,
+            customerEmail,
+            customerPhone,
+            paymentMethod,
+            orderName,
+            description: orderName,
+            returnUrl: "http://localhost:5000/success.html",
+            cancelUrl: "http://localhost:5000/cancel.html",
+            amount: total,
+          }),
+        }
+      );
 
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.message);
+      const result = await response.json();
+
+      if (!response.ok || !result?.data?.checkoutUrl) {
+        alert(result.message || "Không thể tạo thanh toán.");
+        return;
       }
 
+      // 2. Gửi từng booking có username
+      for (const item of cartWithType) {
+        const bookingPayload = {
+          service_id: item._id,
+          service_name: item.name,
+          customerName,
+          customerEmail,
+          customerPhone,
+          username: user?.username || "",
+          quantity: item.quantity,
+          price: parseFloat(
+            typeof item.price === "object"
+              ? item.price.$numberDecimal
+              : item.price.toString()
+          ),
+          paymentMethod,
+          productType: item.productType,
+          orderCode: result.data.orderCode, // ✅ thêm dòng này
+        };
+
+        await fetch("http://localhost:5000/api/booking/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(bookingPayload),
+        });
+      }
+
+      // 3. Xoá giỏ hàng và chuyển sang trang thanh toán
       localStorage.removeItem("cart");
-      alert("Đơn hàng đã được gửi thành công!");
-      window.location.href = "/booking-history"; // hoặc redirect đến trang lịch sử
-    } catch (error: any) {
-      console.error("❌ Gửi đơn hàng thất bại:", error);
-      alert(error.message || "Không thể gửi đơn hàng.");
+      window.location.href = result.data.checkoutUrl;
+    } catch (error) {
+      console.error("❌ Lỗi gửi đơn hàng:", error);
+      alert("Không thể xử lý đơn hàng.");
     }
   };
 
   return (
     <Layout>
       <div className="max-w-4xl mx-auto px-4 py-12">
-        <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">
+        <h1 className="text-4xl font-bold mb-10 text-center text-gray-800">
           Thanh toán đơn hàng
         </h1>
 
-        {/* Giỏ hàng */}
         <div className="bg-white border rounded-lg p-6 shadow-md mb-10">
           <h2 className="text-xl font-semibold mb-4 text-gray-700">
-            Sản phẩm trong giỏ
+            Sản phẩm trong giỏ hàng
           </h2>
+
           {cart.length === 0 ? (
             <p className="text-gray-500">Giỏ hàng trống.</p>
           ) : (
@@ -116,16 +145,27 @@ const CheckoutService: React.FC = () => {
                 return (
                   <div
                     key={item._id}
-                    className="flex justify-between border-b pb-4"
+                    className="flex items-center justify-between border-b pb-4"
                   >
-                    <div>
-                      <div className="font-medium">{item.name}</div>
-                      <div className="text-sm text-gray-500">
-                        Số lượng: {item.quantity}
+                    <div className="flex items-center space-x-4">
+                      <img
+                        src={item.image || "/default-image.jpg"}
+                        alt={item.name}
+                        className="w-16 h-16 rounded object-cover"
+                      />
+                      <div>
+                        <div className="font-medium text-gray-800">
+                          {item.name}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          Số lượng: {item.quantity}
+                        </div>
                       </div>
                     </div>
-                    <div className="text-right font-semibold">
-                      {formatPrice(itemTotal)}
+                    <div className="text-right">
+                      <div className="text-gray-700 font-semibold">
+                        {formatPrice(itemTotal)}
+                      </div>
                     </div>
                   </div>
                 );
@@ -137,52 +177,58 @@ const CheckoutService: React.FC = () => {
           )}
         </div>
 
-        {/* Form nhập thông tin */}
+        {/* Form thanh toán */}
         <form
           onSubmit={handleSubmit}
-          className="bg-white p-8 border rounded-lg shadow-md space-y-6"
+          className="bg-white shadow-md rounded-lg p-8 space-y-6 border"
         >
           <div>
-            <label className="block font-medium mb-1">Họ và tên</label>
+            <label className="block mb-2 text-gray-700 font-medium">
+              Họ và tên
+            </label>
             <input
               type="text"
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
               required
-              className="w-full border px-4 py-2 rounded"
+              className="w-full border px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 
           <div>
-            <label className="block font-medium mb-1">Email</label>
+            <label className="block mb-2 text-gray-700 font-medium">
+              Email
+            </label>
             <input
               type="email"
               value={customerEmail}
               onChange={(e) => setCustomerEmail(e.target.value)}
-              className="w-full border px-4 py-2 rounded"
+              className="w-full border px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 
           <div>
-            <label className="block font-medium mb-1">Số điện thoại</label>
+            <label className="block mb-2 text-gray-700 font-medium">
+              Số điện thoại
+            </label>
             <input
               type="tel"
               value={customerPhone}
               onChange={(e) => setCustomerPhone(e.target.value)}
               required
-              className="w-full border px-4 py-2 rounded"
+              className="w-full border px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 
           <div>
-            <label className="block font-medium mb-1">
+            <label className="block mb-2 text-gray-700 font-medium">
               Phương thức thanh toán
             </label>
             <select
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value)}
               required
-              className="w-full border px-4 py-2 rounded"
+              className="w-full border px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="">-- Chọn --</option>
               <option value="payos">PayOS</option>
@@ -191,10 +237,10 @@ const CheckoutService: React.FC = () => {
             </select>
           </div>
 
-          <div className="text-right">
+          <div className="text-right pt-4">
             <button
               type="submit"
-              className="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-3 rounded-lg"
+              className="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-3 rounded-lg transition duration-200"
             >
               Xác nhận thanh toán
             </button>

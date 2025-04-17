@@ -38,6 +38,7 @@ router.post("/create", async (req, res) => {
   const orderCode = Date.now();
 
   try {
+    // Lưu từng booking vào DB
     for (const item of cart) {
       const price =
         typeof item.price === "object"
@@ -62,13 +63,24 @@ router.post("/create", async (req, res) => {
       await newBooking.save();
     }
 
+    // Phân loại đơn hàng
     const hasPurchase = cart.some((item) => item.productType === "purchase");
     const hasConsultation = cart.some(
       (item) => item.productType === "consultation"
     );
 
     let paymentLinkRes = null;
-    if ((paymentMethod === "payos" && hasPurchase) || hasConsultation) {
+
+    // Nếu có purchase thì bắt buộc phải dùng payos
+    if (hasPurchase && paymentMethod !== "payos") {
+      return res.status(400).json({
+        error: -1,
+        message: "Phương thức thanh toán không hợp lệ cho sản phẩm purchase.",
+      });
+    }
+
+    // Nếu dùng payos thì tạo link thật
+    if (paymentMethod === "payos") {
       paymentLinkRes = await payOS.createPaymentLink({
         orderCode,
         amount,
@@ -77,8 +89,15 @@ router.post("/create", async (req, res) => {
         cancelUrl,
         orderName,
       });
+    } else {
+      // Ngược lại trả về URL thủ công (redirect sau khi thanh toán)
+      paymentLinkRes = {
+        checkoutUrl: returnUrl,
+        qrCode: null,
+      };
     }
 
+    // Lưu thanh toán vào DB
     const newPayment = new Payment({
       paymentID: `PAY-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       orderCode,
@@ -107,7 +126,7 @@ router.post("/create", async (req, res) => {
     });
   } catch (error) {
     console.error(
-      "\u274c Lỗi khi tạo thanh toán:",
+      "❌ Lỗi khi tạo thanh toán:",
       error.response?.data || error.message
     );
     return res.status(500).json({

@@ -159,7 +159,6 @@
 //   }
 // };
 
-
 const Booking = require("../models/booking");
 
 // Tạo booking mới

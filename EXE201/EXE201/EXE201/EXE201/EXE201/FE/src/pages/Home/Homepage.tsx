@@ -124,7 +124,7 @@ const HomePage: React.FC = () => {
           data.map((staff: any) => ({
             id: staff._id,
             name: staff.username,
-            image: staff.avatar, // để backend xử lý đúng avatar
+            image: staff.avatar || "/default-avatar.png",
             Description: staff.Description,
           }))
         );
@@ -520,13 +520,7 @@ const HomePage: React.FC = () => {
                   >
                     <div className="relative">
                       <img
-                        src={
-                          therapist.image?.startsWith("/uploads")
-                            ? `${API_BASE_URL.replace("/api", "")}${
-                                therapist.image
-                              }`
-                            : therapist.image || "/default-avatar.png"
-                        }
+                        src={therapist.image}
                         alt={therapist.name}
                         className="w-full h-56 object-cover rounded-t-lg"
                         onError={(e) => {

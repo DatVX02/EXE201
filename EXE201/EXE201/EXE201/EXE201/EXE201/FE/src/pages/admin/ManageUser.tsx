@@ -39,12 +39,9 @@ function ManageUser() {
     }
     try {
       console.log("Fetching users with token:", token);
-      const response = await axios.get(
-        "https://exe201-production.up.railway.app/api/users/",
-        {
-          headers: { "x-auth-token": token },
-        }
-      );
+      const response = await axios.get("http://localhost:5000/api/users/", {
+        headers: { "x-auth-token": token },
+      });
       console.log("Fetched users:", response.data);
       setUsers(response.data);
     } catch (error: any) {
@@ -70,7 +67,7 @@ function ManageUser() {
         JSON.stringify(values, null, 2)
       );
       const response = await axios.post(
-        "https://exe201-production.up.railway.app/api/users/",
+        "http://localhost:5000/api/users/",
         values,
         {
           headers: {

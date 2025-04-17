@@ -85,7 +85,7 @@ const Cart: React.FC = () => {
       const description = `Thanh toán cho: ${productNames}`;
 
       const response = await fetch(
-        "https://exe201-production.up.railway.app/api/payments/create",
+        "http://localhost:5000/api/payments/create",
         {
           method: "POST",
           headers: {
@@ -95,8 +95,8 @@ const Cart: React.FC = () => {
             cart: cartWithProductType,
             orderName,
             description,
-            returnUrl: "https://exe201diabe.vercel.app//payment-success",
-            cancelUrl: "https://exe201diabe.vercel.app//payment-cancel",
+            returnUrl: "http://localhost:3000/payment-success",
+            cancelUrl: "http://localhost:3000/payment-cancel",
             amount: total,
             paymentMethod: "payos",
           }),

@@ -147,7 +147,7 @@ const StaffCheckOut: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState(1);
   const paymentsPerPage = 15;
-  const API_BASE_URL = "https://exe201-production.up.railway.app/api";
+  const API_BASE_URL = "http://localhost:5000/api";
 
   useEffect(() => {
     fetchPayments();
@@ -289,7 +289,7 @@ const StaffCheckOut: React.FC = () => {
     <div className="container mx-auto p-6">
       <ToastContainer />
       <h1 className="text-3xl font-bold text-center mb-6">
-        Điểm danh thanh toán
+        Staff Check-out Management
       </h1>
       {loading ? (
         <p className="text-center text-gray-600">Loading data...</p>
@@ -300,27 +300,28 @@ const StaffCheckOut: React.FC = () => {
               <thead className="bg-gray-100">
                 <tr>
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap sticky left-0 bg-gray-100 z-10">
-                    Mã đơn hàng
+                    Order Code
                   </th>
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap">
-                    Tên đơn hàng
+                    Order Name
                   </th>
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap">
-                    Chi phí (VND)
+                    Amount (VND)
                   </th>
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap">
-                    Mô tả
+                    Description
                   </th>
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap">
-                    Trạng thái
-                  </th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap"></th>
-                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">
-                    Ngày tạo
+                    Status
                   </th>
                   <th className="py-3 px-4 border-b text-left whitespace-nowrap">
-                    Cập nhật{" "}
-
+                    Action
+                  </th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">
+                    Created At
+                  </th>
+                  <th className="py-3 px-4 border-b text-left whitespace-nowrap">
+                    Updated At
                   </th>
                 </tr>
               </thead>
@@ -328,7 +329,7 @@ const StaffCheckOut: React.FC = () => {
                 {currentPayments.length === 0 ? (
                   <tr>
                     <td colSpan={10} className="text-center py-4 text-gray-600">
-                      Không có thông tin thanh toán
+                      No payments available
                     </td>
                   </tr>
                 ) : (
@@ -389,7 +390,7 @@ const StaffCheckOut: React.FC = () => {
                               }
                               className="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600 transition-all duration-300 mr-2 whitespace-nowrap"
                             >
-                            Thành công
+                              Mark Success
                             </button>
 
                             <button
@@ -398,7 +399,7 @@ const StaffCheckOut: React.FC = () => {
                               }
                               className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition-all duration-300 whitespace-nowrap"
                             >
-                              Thất bại
+                              Mark Failed
                             </button>
                           </>
                         ) : (
@@ -427,10 +428,10 @@ const StaffCheckOut: React.FC = () => {
                   : "bg-blue-500 text-white hover:bg-blue-600"
               } transition-all duration-300`}
             >
-              Trước
+              Previous
             </button>
             <span className="py-2 px-4">
-              Trang {currentPage} of {totalPages}
+              Page {currentPage} of {totalPages}
             </span>
             <button
               onClick={goToNextPage}
@@ -441,7 +442,7 @@ const StaffCheckOut: React.FC = () => {
                   : "bg-blue-500 text-white hover:bg-blue-600"
               } transition-all duration-300`}
             >
-              Kế tiếp
+              Next
             </button>
           </div>
         </>
@@ -452,7 +453,7 @@ const StaffCheckOut: React.FC = () => {
           className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition-all duration-300"
           disabled={loading}
         >
-          {loading ? "Refreshing..." : "Cập nhật lại trang"}
+          {loading ? "Refreshing..." : "Refresh Payments"}
         </button>
       </div>
     </div>
