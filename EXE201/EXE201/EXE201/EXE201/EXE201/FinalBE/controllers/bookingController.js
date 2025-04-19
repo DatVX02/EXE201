@@ -160,7 +160,7 @@
 // };
 
 const Booking = require("../models/booking");
-
+const { sendBookingConfirmationEmail } = require("../services/emailService");
 // Tạo booking mới
 exports.createBooking = async (req, res) => {
   try {
@@ -170,20 +170,27 @@ exports.createBooking = async (req, res) => {
       customerName,
       customerEmail,
       customerPhone,
+      customerAddress,
       username,
       quantity,
       price,
       paymentMethod,
       productType,
-      orderCode, // ✅ lấy orderCode từ frontend
+      orderCode,
     } = req.body;
 
+    const generateRandomCode = () =>
+      Math.random().toString(36).substring(2, 10).toUpperCase();
+
     const newBooking = new Booking({
+      BookingID: `BID-${Date.now()}`, // ✅ Auto-generate BookingID
+      BookingCode: `BCODE-${generateRandomCode()}`, // ✅ Auto-generate BookingCode
       service_id,
       service_name,
       customerName,
       customerEmail,
       customerPhone,
+      customerAddress,
       username,
       quantity,
       price,
@@ -193,7 +200,17 @@ exports.createBooking = async (req, res) => {
     });
 
     await newBooking.save();
-
+    await sendBookingConfirmationEmail(customerEmail, {
+      BookingID: newBooking.BookingID,
+      serviceName: newBooking.service_name,
+      customerName: newBooking.customerName,
+      customerPhone: newBooking.customerPhone,
+      customerAddress: newBooking.customerAddress,
+      quantity: newBooking.quantity,
+      price: newBooking.price.toLocaleString("vi-VN"),
+      paymentMethod: newBooking.paymentMethod,
+    });
+    // Gửi email xác nhận đơn hàng
     res.status(201).json({
       message: "Booking đã lưu thành công",
       data: newBooking,

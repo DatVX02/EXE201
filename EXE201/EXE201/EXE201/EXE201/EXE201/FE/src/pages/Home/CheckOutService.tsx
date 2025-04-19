@@ -16,6 +16,7 @@ const CheckoutService: React.FC = () => {
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const { user } = useAuth();
 
@@ -52,7 +53,7 @@ const CheckoutService: React.FC = () => {
       ...item,
       productType: "purchase",
     }));
-const orderName = cartWithType.map((item) => item.name).join(", ");
+    const orderName = cartWithType.map((item) => item.name).join(", ");
 
     try {
       // 1. Tạo link thanh toán
@@ -66,6 +67,7 @@ const orderName = cartWithType.map((item) => item.name).join(", ");
             customerName,
             customerEmail,
             customerPhone,
+            customerAddress,
             paymentMethod,
             orderName,
             description: orderName,
@@ -91,6 +93,7 @@ const orderName = cartWithType.map((item) => item.name).join(", ");
           customerName,
           customerEmail,
           customerPhone,
+          customerAddress,
           username: user?.username || "",
           quantity: item.quantity,
           price: parseFloat(
@@ -184,7 +187,7 @@ const orderName = cartWithType.map((item) => item.name).join(", ");
         >
           <div>
             <label className="block mb-2 text-gray-700 font-medium">
-              Họ và tên
+              Họ và tên <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -197,7 +200,7 @@ const orderName = cartWithType.map((item) => item.name).join(", ");
 
           <div>
             <label className="block mb-2 text-gray-700 font-medium">
-              Email
+              Email <span className="text-red-500">*</span>
             </label>
             <input
               type="email"
@@ -209,7 +212,7 @@ const orderName = cartWithType.map((item) => item.name).join(", ");
 
           <div>
             <label className="block mb-2 text-gray-700 font-medium">
-              Số điện thoại
+              Số điện thoại <span className="text-red-500">*</span>
             </label>
             <input
               type="tel"
@@ -219,10 +222,22 @@ const orderName = cartWithType.map((item) => item.name).join(", ");
               className="w-full border px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
+          <div>
+            <label className="block mb-2 text-gray-700 font-medium">
+              Địa chỉ <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={customerAddress}
+              onChange={(e) => setCustomerAddress(e.target.value)}
+              required
+              className="w-full border px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+          </div>
 
           <div>
             <label className="block mb-2 text-gray-700 font-medium">
-              Phương thức thanh toán
+              Phương thức thanh toán <span className="text-red-500">*</span>
             </label>
             <select
               value={paymentMethod}
@@ -231,9 +246,7 @@ const orderName = cartWithType.map((item) => item.name).join(", ");
               className="w-full border px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="">-- Chọn --</option>
-              <option value="payos">PayOS</option>
-              <option value="cod">Thanh toán khi nhận hàng</option>
-              <option value="bank">Chuyển khoản ngân hàng</option>
+              <option value="payos">PayOS</option>s{" "}
             </select>
           </div>
 
